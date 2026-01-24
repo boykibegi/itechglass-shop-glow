@@ -123,7 +123,7 @@ const Checkout = () => {
           customer_email: formData.email.trim(),
           customer_phone: formData.phone.trim(),
           shipping_address: formData.address.trim(),
-          items: items as unknown as Record<string, unknown>,
+          items: JSON.parse(JSON.stringify(items)),
           total_amount: getTotalPrice(),
           payment_method: formData.paymentMethod,
           transaction_id: formData.transactionId.trim() || null,
