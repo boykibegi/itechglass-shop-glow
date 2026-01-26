@@ -1,14 +1,16 @@
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, Menu, X, User } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/lib/cart';
+import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const { getTotalItems } = useCart();
+  const { user, isAdmin, signOut } = useAuth();
   const totalItems = getTotalItems();
 
   const navLinks = [
@@ -22,6 +24,10 @@ const Header = () => {
   const isActive = (href: string) => {
     if (href === '/') return location.pathname === '/';
     return location.pathname + location.search === href;
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
   };
 
   return (
@@ -51,12 +57,14 @@ const Header = () => {
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center gap-4">
-          <Link to="/admin" className="hidden md:block">
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-            </Button>
-          </Link>
+        <div className="flex items-center gap-2">
+          {isAdmin && (
+            <Link to="/admin" className="hidden md:block">
+              <Button variant="ghost" size="icon">
+                <User className="h-5 w-5" />
+              </Button>
+            </Link>
+          )}
           
           <Link to="/cart" className="relative">
             <Button variant="ghost" size="icon">
@@ -68,6 +76,18 @@ const Header = () => {
               )}
             </Button>
           </Link>
+
+          {user && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleSignOut}
+              className="hidden md:flex"
+              title="Sign out"
+            >
+              <LogOut className="h-5 w-5" />
+            </Button>
+          )}
 
           {/* Mobile menu toggle */}
           <Button
@@ -98,13 +118,26 @@ const Header = () => {
                 {link.label}
               </Link>
             ))}
-            <Link
-              to="/admin"
-              onClick={() => setIsMenuOpen(false)}
-              className="text-sm font-medium text-muted-foreground hover:text-gold py-2"
-            >
-              Admin
-            </Link>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                onClick={() => setIsMenuOpen(false)}
+                className="text-sm font-medium text-muted-foreground hover:text-gold py-2"
+              >
+                Admin
+              </Link>
+            )}
+            {user && (
+              <button
+                onClick={() => {
+                  handleSignOut();
+                  setIsMenuOpen(false);
+                }}
+                className="text-sm font-medium text-muted-foreground hover:text-gold py-2 text-left"
+              >
+                Sign Out
+              </button>
+            )}
           </nav>
         </div>
       )}
