@@ -111,12 +111,12 @@ const Shop = () => {
 
           {/* Products Grid */}
           {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="bg-card rounded-lg overflow-hidden border border-border animate-pulse">
-                  <div className="aspect-square bg-muted" />
-                  <div className="p-4 space-y-3">
-                    <div className="h-3 bg-muted rounded w-1/3" />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
+              {[...Array(10)].map((_, i) => (
+                <div key={i} className="bg-card rounded-xl overflow-hidden border border-border/50 animate-pulse">
+                  <div className="aspect-[4/5] bg-muted" />
+                  <div className="p-3 space-y-2">
+                    <div className="h-4 bg-muted rounded w-full" />
                     <div className="h-4 bg-muted rounded w-2/3" />
                     <div className="h-5 bg-muted rounded w-1/2" />
                   </div>
@@ -124,7 +124,7 @@ const Shop = () => {
               ))}
             </div>
           ) : filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
               {filteredProducts.map((product) => (
                 <ProductCard
                   key={product.id}
