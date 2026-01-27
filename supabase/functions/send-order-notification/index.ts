@@ -178,7 +178,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const emailResponse = await resend.emails.send({
-      from: "iTechGlass <onboarding@resend.dev>",
+      from: "iTechGlass <support@itechglass.co.tz>",
       to: [customerEmail],
       subject: `iTechGlass - ${subject}`,
       html: emailHtml,
