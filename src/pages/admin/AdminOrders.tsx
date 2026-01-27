@@ -74,16 +74,52 @@ const AdminOrders = () => {
     },
   });
 
+  const sendNotification = async (order: Order, newStatus: string) => {
+    try {
+      const items = order.items as unknown as CartItem[];
+      const { error } = await supabase.functions.invoke('send-order-notification', {
+        body: {
+          orderId: order.id,
+          customerEmail: order.customer_email,
+          customerName: order.customer_name,
+          orderStatus: newStatus,
+          totalAmount: order.total_amount,
+          items: items.map(item => ({
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price,
+            selectedModel: item.selectedModel,
+          })),
+        },
+      });
+      
+      if (error) {
+        console.error('Failed to send notification:', error);
+      } else {
+        console.log('Notification sent for status:', newStatus);
+      }
+    } catch (err) {
+      console.error('Error sending notification:', err);
+    }
+  };
+
   const updateMutation = useMutation({
     mutationFn: async ({
       id,
       updates,
+      order,
     }: {
       id: string;
       updates: { payment_status?: string; order_status?: string };
+      order?: Order;
     }) => {
       const { error } = await supabase.from('orders').update(updates).eq('id', id);
       if (error) throw error;
+      
+      // Send email notification for order status changes
+      if (updates.order_status && order) {
+        await sendNotification(order, updates.order_status);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
@@ -366,6 +402,7 @@ const AdminOrders = () => {
                           updateMutation.mutate({
                             id: selectedOrder.id,
                             updates: { order_status: value },
+                            order: selectedOrder,
                           })
                         }
                       >
