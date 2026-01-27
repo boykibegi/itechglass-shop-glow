@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, Menu, X, User, LogOut } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, LogOut, Package } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/lib/cart';
@@ -58,8 +58,16 @@ const Header = () => {
 
         {/* Actions */}
         <div className="flex items-center gap-2">
+          {user && (
+            <Link to="/orders" className="hidden md:block" title="My Orders">
+              <Button variant="ghost" size="icon">
+                <Package className="h-5 w-5" />
+              </Button>
+            </Link>
+          )}
+
           {isAdmin && (
-            <Link to="/admin" className="hidden md:block">
+            <Link to="/admin" className="hidden md:block" title="Admin Dashboard">
               <Button variant="ghost" size="icon">
                 <User className="h-5 w-5" />
               </Button>
@@ -118,6 +126,15 @@ const Header = () => {
                 {link.label}
               </Link>
             ))}
+            {user && (
+              <Link
+                to="/orders"
+                onClick={() => setIsMenuOpen(false)}
+                className="text-sm font-medium text-muted-foreground hover:text-gold py-2"
+              >
+                My Orders
+              </Link>
+            )}
             {isAdmin && (
               <Link
                 to="/admin"
