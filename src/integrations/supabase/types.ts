@@ -14,50 +14,112 @@ export type Database = {
   }
   public: {
     Tables: {
+      delivery_locations: {
+        Row: {
+          accuracy: number | null
+          created_at: string
+          driver_id: string
+          heading: number | null
+          id: string
+          latitude: number
+          longitude: number
+          order_id: string
+          speed: number | null
+        }
+        Insert: {
+          accuracy?: number | null
+          created_at?: string
+          driver_id: string
+          heading?: number | null
+          id?: string
+          latitude: number
+          longitude: number
+          order_id: string
+          speed?: number | null
+        }
+        Update: {
+          accuracy?: number | null
+          created_at?: string
+          driver_id?: string
+          heading?: number | null
+          id?: string
+          latitude?: number
+          longitude?: number
+          order_id?: string
+          speed?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_locations_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
+          assigned_at: string | null
           created_at: string
           customer_email: string
           customer_name: string
           customer_phone: string
+          delivery_lat: number | null
+          delivery_lng: number | null
+          driver_id: string | null
           id: string
           items: Json
           order_status: string
           payment_method: string
           payment_proof_url: string | null
           payment_status: string
+          pickup_lat: number | null
+          pickup_lng: number | null
           shipping_address: string
           total_amount: number
           transaction_id: string | null
           updated_at: string
         }
         Insert: {
+          assigned_at?: string | null
           created_at?: string
           customer_email: string
           customer_name: string
           customer_phone: string
+          delivery_lat?: number | null
+          delivery_lng?: number | null
+          driver_id?: string | null
           id?: string
           items: Json
           order_status?: string
           payment_method: string
           payment_proof_url?: string | null
           payment_status?: string
+          pickup_lat?: number | null
+          pickup_lng?: number | null
           shipping_address: string
           total_amount: number
           transaction_id?: string | null
           updated_at?: string
         }
         Update: {
+          assigned_at?: string | null
           created_at?: string
           customer_email?: string
           customer_name?: string
           customer_phone?: string
+          delivery_lat?: number | null
+          delivery_lng?: number | null
+          driver_id?: string | null
           id?: string
           items?: Json
           order_status?: string
           payment_method?: string
           payment_proof_url?: string | null
           payment_status?: string
+          pickup_lat?: number | null
+          pickup_lng?: number | null
           shipping_address?: string
           total_amount?: number
           transaction_id?: string | null
