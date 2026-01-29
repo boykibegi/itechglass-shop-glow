@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Search, Loader2, Eye, CheckCircle, XCircle, Clock, ExternalLink } from 'lucide-react';
+import { Search, Loader2, Eye, CheckCircle, XCircle, Clock, ExternalLink, Truck } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Button } from '@/components/ui/button';
@@ -29,8 +29,12 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import type { Tables } from '@/integrations/supabase/types';
+import AssignDriverDialog from '@/components/admin/AssignDriverDialog';
 
-type Order = Tables<'orders'>;
+type Order = Tables<'orders'> & {
+  driver_id?: string | null;
+  assigned_at?: string | null;
+};
 
 interface CartItem {
   productId: string;
@@ -60,9 +64,10 @@ const AdminOrders = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [assignDriverOrder, setAssignDriverOrder] = useState<Order | null>(null);
 
   const { data: orders, isLoading } = useQuery({
-    queryKey: ['admin-orders'],
+    queryKey: ['adminOrders'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('orders')
@@ -122,7 +127,7 @@ const AdminOrders = () => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+      queryClient.invalidateQueries({ queryKey: ['adminOrders'] });
       toast.success('Order updated');
     },
     onError: () => {
@@ -242,13 +247,23 @@ const AdminOrders = () => {
                       {formatDate(order.created_at)}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setSelectedOrder(order)}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setAssignDriverOrder(order)}
+                          title="Assign Driver"
+                        >
+                          <Truck className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setSelectedOrder(order)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
@@ -429,6 +444,16 @@ const AdminOrders = () => {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Assign Driver Dialog */}
+        {assignDriverOrder && (
+          <AssignDriverDialog
+            open={!!assignDriverOrder}
+            onOpenChange={(open) => !open && setAssignDriverOrder(null)}
+            orderId={assignDriverOrder.id}
+            currentDriverId={assignDriverOrder.driver_id}
+          />
+        )}
       </div>
     </AdminLayout>
   );

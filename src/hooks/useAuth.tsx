@@ -6,6 +6,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   isAdmin: boolean;
+  isDriver: boolean;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
@@ -18,12 +19,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isDriver, setIsDriver] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const checkAdminRole = async (userId: string) => {
+  const checkRole = async (userId: string, role: 'admin' | 'driver') => {
     const { data } = await supabase.rpc('has_role', {
       _user_id: userId,
-      _role: 'admin',
+      _role: role,
     });
     return data === true;
   };
@@ -35,15 +37,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        // Defer admin check with setTimeout to prevent deadlock
+        // Defer role checks with setTimeout to prevent deadlock
         if (session?.user) {
           setTimeout(async () => {
-            const adminStatus = await checkAdminRole(session.user.id);
+            const [adminStatus, driverStatus] = await Promise.all([
+              checkRole(session.user.id, 'admin'),
+              checkRole(session.user.id, 'driver'),
+            ]);
             setIsAdmin(adminStatus);
+            setIsDriver(driverStatus);
             setIsLoading(false);
           }, 0);
         } else {
           setIsAdmin(false);
+          setIsDriver(false);
           setIsLoading(false);
         }
       }
@@ -55,8 +62,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        const adminStatus = await checkAdminRole(session.user.id);
+        const [adminStatus, driverStatus] = await Promise.all([
+          checkRole(session.user.id, 'admin'),
+          checkRole(session.user.id, 'driver'),
+        ]);
         setIsAdmin(adminStatus);
+        setIsDriver(driverStatus);
       }
       setIsLoading(false);
     });
@@ -82,10 +93,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signOut = async () => {
     await supabase.auth.signOut();
     setIsAdmin(false);
+    setIsDriver(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, isAdmin, isLoading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, session, isAdmin, isDriver, isLoading, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );

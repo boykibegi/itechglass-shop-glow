@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Package, Clock, CheckCircle, Truck, XCircle, MapPin, Phone, Mail, CreditCard } from 'lucide-react';
+import { ArrowLeft, Package, Clock, CheckCircle, Truck, XCircle, MapPin, Phone, Mail, CreditCard, Navigation } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import Header from '@/components/layout/Header';
@@ -261,6 +261,20 @@ const OrderDetail = () => {
               </CardContent>
             </Card>
           </div>
+
+          {/* Track Delivery Button */}
+          {(order.order_status === 'shipped' || order.order_status === 'processing') && (
+            <Card className="mt-6">
+              <CardContent className="py-4">
+                <Button asChild variant="gold" className="w-full">
+                  <Link to={`/track/${order.id}`}>
+                    <Navigation className="h-4 w-4 mr-2" />
+                    Track Live Delivery
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Help Section */}
           <Card className="mt-6">
