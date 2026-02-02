@@ -42,7 +42,7 @@ const App = () => (
             <Route path="/orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
             <Route path="/order/:orderId" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
             <Route path="/track/:orderId" element={<ProtectedRoute><TrackOrder /></ProtectedRoute>} />
-            <Route path="/driver" element={<ProtectedRoute><DriverDashboard /></ProtectedRoute>} />
+            <Route path="/delivery" element={<ProtectedRoute><DriverDashboard /></ProtectedRoute>} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/products" element={<AdminProducts />} />
