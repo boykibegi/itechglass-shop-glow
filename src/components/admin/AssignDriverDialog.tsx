@@ -36,7 +36,7 @@ const AssignDriverDialog = ({
 }: AssignDriverDialogProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [selectedDriver, setSelectedDriver] = useState<string>(currentDriverId || '');
+  const [selectedDriver, setSelectedDriver] = useState<string>(currentDriverId || 'none');
 
   // Fetch all drivers
   const { data: drivers, isLoading: driversLoading } = useQuery({
@@ -67,22 +67,24 @@ const AssignDriverDialog = ({
 
   const assignDriver = useMutation({
     mutationFn: async () => {
+      const driverId = selectedDriver === 'none' ? null : selectedDriver;
       const { error } = await supabase
         .from('orders')
         .update({
-          driver_id: selectedDriver || null,
-          assigned_at: selectedDriver ? new Date().toISOString() : null,
-          order_status: selectedDriver ? 'processing' : 'pending',
+          driver_id: driverId,
+          assigned_at: driverId ? new Date().toISOString() : null,
+          order_status: driverId ? 'processing' : 'pending',
         })
         .eq('id', orderId);
 
       if (error) throw error;
     },
     onSuccess: () => {
+      const driverId = selectedDriver === 'none' ? null : selectedDriver;
       queryClient.invalidateQueries({ queryKey: ['adminOrders'] });
       toast({
-        title: selectedDriver ? 'Driver Assigned' : 'Driver Removed',
-        description: selectedDriver 
+        title: driverId ? 'Driver Assigned' : 'Driver Removed',
+        description: driverId 
           ? 'The driver has been assigned to this order.'
           : 'Driver has been removed from this order.',
       });
@@ -117,7 +119,7 @@ const AssignDriverDialog = ({
               <SelectValue placeholder="Select a driver" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">No Driver (Unassign)</SelectItem>
+              <SelectItem value="none">No Driver (Unassign)</SelectItem>
               {driversLoading ? (
                 <div className="flex items-center justify-center py-4">
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -150,7 +152,7 @@ const AssignDriverDialog = ({
             disabled={assignDriver.isPending}
           >
             {assignDriver.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            {selectedDriver ? 'Assign Driver' : 'Remove Driver'}
+            {selectedDriver !== 'none' ? 'Assign Driver' : 'Remove Driver'}
           </Button>
         </DialogFooter>
       </DialogContent>
