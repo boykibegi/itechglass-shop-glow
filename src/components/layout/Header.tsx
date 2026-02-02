@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, Menu, X, User, LogOut, Package } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, LogOut, Package, Truck } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/lib/cart';
@@ -10,7 +10,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const { getTotalItems } = useCart();
-  const { user, isAdmin, signOut } = useAuth();
+  const { user, isAdmin, isDriver, signOut } = useAuth();
   const totalItems = getTotalItems();
 
   const navLinks = [
@@ -62,6 +62,14 @@ const Header = () => {
             <Link to="/orders" className="hidden md:block" title="My Orders">
               <Button variant="ghost" size="icon">
                 <Package className="h-5 w-5" />
+              </Button>
+            </Link>
+          )}
+
+          {isDriver && (
+            <Link to="/delivery" className="hidden md:block" title="Driver Dashboard">
+              <Button variant="ghost" size="icon">
+                <Truck className="h-5 w-5" />
               </Button>
             </Link>
           )}
@@ -133,6 +141,15 @@ const Header = () => {
                 className="text-sm font-medium text-muted-foreground hover:text-gold py-2"
               >
                 My Orders
+              </Link>
+            )}
+            {isDriver && (
+              <Link
+                to="/delivery"
+                onClick={() => setIsMenuOpen(false)}
+                className="text-sm font-medium text-muted-foreground hover:text-gold py-2"
+              >
+                Driver Dashboard
               </Link>
             )}
             {isAdmin && (
