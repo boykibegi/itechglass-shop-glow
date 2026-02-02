@@ -51,7 +51,7 @@ const AssignDriverDialog = ({
       if (rolesError) throw rolesError;
       if (!driverRoles?.length) return [];
 
-      // Get profiles for these drivers
+      // Get profiles for these drivers (profiles may not exist)
       const driverIds = driverRoles.map(r => r.user_id);
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
@@ -60,7 +60,14 @@ const AssignDriverDialog = ({
 
       if (profilesError) throw profilesError;
 
-      return profiles || [];
+      // Map driver roles with their profile names (or null if no profile)
+      return driverIds.map(userId => {
+        const profile = profiles?.find(p => p.user_id === userId);
+        return {
+          user_id: userId,
+          full_name: profile?.full_name || null,
+        };
+      });
     },
     enabled: open,
   });
