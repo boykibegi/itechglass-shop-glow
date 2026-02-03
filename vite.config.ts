@@ -13,6 +13,11 @@ export default defineConfig(({ mode }) => ({
     },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  // Avoid stale optimized deps causing React context consumer/provider mismatches in react-leaflet.
+  // (This is a dev-server optimization only; production builds are unaffected.)
+  optimizeDeps: {
+    exclude: ["react-leaflet", "@react-leaflet/core", "leaflet"],
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
