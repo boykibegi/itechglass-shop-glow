@@ -2,3 +2,6 @@ project_id = "yusmekgbrimlrzoglwtg"
 
 [functions.send-order-notification]
 verify_jwt = false
+ 
+ [functions.clickpesa-payment]
+ verify_jwt = false
