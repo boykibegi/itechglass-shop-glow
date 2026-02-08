@@ -24,30 +24,42 @@ async function generateToken(): Promise<string> {
   const clientId = Deno.env.get("CLICKPESA_CLIENT_ID");
   const apiKey = Deno.env.get("CLICKPESA_API_KEY");
 
+  console.log("ClickPesa credentials configured:", !!clientId && !!apiKey);
+
   if (!clientId || !apiKey) {
     throw new Error("Payment service configuration error");
   }
 
-  const response = await fetch(`${CLICKPESA_BASE_URL}/generate-token`, {
-    method: "POST",
-    headers: {
-      "client-id": clientId,
-      "api-key": apiKey,
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    const response = await fetch(`${CLICKPESA_BASE_URL}/generate-token`, {
+      method: "POST",
+      headers: {
+        "client-id": clientId,
+        "api-key": apiKey,
+        "Content-Type": "application/json",
+      },
+    });
 
-  if (!response.ok) {
-    console.error("Token generation failed:", response.status);
+    const responseText = await response.text();
+    console.log("ClickPesa token response status:", response.status);
+    
+    if (!response.ok) {
+      console.error("Token generation failed:", response.status, responseText);
+      throw new Error("Payment service temporarily unavailable");
+    }
+
+    const data: TokenResponse = JSON.parse(responseText);
+    if (!data.success || !data.token) {
+      console.error("Invalid token response:", data);
+      throw new Error("Payment service temporarily unavailable");
+    }
+
+    console.log("Token generated successfully");
+    return data.token;
+  } catch (error) {
+    console.error("Token generation error:", error instanceof Error ? error.message : "Unknown error");
     throw new Error("Payment service temporarily unavailable");
   }
-
-  const data: TokenResponse = await response.json();
-  if (!data.success || !data.token) {
-    throw new Error("Payment service temporarily unavailable");
-  }
-
-  return data.token;
 }
 
 async function authenticateUser(req: Request): Promise<string> {
