@@ -58,13 +58,13 @@ const Footer = () => {
           <div className="space-y-4">
             <h4 className="text-sm font-semibold uppercase tracking-wider text-gold">Contact Us</h4>
             <div className="flex flex-col gap-3">
-              <a href="tel:+255700000000" className="flex items-center gap-2 text-sm text-primary-foreground/70 hover:text-gold transition-colors">
+              <a href="tel:+255746582989" className="flex items-center gap-2 text-sm text-primary-foreground/70 hover:text-gold transition-colors">
                 <Phone className="h-4 w-4" />
-                +255 700 000 000
+                +255 746 582 989
               </a>
-              <a href="mailto:info@itechglass.com" className="flex items-center gap-2 text-sm text-primary-foreground/70 hover:text-gold transition-colors">
+              <a href="mailto:support@itechglass.co.tz" className="flex items-center gap-2 text-sm text-primary-foreground/70 hover:text-gold transition-colors">
                 <Mail className="h-4 w-4" />
-                info@itechglass.com
+                support@itechglass.co.tz
               </a>
               <span className="flex items-center gap-2 text-sm text-primary-foreground/70">
                 <MapPin className="h-4 w-4" />
