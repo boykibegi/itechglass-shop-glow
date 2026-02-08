@@ -23,6 +23,11 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
     // Prevent duplicate React instances causing react-leaflet errors
-    dedupe: ["react", "react-dom", "react/jsx-runtime"],
+    dedupe: ["react", "react-dom", "react-dom/client", "react/jsx-runtime", "react/jsx-dev-runtime"],
+  },
+  build: {
+    commonjsOptions: {
+      include: [/node_modules/],
+    },
   },
 }));
