@@ -46,7 +46,7 @@ const Checkout = () => {
     phone: '',
     address: '',
   });
-  const [errors, setErrors] = useState<Record<string, string>>();
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Update email when user changes (ensure it matches authenticated user)
   useEffect(() => {
