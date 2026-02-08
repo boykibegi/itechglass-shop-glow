@@ -21,9 +21,27 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { z } from 'zod';
 import type { Tables } from '@/integrations/supabase/types';
 
 type Product = Tables<'products'>;
+
+// Validation schema for product data
+const productSchema = z.object({
+  name: z.string().trim().min(1, 'Product name is required').max(200, 'Name must be less than 200 characters'),
+  description: z.string().trim().max(2000, 'Description must be less than 2000 characters').optional().or(z.literal('')),
+  price: z.string().refine(val => {
+    const num = parseFloat(val);
+    return !isNaN(num) && num > 0 && num <= 10000000;
+  }, 'Price must be between 1 and 10,000,000'),
+  stock: z.string().refine(val => {
+    const num = parseInt(val);
+    return !isNaN(num) && num >= 0 && num <= 100000;
+  }, 'Stock must be between 0 and 100,000'),
+  category: z.string().min(1, 'Category is required'),
+  featured: z.boolean(),
+  compatibleModels: z.array(z.string()),
+});
 
 interface ProductFormDialogProps {
   open: boolean;
@@ -170,12 +188,26 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
     }));
   };
 
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.price || !formData.stock) {
-      toast.error('Please fill in all required fields');
+    setValidationErrors({});
+
+    // Validate form data with Zod schema
+    const result = productSchema.safeParse(formData);
+    if (!result.success) {
+      const errors: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          errors[err.path[0] as string] = err.message;
+        }
+      });
+      setValidationErrors(errors);
+      toast.error('Please fix the validation errors');
       return;
     }
+
     mutation.mutate(formData);
   };
 
@@ -195,7 +227,9 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
                 value={formData.name}
                 onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                 placeholder="iPhone 15 Pro Back Glass"
+                maxLength={200}
               />
+              {validationErrors.name && <p className="text-sm text-destructive">{validationErrors.name}</p>}
             </div>
 
             <div className="space-y-2">
@@ -215,6 +249,7 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
                   ))}
                 </SelectContent>
               </Select>
+              {validationErrors.category && <p className="text-sm text-destructive">{validationErrors.category}</p>}
             </div>
 
             <div className="space-y-2">
@@ -225,7 +260,10 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
                 value={formData.price}
                 onChange={(e) => setFormData((prev) => ({ ...prev, price: e.target.value }))}
                 placeholder="25000"
+                min="1"
+                max="10000000"
               />
+              {validationErrors.price && <p className="text-sm text-destructive">{validationErrors.price}</p>}
             </div>
 
             <div className="space-y-2">
@@ -236,7 +274,10 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
                 value={formData.stock}
                 onChange={(e) => setFormData((prev) => ({ ...prev, stock: e.target.value }))}
                 placeholder="50"
+                min="0"
+                max="100000"
               />
+              {validationErrors.stock && <p className="text-sm text-destructive">{validationErrors.stock}</p>}
             </div>
           </div>
 
@@ -248,7 +289,9 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
               onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
               placeholder="High-quality replacement back glass..."
               rows={3}
+              maxLength={2000}
             />
+            {validationErrors.description && <p className="text-sm text-destructive">{validationErrors.description}</p>}
           </div>
 
           <div className="flex items-center space-x-2">
