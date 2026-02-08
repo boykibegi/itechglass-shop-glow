@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -20,6 +21,45 @@ interface OrderNotificationRequest {
     price: number;
     selectedModel?: string;
   }>;
+}
+
+async function authenticateAdmin(req: Request): Promise<string> {
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new Error('No authorization header');
+  }
+
+  const supabaseUrl = Deno.env.get('SUPABASE_URL');
+  const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error('Supabase configuration missing');
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    global: { headers: { Authorization: authHeader } }
+  });
+
+  const token = authHeader.replace('Bearer ', '');
+  const { data, error } = await supabase.auth.getClaims(token);
+
+  if (error || !data?.claims?.sub) {
+    console.error('Auth error:', error);
+    throw new Error('Unauthorized');
+  }
+
+  const userId = data.claims.sub as string;
+
+  // Check if user has admin role
+  const { data: roleData, error: roleError } = await supabase
+    .rpc('has_role', { _user_id: userId, _role: 'admin' });
+
+  if (roleError || !roleData) {
+    console.error('Role check failed:', roleError);
+    throw new Error('Admin access required');
+  }
+
+  return userId;
 }
 
 const getStatusMessage = (status: string): { subject: string; heading: string; message: string } => {
@@ -73,6 +113,10 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Authenticate admin user
+    const adminId = await authenticateAdmin(req);
+    console.log(`Admin authenticated: ${adminId}`);
+
     const { orderId, customerEmail, customerName, orderStatus, totalAmount, items }: OrderNotificationRequest = await req.json();
 
     console.log(`Processing notification for order ${orderId}, status: ${orderStatus}`);
@@ -192,10 +236,16 @@ const handler = async (req: Request): Promise<Response> => {
     });
   } catch (error: any) {
     console.error("Error sending order notification:", error);
+    
+    // Return 401/403 for auth errors
+    const status = error.message === 'Unauthorized' || error.message === 'No authorization header' ? 401 
+      : error.message === 'Admin access required' ? 403 
+      : 500;
+    
     return new Response(
       JSON.stringify({ success: false, error: error.message }),
       {
-        status: 500,
+        status,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       }
     );
