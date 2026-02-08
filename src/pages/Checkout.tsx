@@ -1,19 +1,19 @@
- import { useState, useEffect, useRef } from 'react';
- import { useNavigate } from 'react-router-dom';
- import { ArrowLeft, Loader2, Phone, CheckCircle2, AlertCircle } from 'lucide-react';
- import { Button } from '@/components/ui/button';
- import { Input } from '@/components/ui/input';
- import { Label } from '@/components/ui/label';
- import { Textarea } from '@/components/ui/textarea';
- import Header from '@/components/layout/Header';
- import Footer from '@/components/layout/Footer';
- import WhatsAppButton from '@/components/WhatsAppButton';
- import { useCart } from '@/lib/cart';
- import { supabase } from '@/integrations/supabase/client';
- import { toast } from 'sonner';
- import { z } from 'zod';
- import { useClickPesaPayment, PaymentStatus } from '@/hooks/useClickPesaPayment';
- 
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Loader2, Phone, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import WhatsAppButton from '@/components/WhatsAppButton';
+import { useCart } from '@/lib/cart';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { z } from 'zod';
+import { useClickPesaPayment, PaymentStatus } from '@/hooks/useClickPesaPayment';
+import { useAuth } from '@/hooks/useAuth';
  const checkoutSchema = z.object({
    name: z.string().min(2, 'Name is required').max(100),
    email: z.string().email('Valid email required').max(255),
@@ -21,30 +21,39 @@
    address: z.string().min(10, 'Full address required').max(500),
  });
  
- const Checkout = () => {
-   const navigate = useNavigate();
-   const { items, getTotalPrice, clearCart } = useCart();
-   const [isSubmitting, setIsSubmitting] = useState(false);
-   const [orderReference, setOrderReference] = useState<string | null>(null);
-   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
-   
-   const {
-     status: paymentStatus,
-     availableMethods,
-     error: paymentError,
-     previewPayment,
-     initiatePayment,
-     checkPaymentStatus,
-     resetPayment,
-   } = useClickPesaPayment();
-   
-   const [formData, setFormData] = useState({
-     name: '',
-     email: '',
-     phone: '',
-     address: '',
-   });
-   const [errors, setErrors] = useState<Record<string, string>>({});
+const Checkout = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { items, getTotalPrice, clearCart } = useCart();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [orderReference, setOrderReference] = useState<string | null>(null);
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const {
+    status: paymentStatus,
+    availableMethods,
+    error: paymentError,
+    previewPayment,
+    initiatePayment,
+    checkPaymentStatus,
+    resetPayment,
+  } = useClickPesaPayment();
+  
+  // Pre-fill email from authenticated user
+  const [formData, setFormData] = useState({
+    name: '',
+    email: user?.email || '',
+    phone: '',
+    address: '',
+  });
+  const [errors, setErrors] = useState<Record<string, string>>();
+
+  // Update email when user changes (ensure it matches authenticated user)
+  useEffect(() => {
+    if (user?.email) {
+      setFormData(prev => ({ ...prev, email: user.email || '' }));
+    }
+  }, [user]);
  
    // Cleanup polling on unmount
    useEffect(() => {
@@ -123,38 +132,48 @@
      }, 5000);
    };
    
-   const createOrder = async (paymentStat: string) => {
-     setIsSubmitting(true);
-     
-     try {
-       const { data: order, error: orderError } = await supabase
-         .from('orders')
-         .insert([{
-           customer_name: formData.name.trim(),
-           customer_email: formData.email.trim(),
-           customer_phone: formData.phone.trim(),
-           shipping_address: formData.address.trim(),
-           items: JSON.parse(JSON.stringify(items)),
-           total_amount: getTotalPrice(),
-           payment_method: 'mobile_money',
-           transaction_id: orderReference,
-           payment_status: paymentStat,
-         }])
-         .select()
-         .single();
- 
-       if (orderError) throw orderError;
- 
-       clearCart();
-       navigate(`/order-confirmation/${order.id}`);
-       
-     } catch (error) {
-       console.error('Order creation error:', error);
-       toast.error('Failed to create order. Please contact support.');
-     } finally {
-       setIsSubmitting(false);
-     }
-   };
+  const createOrder = async (paymentStat: string) => {
+    setIsSubmitting(true);
+    
+    try {
+      if (!user?.id || !user?.email) {
+        throw new Error('You must be logged in to place an order');
+      }
+
+      // Ensure the email matches the authenticated user's email
+      if (formData.email.trim().toLowerCase() !== user.email.toLowerCase()) {
+        throw new Error('Email must match your account email');
+      }
+
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert([{
+          user_id: user.id,
+          customer_name: formData.name.trim(),
+          customer_email: user.email, // Use authenticated user's email
+          customer_phone: formData.phone.trim(),
+          shipping_address: formData.address.trim(),
+          items: JSON.parse(JSON.stringify(items)),
+          total_amount: getTotalPrice(),
+          payment_method: 'mobile_money',
+          transaction_id: orderReference,
+          payment_status: paymentStat,
+        }])
+        .select()
+        .single();
+
+      if (orderError) throw orderError;
+
+      clearCart();
+      navigate(`/order-confirmation/${order.id}`);
+      
+    } catch (error) {
+      console.error('Order creation error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to create order. Please contact support.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
  
    const handleSubmit = async (e: React.FormEvent) => {
      e.preventDefault();
@@ -247,17 +266,18 @@
                      {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
                    </div>
  
-                   <div className="space-y-2">
-                     <Label htmlFor="email">Email</Label>
-                     <Input
-                       id="email"
-                       type="email"
-                       value={formData.email}
-                       onChange={(e) => handleInputChange('email', e.target.value)}
-                       placeholder="john@example.com"
-                     />
-                     {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
-                   </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        readOnly
+                        disabled
+                        className="bg-muted cursor-not-allowed"
+                      />
+                      <p className="text-xs text-muted-foreground">Email is linked to your account and cannot be changed.</p>
+                    </div>
  
                    <div className="space-y-2">
                      <Label htmlFor="address">Shipping Address</Label>
