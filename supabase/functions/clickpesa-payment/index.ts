@@ -31,12 +31,12 @@ async function generateToken(): Promise<string> {
   }
 
   try {
-    const response = await fetch(`${CLICKPESA_BASE_URL}/generate-token`, {
+    const response = await fetch(`${CLICKPESA_BASE_URL}/third-parties/generate-token`, {
       method: "POST",
       headers: {
         "client-id": clientId,
         "api-key": apiKey,
-        "Content-Type": "application/json",
+        "Accept": "application/json",
       },
     });
 
