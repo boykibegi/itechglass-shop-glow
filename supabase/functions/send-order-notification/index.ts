@@ -2,6 +2,13 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
+// Validate required environment variables at startup
+const REQUIRED_ENV = ['RESEND_API_KEY', 'SUPABASE_URL', 'SUPABASE_ANON_KEY'];
+const missingEnv = REQUIRED_ENV.filter(key => !Deno.env.get(key));
+if (missingEnv.length > 0) {
+  console.error(`Missing required environment variables: ${missingEnv.join(', ')}`);
+}
+
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
@@ -33,7 +40,7 @@ async function authenticateAdmin(req: Request): Promise<string> {
   const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Supabase configuration missing');
+    throw new Error('Service configuration error');
   }
 
   const supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -44,7 +51,7 @@ async function authenticateAdmin(req: Request): Promise<string> {
   const { data, error } = await supabase.auth.getClaims(token);
 
   if (error || !data?.claims?.sub) {
-    console.error('Auth error:', error);
+    console.error('Auth error:', error?.message || 'Invalid token');
     throw new Error('Unauthorized');
   }
 
@@ -55,7 +62,7 @@ async function authenticateAdmin(req: Request): Promise<string> {
     .rpc('has_role', { _user_id: userId, _role: 'admin' });
 
   if (roleError || !roleData) {
-    console.error('Role check failed:', roleError);
+    console.error('Role check failed:', roleError?.message || 'Not admin');
     throw new Error('Admin access required');
   }
 
@@ -113,6 +120,14 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Check configuration is valid
+    if (missingEnv.length > 0) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Service temporarily unavailable" }),
+        { status: 503, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
     // Authenticate admin user
     const adminId = await authenticateAdmin(req);
     console.log(`Admin authenticated: ${adminId}`);
@@ -122,7 +137,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Processing notification for order ${orderId}, status: ${orderStatus}`);
 
     if (!customerEmail || !orderId || !orderStatus) {
-      throw new Error("Missing required fields: customerEmail, orderId, or orderStatus");
+      throw new Error("Missing required fields");
     }
 
     const { subject, heading, message } = getStatusMessage(orderStatus);
@@ -228,22 +243,24 @@ const handler = async (req: Request): Promise<Response> => {
       html: emailHtml,
     });
 
-    console.log("Email sent successfully:", emailResponse);
+    console.log("Email sent successfully");
 
     return new Response(JSON.stringify({ success: true, data: emailResponse }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (error: any) {
-    console.error("Error sending order notification:", error);
+    console.error("Error sending order notification:", error?.message || "Unknown error");
     
-    // Return 401/403 for auth errors
+    // Return appropriate status codes with generic messages
     const status = error.message === 'Unauthorized' || error.message === 'No authorization header' ? 401 
       : error.message === 'Admin access required' ? 403 
       : 500;
     
+    const clientMessage = status === 401 || status === 403 ? error.message : "Failed to send notification";
+    
     return new Response(
-      JSON.stringify({ success: false, error: error.message }),
+      JSON.stringify({ success: false, error: clientMessage }),
       {
         status,
         headers: { "Content-Type": "application/json", ...corsHeaders },

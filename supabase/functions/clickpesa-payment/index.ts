@@ -8,6 +8,13 @@ const corsHeaders = {
 
 const CLICKPESA_BASE_URL = "https://api.clickpesa.com";
 
+// Validate required environment variables at startup
+const REQUIRED_ENV = ['CLICKPESA_CLIENT_ID', 'CLICKPESA_API_KEY', 'SUPABASE_URL', 'SUPABASE_ANON_KEY'];
+const missingEnv = REQUIRED_ENV.filter(key => !Deno.env.get(key));
+if (missingEnv.length > 0) {
+  console.error(`Missing required environment variables: ${missingEnv.join(', ')}`);
+}
+
 interface TokenResponse {
   success: boolean;
   token: string;
@@ -18,7 +25,7 @@ async function generateToken(): Promise<string> {
   const apiKey = Deno.env.get("CLICKPESA_API_KEY");
 
   if (!clientId || !apiKey) {
-    throw new Error("ClickPesa credentials not configured");
+    throw new Error("Payment service configuration error");
   }
 
   const response = await fetch(`${CLICKPESA_BASE_URL}/generate-token`, {
@@ -31,14 +38,13 @@ async function generateToken(): Promise<string> {
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    console.error("Token generation failed:", response.status, errorText);
-    throw new Error(`Failed to generate token: ${response.status}`);
+    console.error("Token generation failed:", response.status);
+    throw new Error("Payment service temporarily unavailable");
   }
 
   const data: TokenResponse = await response.json();
   if (!data.success || !data.token) {
-    throw new Error("Invalid token response from ClickPesa");
+    throw new Error("Payment service temporarily unavailable");
   }
 
   return data.token;
@@ -54,7 +60,7 @@ async function authenticateUser(req: Request): Promise<string> {
   const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Supabase configuration missing');
+    throw new Error('Service configuration error');
   }
 
   const supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -65,7 +71,7 @@ async function authenticateUser(req: Request): Promise<string> {
   const { data, error } = await supabase.auth.getClaims(token);
 
   if (error || !data?.claims?.sub) {
-    console.error('Auth error:', error);
+    console.error('Auth error:', error?.message || 'Invalid token');
     throw new Error('Unauthorized');
   }
 
@@ -79,12 +85,20 @@ serve(async (req) => {
   }
 
   try {
+    // Check configuration is valid
+    if (missingEnv.length > 0) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Service temporarily unavailable" }),
+        { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Authenticate the user
     const userId = await authenticateUser(req);
     console.log(`Authenticated user: ${userId}`);
 
     const { action, ...payload } = await req.json();
-    console.log(`ClickPesa action: ${action}`, JSON.stringify(payload));
+    console.log(`ClickPesa action: ${action}`);
 
     // Generate fresh token for each request
     const token = await generateToken();
@@ -128,18 +142,17 @@ serve(async (req) => {
       });
     }
 
-    console.log(`Calling ClickPesa: ${CLICKPESA_BASE_URL}${endpoint}`);
+    console.log(`Calling ClickPesa: ${endpoint}`);
     const response = await fetch(`${CLICKPESA_BASE_URL}${endpoint}`, fetchOptions);
     const data = await response.json();
 
-    console.log(`ClickPesa response:`, JSON.stringify(data));
+    console.log(`ClickPesa response status: ${response.status}`);
 
     if (!response.ok) {
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: data.message || "Payment request failed",
-          details: data 
+          error: data.message || "Payment request failed"
         }),
         { status: response.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -151,14 +164,15 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error("ClickPesa payment error:", error);
+    console.error("ClickPesa payment error:", error instanceof Error ? error.message : "Unknown error");
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     
-    // Return 401 for auth errors
+    // Return 401 for auth errors, generic message for others
     const status = errorMessage === 'Unauthorized' || errorMessage === 'No authorization header' ? 401 : 500;
+    const clientMessage = status === 401 ? errorMessage : "Payment service error. Please try again.";
     
     return new Response(
-      JSON.stringify({ success: false, error: errorMessage }),
+      JSON.stringify({ success: false, error: clientMessage }),
       { status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
