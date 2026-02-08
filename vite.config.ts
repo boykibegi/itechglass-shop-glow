@@ -13,10 +13,9 @@ export default defineConfig(({ mode }) => ({
     },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
-  // Avoid stale optimized deps causing React context consumer/provider mismatches in react-leaflet.
-  // (This is a dev-server optimization only; production builds are unaffected.)
+  // Force pre-bundle react-leaflet with React to avoid duplicate instances
   optimizeDeps: {
-    exclude: ["react-leaflet", "@react-leaflet/core", "leaflet"],
+    include: ["react", "react-dom", "react-dom/client", "react-leaflet", "@react-leaflet/core", "leaflet"],
   },
   resolve: {
     alias: {
