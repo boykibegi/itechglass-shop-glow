@@ -76,7 +76,7 @@ const Checkout = () => {
    const generateOrderReference = () => {
      const timestamp = Date.now().toString(36).toUpperCase();
      const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-     return `ITG-${timestamp}-${random}`;
+     return `ITG${timestamp}${random}`;
    };
  
    const handleVerifyPhone = async () => {
