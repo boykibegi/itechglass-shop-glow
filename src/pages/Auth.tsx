@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Loader2, Smartphone, Phone, Mail, Lock, ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -272,7 +272,18 @@ const Auth = () => {
                 </div>
               )}
 
-              <div className="animate-fade-in" style={{ animationDelay: isSignUp ? '0.4s' : '0.3s', animationFillMode: 'backwards' }}>
+              {!isSignUp && (
+                <div className="text-right animate-fade-in" style={{ animationDelay: '0.3s', animationFillMode: 'backwards' }}>
+                  <Link
+                    to="/forgot-password"
+                    className="text-sm text-gold hover:text-gold/80 font-medium transition-colors hover:underline underline-offset-4"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+              )}
+
+              <div className="animate-fade-in" style={{ animationDelay: isSignUp ? '0.4s' : '0.35s', animationFillMode: 'backwards' }}>
                 <Button
                   type="submit"
                   variant="gold"
