@@ -117,8 +117,8 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen flex bg-background">
-      {/* Left side - Branding */}
+    <div className="min-h-screen flex flex-col lg:flex-row bg-background">
+      {/* Left side - Branding (hidden on mobile) */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-hero relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,hsl(var(--gold)/0.15),transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,hsl(var(--gold)/0.1),transparent_40%)]" />
@@ -169,144 +169,150 @@ const Auth = () => {
       </div>
 
       {/* Right side - Auth Form */}
-      <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
-        <div className="w-full max-w-md">
-          {/* Mobile logo */}
-          <div className="flex flex-col items-center mb-10 lg:hidden">
-            <div className="w-16 h-16 rounded-2xl bg-gold/10 flex items-center justify-center mb-4 border border-gold/20">
-              <Smartphone className="h-8 w-8 text-gold" />
+      <div className="flex-1 flex flex-col min-h-screen lg:min-h-0">
+        {/* Mobile Header with gradient background */}
+        <div className="lg:hidden bg-gradient-hero px-6 pt-safe-top pb-8 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(var(--gold)/0.2),transparent_60%)]" />
+          <div className="relative z-10 flex flex-col items-center pt-8">
+            <div className="w-14 h-14 rounded-2xl bg-gold/20 backdrop-blur-sm flex items-center justify-center mb-3 border border-gold/30">
+              <Smartphone className="h-7 w-7 text-gold" />
             </div>
-            <h1 className="text-2xl font-bold">
+            <h1 className="text-2xl font-bold text-primary-foreground">
               iTech<span className="text-gold">Glass</span>
             </h1>
+            <p className="text-sm text-primary-foreground/60 mt-1">Premium Protection</p>
           </div>
-
-          <div className="space-y-2 mb-8">
-            <h2 className="text-3xl font-bold text-foreground">
-              {isSignUp ? 'Create Account' : 'Welcome Back'}
-            </h2>
-            <p className="text-muted-foreground">
-              {isSignUp
-                ? 'Join us for premium iPhone protection'
-                : 'Sign in to continue shopping'}
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="phone" className="text-sm font-medium flex items-center gap-2">
-                <Phone className="h-4 w-4 text-gold" />
-                Phone Number <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+255 7XX XXX XXX"
-                className="h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20"
-                autoComplete="tel"
-              />
-              {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
+        </div>
+        {/* Form Container */}
+        <div className="flex-1 flex items-center justify-center px-6 py-8 lg:p-12">
+          <div className="w-full max-w-md">
+            <div className="space-y-1 mb-6 lg:mb-8 text-center lg:text-left">
+              <h2 className="text-2xl lg:text-3xl font-bold text-foreground">
+                {isSignUp ? 'Create Account' : 'Welcome Back'}
+              </h2>
+              <p className="text-sm lg:text-base text-muted-foreground">
+                {isSignUp
+                  ? 'Join us for premium iPhone protection'
+                  : 'Sign in to continue shopping'}
+              </p>
             </div>
 
-            {isSignUp && (
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  Email <span className="text-muted-foreground text-xs">(Optional)</span>
+            <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-5">
+              <div className="space-y-1.5">
+                <Label htmlFor="phone" className="text-sm font-medium flex items-center gap-2">
+                  <Phone className="h-4 w-4 text-gold" />
+                  Phone Number <span className="text-destructive">*</span>
                 </Label>
                 <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  className="h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20"
-                  autoComplete="email"
+                  id="phone"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+255 7XX XXX XXX"
+                  className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base"
+                  autoComplete="tel"
                 />
-                {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium flex items-center gap-2">
-                <Lock className="h-4 w-4 text-muted-foreground" />
-                Password
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20"
-                autoComplete={isSignUp ? 'new-password' : 'current-password'}
-              />
-              {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+                {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone}</p>}
             </div>
 
-            {isSignUp && (
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-sm font-medium flex items-center gap-2">
-                  <Lock className="h-4 w-4 text-muted-foreground" />
-                  Confirm Password
-                </Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20"
-                  autoComplete="new-password"
-                />
-                {errors.confirmPassword && (
-                  <p className="text-sm text-destructive">{errors.confirmPassword}</p>
-                )}
-              </div>
-            )}
-
-            <Button
-              type="submit"
-              variant="gold"
-              size="lg"
-              className="w-full h-12 text-base font-semibold group"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  {isSignUp ? 'Creating account...' : 'Signing in...'}
-                </>
-              ) : (
-                <>
-                  {isSignUp ? 'Create Account' : 'Sign In'}
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </>
+              {isSignUp && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    Email <span className="text-muted-foreground text-xs">(Optional)</span>
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base"
+                    autoComplete="email"
+                  />
+                  {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
+                </div>
               )}
-            </Button>
-          </form>
 
-          <div className="mt-8 text-center">
-            <p className="text-muted-foreground">
-              {isSignUp ? 'Already have an account?' : "Don't have an account?"}
-              <button
-                type="button"
-                onClick={() => {
-                  setIsSignUp(!isSignUp);
-                  setErrors({});
-                }}
-                className="ml-2 text-gold hover:text-gold/80 font-semibold transition-colors"
+              <div className="space-y-1.5">
+                <Label htmlFor="password" className="text-sm font-medium flex items-center gap-2">
+                  <Lock className="h-4 w-4 text-muted-foreground" />
+                  Password
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base"
+                  autoComplete={isSignUp ? 'new-password' : 'current-password'}
+                />
+                {errors.password && <p className="text-xs text-destructive mt-1">{errors.password}</p>}
+              </div>
+
+              {isSignUp && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="confirmPassword" className="text-sm font-medium flex items-center gap-2">
+                    <Lock className="h-4 w-4 text-muted-foreground" />
+                    Confirm Password
+                  </Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base"
+                    autoComplete="new-password"
+                  />
+                  {errors.confirmPassword && (
+                    <p className="text-xs text-destructive mt-1">{errors.confirmPassword}</p>
+                  )}
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                variant="gold"
+                size="lg"
+                className="w-full h-11 lg:h-12 text-base font-semibold group mt-2"
+                disabled={isSubmitting}
               >
-                {isSignUp ? 'Sign in' : 'Sign up'}
-              </button>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    {isSignUp ? 'Creating account...' : 'Signing in...'}
+                  </>
+                ) : (
+                  <>
+                    {isSignUp ? 'Create Account' : 'Sign In'}
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
+              </Button>
+            </form>
+
+            <div className="mt-6 lg:mt-8 text-center">
+              <p className="text-sm text-muted-foreground">
+                {isSignUp ? 'Already have an account?' : "Don't have an account?"}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSignUp(!isSignUp);
+                    setErrors({});
+                  }}
+                  className="ml-2 text-gold hover:text-gold/80 font-semibold transition-colors"
+                >
+                  {isSignUp ? 'Sign in' : 'Sign up'}
+                </button>
+              </p>
+            </div>
+
+            <p className="mt-6 text-center text-xs text-muted-foreground px-4">
+              By continuing, you agree to our Terms of Service and Privacy Policy
             </p>
           </div>
-
-          <p className="mt-8 text-center text-xs text-muted-foreground">
-            By continuing, you agree to our Terms of Service and Privacy Policy
-          </p>
         </div>
       </div>
     </div>
