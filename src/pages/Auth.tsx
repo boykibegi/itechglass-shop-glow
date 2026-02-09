@@ -186,7 +186,7 @@ const Auth = () => {
         {/* Form Container */}
         <div className="flex-1 flex items-center justify-center px-6 py-8 lg:p-12">
           <div className="w-full max-w-md">
-            <div className="space-y-1 mb-6 lg:mb-8 text-center lg:text-left">
+            <div className="space-y-1 mb-6 lg:mb-8 text-center lg:text-left animate-fade-in" style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}>
               <h2 className="text-2xl lg:text-3xl font-bold text-foreground">
                 {isSignUp ? 'Create Account' : 'Welcome Back'}
               </h2>
@@ -198,7 +198,7 @@ const Auth = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-5">
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}>
                 <Label htmlFor="phone" className="text-sm font-medium flex items-center gap-2">
                   <Phone className="h-4 w-4 text-gold" />
                   Phone Number <span className="text-destructive">*</span>
@@ -209,14 +209,14 @@ const Auth = () => {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+255 7XX XXX XXX"
-                  className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base"
+                  className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50"
                   autoComplete="tel"
                 />
                 {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone}</p>}
             </div>
 
               {isSignUp && (
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 animate-fade-in" style={{ animationDelay: '0.25s', animationFillMode: 'backwards' }}>
                   <Label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
                     <Mail className="h-4 w-4 text-muted-foreground" />
                     Email <span className="text-muted-foreground text-xs">(Optional)</span>
@@ -227,14 +227,14 @@ const Auth = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="your@email.com"
-                    className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base"
+                    className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50"
                     autoComplete="email"
                   />
                   {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
                 </div>
               )}
 
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 animate-fade-in" style={{ animationDelay: isSignUp ? '0.3s' : '0.25s', animationFillMode: 'backwards' }}>
                 <Label htmlFor="password" className="text-sm font-medium flex items-center gap-2">
                   <Lock className="h-4 w-4 text-muted-foreground" />
                   Password
@@ -245,14 +245,14 @@ const Auth = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base"
+                  className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50"
                   autoComplete={isSignUp ? 'new-password' : 'current-password'}
                 />
                 {errors.password && <p className="text-xs text-destructive mt-1">{errors.password}</p>}
               </div>
 
               {isSignUp && (
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 animate-fade-in" style={{ animationDelay: '0.35s', animationFillMode: 'backwards' }}>
                   <Label htmlFor="confirmPassword" className="text-sm font-medium flex items-center gap-2">
                     <Lock className="h-4 w-4 text-muted-foreground" />
                     Confirm Password
@@ -263,7 +263,7 @@ const Auth = () => {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base"
+                    className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50"
                     autoComplete="new-password"
                   />
                   {errors.confirmPassword && (
@@ -272,28 +272,30 @@ const Auth = () => {
                 </div>
               )}
 
-              <Button
-                type="submit"
-                variant="gold"
-                size="lg"
-                className="w-full h-11 lg:h-12 text-base font-semibold group mt-2"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    {isSignUp ? 'Creating account...' : 'Signing in...'}
-                  </>
-                ) : (
-                  <>
-                    {isSignUp ? 'Create Account' : 'Sign In'}
-                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </>
-                )}
-              </Button>
+              <div className="animate-fade-in" style={{ animationDelay: isSignUp ? '0.4s' : '0.3s', animationFillMode: 'backwards' }}>
+                <Button
+                  type="submit"
+                  variant="gold"
+                  size="lg"
+                  className="w-full h-11 lg:h-12 text-base font-semibold group mt-2 transition-all duration-300 hover:shadow-gold hover:scale-[1.02] active:scale-[0.98]"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      {isSignUp ? 'Creating account...' : 'Signing in...'}
+                    </>
+                  ) : (
+                    <>
+                      {isSignUp ? 'Create Account' : 'Sign In'}
+                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
+                </Button>
+              </div>
             </form>
 
-            <div className="mt-6 lg:mt-8 text-center">
+            <div className="mt-6 lg:mt-8 text-center animate-fade-in" style={{ animationDelay: isSignUp ? '0.45s' : '0.35s', animationFillMode: 'backwards' }}>
               <p className="text-sm text-muted-foreground">
                 {isSignUp ? 'Already have an account?' : "Don't have an account?"}
                 <button
@@ -302,14 +304,14 @@ const Auth = () => {
                     setIsSignUp(!isSignUp);
                     setErrors({});
                   }}
-                  className="ml-2 text-gold hover:text-gold/80 font-semibold transition-colors"
+                  className="ml-2 text-gold hover:text-gold/80 font-semibold transition-colors hover:underline underline-offset-4"
                 >
                   {isSignUp ? 'Sign in' : 'Sign up'}
                 </button>
               </p>
             </div>
 
-            <p className="mt-6 text-center text-xs text-muted-foreground px-4">
+            <p className="mt-6 text-center text-xs text-muted-foreground px-4 animate-fade-in" style={{ animationDelay: isSignUp ? '0.5s' : '0.4s', animationFillMode: 'backwards' }}>
               By continuing, you agree to our Terms of Service and Privacy Policy
             </p>
           </div>
