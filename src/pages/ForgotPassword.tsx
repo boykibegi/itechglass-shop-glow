@@ -1,49 +1,48 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Loader2, Phone, ArrowLeft, CheckCircle, Smartphone } from 'lucide-react';
+import { Loader2, Mail, ArrowLeft, CheckCircle, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { z } from 'zod';
+
+const emailSchema = z.string().trim().email('Please enter a valid email address').max(255, 'Email is too long');
 
 const ForgotPassword = () => {
-  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
-
-  const generateEmail = (phoneNumber: string) => {
-    const cleanPhone = phoneNumber.replace(/[^0-9]/g, '');
-    return `${cleanPhone}@itechglass.user`;
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (phone.length < 10) {
-      setError('Please enter a valid phone number');
-      return;
+    try {
+      emailSchema.parse(email);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        setError(err.errors[0].message);
+        return;
+      }
     }
 
     setIsSubmitting(true);
 
     try {
-      const email = generateEmail(phone);
-      const redirectUrl = `${window.location.origin}/reset-password`;
-      
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: redirectUrl,
+      const { data, error: fnError } = await supabase.functions.invoke('send-password-reset', {
+        body: { email: email.trim() },
       });
 
-      if (error) {
+      if (fnError) {
         toast.error('Failed to send reset link. Please try again.');
         return;
       }
 
       setIsSuccess(true);
-      toast.success('Password reset instructions sent!');
+      toast.success('Password reset email sent!');
     } catch (err) {
       toast.error('An unexpected error occurred');
     } finally {
@@ -71,9 +70,9 @@ const ForgotPassword = () => {
             <div className="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="h-8 w-8 text-emerald-500" />
             </div>
-            <h2 className="text-2xl font-bold text-foreground mb-3">Check Your Messages</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-3">Check Your Email</h2>
             <p className="text-muted-foreground mb-8">
-              If an account exists with this phone number, you'll receive password reset instructions shortly.
+              If an account exists with this email address, you'll receive a password reset link shortly.
             </p>
             <Link to="/">
               <Button variant="outline" className="gap-2">
@@ -115,24 +114,24 @@ const ForgotPassword = () => {
           <div className="space-y-1 mb-6 animate-fade-in" style={{ animationDelay: '0.15s', animationFillMode: 'backwards' }}>
             <h2 className="text-2xl lg:text-3xl font-bold text-foreground">Forgot Password?</h2>
             <p className="text-sm lg:text-base text-muted-foreground">
-              Enter your phone number and we'll send you reset instructions.
+              Enter your email address and we'll send you a reset link.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5 animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}>
-              <Label htmlFor="phone" className="text-sm font-medium flex items-center gap-2">
-                <Phone className="h-4 w-4 text-gold" />
-                Phone Number
+              <Label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
+                <Mail className="h-4 w-4 text-gold" />
+                Email Address
               </Label>
               <Input
-                id="phone"
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+255 7XX XXX XXX"
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your@email.com"
                 className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50"
-                autoComplete="tel"
+                autoComplete="email"
               />
               {error && <p className="text-xs text-destructive mt-1">{error}</p>}
             </div>
@@ -151,7 +150,7 @@ const ForgotPassword = () => {
                     Sending...
                   </>
                 ) : (
-                  'Send Reset Instructions'
+                  'Send Reset Link'
                 )}
               </Button>
             </div>
