@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { Search, SlidersHorizontal, Sparkles, Shield, Smartphone, Layers } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/layout/Header';
@@ -64,13 +64,60 @@ const Shop = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      {/* Page Header */}
-      <section className="bg-gradient-hero text-primary-foreground py-16">
-        <div className="container">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">Shop</h1>
-          <p className="text-primary-foreground/70">
-            Premium iPhone accessories for every model
-          </p>
+      {/* Premium Page Header */}
+      <section className="relative overflow-hidden bg-gradient-hero text-primary-foreground py-20 md:py-24">
+        {/* Decorative elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+          <div className="absolute bottom-0 left-0 w-72 h-72 bg-gold/3 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4" />
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
+        </div>
+
+        <div className="container relative z-10">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 border border-gold/20">
+                <Sparkles className="h-3.5 w-3.5 text-gold" />
+                <span className="text-xs font-semibold text-gold uppercase tracking-wider">
+                  {activeCategory === 'all' ? 'All Collections' : categories.find(c => c.slug === activeCategory)?.name}
+                </span>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+                {activeCategory === 'all' ? (
+                  <>Our <span className="text-gradient-gold">Collection</span></>
+                ) : activeCategory === 'back-glass' ? (
+                  <>Back <span className="text-gradient-gold">Glass</span></>
+                ) : activeCategory === 'screen-glass' ? (
+                  <>Screen <span className="text-gradient-gold">Glass</span></>
+                ) : (
+                  <>Premium <span className="text-gradient-gold">Covers</span></>
+                )}
+              </h1>
+              <p className="text-primary-foreground/50 max-w-md text-sm md:text-base leading-relaxed">
+                {activeCategory === 'all'
+                  ? 'Curated accessories crafted for perfection — protection meets luxury.'
+                  : activeCategory === 'back-glass'
+                  ? 'Crystal-clear replacement glass with precise cutouts and OEM-grade quality.'
+                  : activeCategory === 'screen-glass'
+                  ? '9H tempered glass with edge-to-edge clarity and anti-fingerprint coating.'
+                  : 'Elegant cases in leather, silicone, and MagSafe — style meets defense.'}
+              </p>
+            </div>
+
+            {/* Category icons */}
+            <div className="hidden md:flex items-center gap-3">
+              {[
+                { icon: Layers, label: 'Back Glass' },
+                { icon: Smartphone, label: 'Screens' },
+                { icon: Shield, label: 'Covers' },
+              ].map(({ icon: Icon, label }) => (
+                <div key={label} className="flex flex-col items-center gap-1.5 px-4 py-3 rounded-xl bg-primary-foreground/5 border border-primary-foreground/10">
+                  <Icon className="h-5 w-5 text-gold/70" />
+                  <span className="text-[10px] text-primary-foreground/40 uppercase tracking-wider font-medium">{label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
