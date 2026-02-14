@@ -1,4 +1,5 @@
 import { Package, ShoppingCart, LayoutDashboard, LogOut, Store } from 'lucide-react';
+import logo from '@/assets/logo.png';
 import { NavLink } from '@/components/NavLink';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -34,13 +35,7 @@ export function AdminSidebar() {
     <Sidebar className="border-r border-border">
       <div className="p-4 border-b border-border">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gold flex items-center justify-center">
-            <span className="text-black font-bold text-sm">iT</span>
-          </div>
-          <div>
-            <h2 className="font-semibold text-sm">iTechGlass</h2>
-            <p className="text-xs text-muted-foreground">Admin Panel</p>
-          </div>
+          <img src={logo} alt="iTechGlass" className="h-8" />
         </div>
       </div>
 

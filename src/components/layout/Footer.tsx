@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Instagram, Facebook, Twitter } from 'lucide-react';
+import logo from '@/assets/logo.png';
 
 const Footer = () => {
   return (
@@ -8,8 +9,8 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="space-y-4">
-            <Link to="/" className="text-2xl font-bold tracking-tight">
-              iTech<span className="text-gradient-gold">Glass</span>
+            <Link to="/">
+              <img src={logo} alt="iTechGlass" className="h-8" />
             </Link>
             <p className="text-sm text-primary-foreground/70 max-w-xs">
               Premium iPhone accessories. Quality glass protection and stylish covers for your device.
