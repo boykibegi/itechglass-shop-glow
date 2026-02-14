@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import WhatsAppButton from '@/components/WhatsAppButton';
+import ProductReviews from '@/components/ProductReviews';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { useCart } from '@/lib/cart';
@@ -253,6 +254,9 @@ const ProductDetail = () => {
               )}
             </div>
           </div>
+
+          {/* Customer Reviews */}
+          <ProductReviews />
         </div>
       </main>
 
