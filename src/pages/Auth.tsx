@@ -222,173 +222,183 @@ const Auth = () => {
         {/* Form Container */}
         <div className="flex-1 flex items-center justify-center px-6 py-8 lg:p-12">
           <div className="w-full max-w-md">
-            <div className="space-y-1 mb-6 lg:mb-8 text-center lg:text-left animate-fade-in" style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}>
-              <h2 className="text-2xl lg:text-3xl font-bold text-foreground">
-                {isSignUp ? 'Create Account' : 'Welcome Back'}
-              </h2>
-              <p className="text-sm lg:text-base text-muted-foreground">
-                {isSignUp
-                  ? 'Join us for premium iPhone protection'
-                  : 'Sign in to continue shopping'}
-              </p>
+            {/* Desktop brand */}
+            <div className="hidden lg:block mb-10 animate-fade-in">
+              <span className="text-2xl font-bold tracking-tight text-foreground">
+                iTech<span className="text-gold">Glass</span>
+              </span>
             </div>
 
-            {/* Login method tabs - only show on sign in */}
-            {!isSignUp && (
-              <div className="mb-5 animate-fade-in" style={{ animationDelay: '0.15s', animationFillMode: 'backwards' }}>
-                <Tabs value={loginMethod} onValueChange={(v) => { setLoginMethod(v as 'phone' | 'email'); setErrors({}); }}>
-                  <TabsList className="w-full grid grid-cols-2">
-                    <TabsTrigger value="phone" className="gap-2">
-                      <Phone className="h-4 w-4" />
-                      Phone
-                    </TabsTrigger>
-                    <TabsTrigger value="email" className="gap-2">
-                      <Mail className="h-4 w-4" />
-                      Email
-                    </TabsTrigger>
-                  </TabsList>
-                </Tabs>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-5">
-              {/* Name field - signup only */}
-              {isSignUp && (
-                <div className="space-y-1.5 animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}>
-                  <Label htmlFor="name" className="text-sm font-medium flex items-center gap-2">
-                    <User className="h-4 w-4 text-gold" />
-                    Full Name <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="John Doe"
-                    className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50"
-                    autoComplete="name"
-                  />
-                  {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
-                </div>
-              )}
-
-              {/* Phone field - show on signup or phone login */}
-              {(isSignUp || loginMethod === 'phone') && (
-                <div className="space-y-1.5 animate-fade-in" style={{ animationDelay: isSignUp ? '0.25s' : '0.2s', animationFillMode: 'backwards' }}>
-                  <Label htmlFor="phone" className="text-sm font-medium flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-gold" />
-                    Phone Number <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+255 7XX XXX XXX"
-                    className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50"
-                    autoComplete="tel"
-                  />
-                  {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone}</p>}
-                </div>
-              )}
-
-              {/* Email field - show on signup (optional) or email login (required) */}
-              {(isSignUp || loginMethod === 'email') && (
-                <div className="space-y-1.5 animate-fade-in" style={{ animationDelay: isSignUp ? '0.3s' : '0.2s', animationFillMode: 'backwards' }}>
-                  <Label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
-                    Email {isSignUp ? (
-                      <span className="text-muted-foreground text-xs">(Optional - for order updates)</span>
-                    ) : (
-                      <span className="text-destructive">*</span>
-                    )}
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="your@email.com"
-                    className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50"
-                    autoComplete="email"
-                  />
-                  {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
-                </div>
-              )}
-
-              <div className="space-y-1.5 animate-fade-in" style={{ animationDelay: isSignUp ? '0.35s' : '0.25s', animationFillMode: 'backwards' }}>
-                <Label htmlFor="password" className="text-sm font-medium flex items-center gap-2">
-                  <Lock className="h-4 w-4 text-muted-foreground" />
-                  Password
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50"
-                  autoComplete={isSignUp ? 'new-password' : 'current-password'}
-                />
-                {errors.password && <p className="text-xs text-destructive mt-1">{errors.password}</p>}
+            {/* Card wrapper */}
+            <div className="rounded-2xl border border-border/60 bg-card p-6 lg:p-8 shadow-[0_8px_40px_-12px_hsl(0_0%_0%/0.15)] dark:shadow-[0_8px_40px_-12px_hsl(0_0%_0%/0.4)]">
+              <div className="space-y-1 mb-6 text-center animate-fade-in" style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}>
+                <h2 className="text-2xl lg:text-3xl font-bold text-foreground tracking-tight">
+                  {isSignUp ? 'Create Account' : 'Welcome Back'}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  {isSignUp
+                    ? 'Join us for premium iPhone protection'
+                    : 'Sign in to continue shopping'}
+                </p>
               </div>
 
-              {isSignUp && (
-                <div className="space-y-1.5 animate-fade-in" style={{ animationDelay: '0.4s', animationFillMode: 'backwards' }}>
-                  <Label htmlFor="confirmPassword" className="text-sm font-medium flex items-center gap-2">
-                    <Lock className="h-4 w-4 text-muted-foreground" />
-                    Confirm Password
-                  </Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50"
-                    autoComplete="new-password"
-                  />
-                  {errors.confirmPassword && (
-                    <p className="text-xs text-destructive mt-1">{errors.confirmPassword}</p>
-                  )}
-                </div>
-              )}
-
+              {/* Login method tabs */}
               {!isSignUp && (
-                <div className="text-right animate-fade-in" style={{ animationDelay: '0.3s', animationFillMode: 'backwards' }}>
-                  <Link
-                    to="/forgot-password"
-                    className="text-sm text-gold hover:text-gold/80 font-medium transition-colors hover:underline underline-offset-4"
-                  >
-                    Forgot password?
-                  </Link>
+                <div className="mb-6 animate-fade-in" style={{ animationDelay: '0.15s', animationFillMode: 'backwards' }}>
+                  <Tabs value={loginMethod} onValueChange={(v) => { setLoginMethod(v as 'phone' | 'email'); setErrors({}); }}>
+                    <TabsList className="w-full grid grid-cols-2 h-12 rounded-xl bg-secondary/80 p-1">
+                      <TabsTrigger value="phone" className="gap-2 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-foreground text-sm font-medium transition-all">
+                        <Phone className="h-4 w-4" />
+                        Phone
+                      </TabsTrigger>
+                      <TabsTrigger value="email" className="gap-2 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-foreground text-sm font-medium transition-all">
+                        <Mail className="h-4 w-4" />
+                        Email
+                      </TabsTrigger>
+                    </TabsList>
+                  </Tabs>
                 </div>
               )}
 
-              <div className="animate-fade-in" style={{ animationDelay: isSignUp ? '0.45s' : '0.35s', animationFillMode: 'backwards' }}>
-                <Button
-                  type="submit"
-                  variant="gold"
-                  size="lg"
-                  className="w-full h-11 lg:h-12 text-base font-semibold group mt-2 transition-all duration-300 hover:shadow-gold hover:scale-[1.02] active:scale-[0.98]"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      {isSignUp ? 'Creating account...' : 'Signing in...'}
-                    </>
-                  ) : (
-                    <>
-                      {isSignUp ? 'Create Account' : 'Sign In'}
-                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                    </>
-                  )}
-                </Button>
-              </div>
-            </form>
+              <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Name field - signup only */}
+                {isSignUp && (
+                  <div className="space-y-2 animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}>
+                    <Label htmlFor="name" className="text-sm font-medium flex items-center gap-2">
+                      <User className="h-3.5 w-3.5 text-gold" />
+                      Full Name <span className="text-destructive text-xs">*</span>
+                    </Label>
+                    <Input
+                      id="name"
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="John Doe"
+                      className="h-12 rounded-xl bg-secondary/40 border-border/40 focus:border-gold/60 focus:ring-2 focus:ring-gold/10 text-base transition-all duration-300 hover:border-border placeholder:text-muted-foreground/50"
+                      autoComplete="name"
+                    />
+                    {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
+                  </div>
+                )}
 
-            <div className="mt-6 lg:mt-8 text-center animate-fade-in" style={{ animationDelay: isSignUp ? '0.5s' : '0.4s', animationFillMode: 'backwards' }}>
+                {/* Phone field */}
+                {(isSignUp || loginMethod === 'phone') && (
+                  <div className="space-y-2 animate-fade-in" style={{ animationDelay: isSignUp ? '0.25s' : '0.2s', animationFillMode: 'backwards' }}>
+                    <Label htmlFor="phone" className="text-sm font-medium flex items-center gap-2">
+                      <Phone className="h-3.5 w-3.5 text-gold" />
+                      Phone Number <span className="text-destructive text-xs">*</span>
+                    </Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+255 7XX XXX XXX"
+                      className="h-12 rounded-xl bg-secondary/40 border-border/40 focus:border-gold/60 focus:ring-2 focus:ring-gold/10 text-base transition-all duration-300 hover:border-border placeholder:text-muted-foreground/50"
+                      autoComplete="tel"
+                    />
+                    {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone}</p>}
+                  </div>
+                )}
+
+                {/* Email field */}
+                {(isSignUp || loginMethod === 'email') && (
+                  <div className="space-y-2 animate-fade-in" style={{ animationDelay: isSignUp ? '0.3s' : '0.2s', animationFillMode: 'backwards' }}>
+                    <Label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
+                      <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+                      Email {isSignUp ? (
+                        <span className="text-muted-foreground/60 text-xs font-normal">(Optional)</span>
+                      ) : (
+                        <span className="text-destructive text-xs">*</span>
+                      )}
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="your@email.com"
+                      className="h-12 rounded-xl bg-secondary/40 border-border/40 focus:border-gold/60 focus:ring-2 focus:ring-gold/10 text-base transition-all duration-300 hover:border-border placeholder:text-muted-foreground/50"
+                      autoComplete="email"
+                    />
+                    {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
+                  </div>
+                )}
+
+                <div className="space-y-2 animate-fade-in" style={{ animationDelay: isSignUp ? '0.35s' : '0.25s', animationFillMode: 'backwards' }}>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password" className="text-sm font-medium flex items-center gap-2">
+                      <Lock className="h-3.5 w-3.5 text-muted-foreground" />
+                      Password
+                    </Label>
+                    {!isSignUp && (
+                      <Link
+                        to="/forgot-password"
+                        className="text-xs text-gold hover:text-gold/80 font-medium transition-colors hover:underline underline-offset-4"
+                      >
+                        Forgot?
+                      </Link>
+                    )}
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="h-12 rounded-xl bg-secondary/40 border-border/40 focus:border-gold/60 focus:ring-2 focus:ring-gold/10 text-base transition-all duration-300 hover:border-border placeholder:text-muted-foreground/50"
+                    autoComplete={isSignUp ? 'new-password' : 'current-password'}
+                  />
+                  {errors.password && <p className="text-xs text-destructive mt-1">{errors.password}</p>}
+                </div>
+
+                {isSignUp && (
+                  <div className="space-y-2 animate-fade-in" style={{ animationDelay: '0.4s', animationFillMode: 'backwards' }}>
+                    <Label htmlFor="confirmPassword" className="text-sm font-medium flex items-center gap-2">
+                      <Lock className="h-3.5 w-3.5 text-muted-foreground" />
+                      Confirm Password
+                    </Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="h-12 rounded-xl bg-secondary/40 border-border/40 focus:border-gold/60 focus:ring-2 focus:ring-gold/10 text-base transition-all duration-300 hover:border-border placeholder:text-muted-foreground/50"
+                      autoComplete="new-password"
+                    />
+                    {errors.confirmPassword && (
+                      <p className="text-xs text-destructive mt-1">{errors.confirmPassword}</p>
+                    )}
+                  </div>
+                )}
+
+                <div className="pt-1 animate-fade-in" style={{ animationDelay: isSignUp ? '0.45s' : '0.35s', animationFillMode: 'backwards' }}>
+                  <Button
+                    type="submit"
+                    variant="gold"
+                    size="lg"
+                    className="w-full h-12 text-base font-semibold group rounded-xl transition-all duration-300 hover:shadow-[0_8px_24px_-6px_hsl(43_74%_49%/0.4)] hover:scale-[1.02] active:scale-[0.98]"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        {isSignUp ? 'Creating account...' : 'Signing in...'}
+                      </>
+                    ) : (
+                      <>
+                        {isSignUp ? 'Create Account' : 'Sign In'}
+                        <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </div>
+
+            {/* Below card */}
+            <div className="mt-6 text-center animate-fade-in" style={{ animationDelay: isSignUp ? '0.5s' : '0.4s', animationFillMode: 'backwards' }}>
               <p className="text-sm text-muted-foreground">
                 {isSignUp ? 'Already have an account?' : "Don't have an account?"}
                 <button
@@ -404,8 +414,11 @@ const Auth = () => {
               </p>
             </div>
 
-            <p className="mt-6 text-center text-xs text-muted-foreground px-4 animate-fade-in" style={{ animationDelay: isSignUp ? '0.55s' : '0.45s', animationFillMode: 'backwards' }}>
-              By continuing, you agree to our Terms of Service and Privacy Policy
+            <p className="mt-4 text-center text-[11px] text-muted-foreground/60 px-4 animate-fade-in" style={{ animationDelay: isSignUp ? '0.55s' : '0.45s', animationFillMode: 'backwards' }}>
+              By continuing, you agree to our{' '}
+              <span className="underline underline-offset-2 cursor-pointer hover:text-muted-foreground transition-colors">Terms of Service</span>
+              {' '}and{' '}
+              <span className="underline underline-offset-2 cursor-pointer hover:text-muted-foreground transition-colors">Privacy Policy</span>
             </p>
           </div>
         </div>
