@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { ShoppingCart, Menu, X, User, LogOut, Package, Truck } from 'lucide-react';
-import logo from '@/assets/logo.png';
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/lib/cart';
@@ -36,7 +36,7 @@ const Header = () => {
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
         <Link to="/home" className="flex items-center gap-2">
-          <img src={logo} alt="iTechGlass" className="h-8" />
+          <span className="text-lg font-bold tracking-tight text-foreground">iTech<span className="text-gold">Glass</span></span>
         </Link>
 
         {/* Desktop Navigation */}
