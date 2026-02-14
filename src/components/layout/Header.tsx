@@ -15,7 +15,7 @@ const Header = () => {
   const totalItems = getTotalItems();
 
   const navLinks = [
-    { href: '/', label: 'Home' },
+    { href: '/home', label: 'Home' },
     { href: '/shop', label: 'Shop' },
     { href: '/shop?category=back-glass', label: 'Back Glass' },
     { href: '/shop?category=screen-glass', label: 'Screen Glass' },
@@ -35,7 +35,7 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/home" className="flex items-center gap-2">
           <img src={logo} alt="iTechGlass" className="h-8" />
         </Link>
 

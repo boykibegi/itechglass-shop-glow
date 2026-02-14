@@ -43,7 +43,7 @@ const Auth = () => {
 
   useEffect(() => {
     if (!isLoading && user) {
-      navigate('/shop');
+      navigate('/home');
     }
   }, [user, isLoading, navigate]);
 
