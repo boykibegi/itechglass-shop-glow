@@ -7,6 +7,7 @@ import {
 import logo from '@/assets/logo.png';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import WhatsAppButton from '@/components/WhatsAppButton';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -301,6 +302,7 @@ const Welcome = () => {
           </button>
         )}
       </div>
+      <WhatsAppButton />
     </div>
   );
 };
