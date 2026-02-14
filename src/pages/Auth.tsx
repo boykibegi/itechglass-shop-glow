@@ -159,10 +159,7 @@ const Auth = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-primary via-transparent to-primary/50" />
         
         <div className="relative z-10 flex flex-col justify-between p-16 w-full">
-          {/* Logo */}
-          <div className="flex items-center gap-4">
-            <img src={logo} alt="iTechGlass" className="h-12 drop-shadow-[0_2px_8px_hsl(43_74%_49%/0.4)]" />
-          </div>
+          {/* Hero text */}
           
           {/* Hero text */}
           <div className="space-y-6">
@@ -212,7 +209,7 @@ const Auth = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/60 to-primary" />
           <div className="relative z-10 flex flex-col items-center px-6 pt-12 pb-10">
-            <img src={logo} alt="iTechGlass" className="h-14 mb-3 drop-shadow-[0_2px_12px_hsl(43_74%_49%/0.4)]" />
+            <div className="h-4" />
             <h1 className="text-2xl font-bold text-primary-foreground tracking-tight">
               iTech<span className="text-gold">Glass</span>
             </h1>
