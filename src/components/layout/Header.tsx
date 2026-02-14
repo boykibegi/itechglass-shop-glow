@@ -15,7 +15,7 @@ const Header = () => {
   const totalItems = getTotalItems();
 
   const navLinks = [
-    { href: '/home', label: 'Home' },
+    { href: '/', label: 'Home' },
     { href: '/shop', label: 'Shop' },
     { href: '/shop?category=back-glass', label: 'Back Glass' },
     { href: '/shop?category=screen-glass', label: 'Screen Glass' },
@@ -23,7 +23,7 @@ const Header = () => {
   ];
 
   const isActive = (href: string) => {
-    if (href === '/home') return location.pathname === '/home';
+    if (href === '/') return location.pathname === '/';
     return location.pathname + location.search === href;
   };
 
@@ -32,49 +32,22 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-primary/95 backdrop-blur supports-[backdrop-filter]:bg-primary/80 shadow-lg">
-      {/* Top bar with logo centered */}
-      <div className="container flex h-20 items-center justify-between">
-        {/* Mobile menu toggle - left */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden text-primary-foreground hover:bg-primary-foreground/10"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
-
-        {/* Left nav - desktop */}
-        <nav className="hidden md:flex items-center gap-6">
-          {navLinks.slice(0, 3).map((link) => (
-            <Link
-              key={link.href}
-              to={link.href}
-              className={cn(
-                "text-xs font-medium uppercase tracking-widest transition-colors hover:text-gold",
-                isActive(link.href) ? "text-gold" : "text-primary-foreground/70"
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
-        {/* Center Logo */}
-        <Link to="/home" className="flex items-center">
-          <img src={logo} alt="iTechGlass" className="h-10 md:h-12" />
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center justify-between">
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-2">
+          <img src={logo} alt="iTechGlass" className="h-8" />
         </Link>
 
-        {/* Right nav - desktop */}
-        <nav className="hidden md:flex items-center gap-6">
-          {navLinks.slice(3).map((link) => (
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-8">
+          {navLinks.map((link) => (
             <Link
               key={link.href}
               to={link.href}
               className={cn(
-                "text-xs font-medium uppercase tracking-widest transition-colors hover:text-gold",
-                isActive(link.href) ? "text-gold" : "text-primary-foreground/70"
+                "text-sm font-medium transition-colors hover:text-gold",
+                isActive(link.href) ? "text-gold" : "text-muted-foreground"
               )}
             >
               {link.label}
@@ -83,44 +56,44 @@ const Header = () => {
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           {user && (
             <Link to="/profile" className="hidden md:block" title="My Profile">
-              <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary-foreground/10">
-                <User className="h-4 w-4" />
+              <Button variant="ghost" size="icon">
+                <User className="h-5 w-5" />
               </Button>
             </Link>
           )}
 
           {user && (
             <Link to="/orders" className="hidden md:block" title="My Orders">
-              <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary-foreground/10">
-                <Package className="h-4 w-4" />
+              <Button variant="ghost" size="icon">
+                <Package className="h-5 w-5" />
               </Button>
             </Link>
           )}
 
           {isDriver && (
             <Link to="/delivery" className="hidden md:block" title="Driver Dashboard">
-              <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary-foreground/10">
-                <Truck className="h-4 w-4" />
+              <Button variant="ghost" size="icon">
+                <Truck className="h-5 w-5" />
               </Button>
             </Link>
           )}
 
           {isAdmin && (
             <Link to="/admin" className="hidden md:block" title="Admin Dashboard">
-              <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary-foreground/10">
-                <Package className="h-4 w-4" />
+              <Button variant="ghost" size="icon">
+                <Package className="h-5 w-5" />
               </Button>
             </Link>
           )}
           
           <Link to="/cart" className="relative">
-            <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary-foreground/10">
-              <ShoppingCart className="h-4 w-4" />
+            <Button variant="ghost" size="icon">
+              <ShoppingCart className="h-5 w-5" />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-gold text-[10px] font-semibold text-primary flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-gold text-xs font-semibold text-primary flex items-center justify-center">
                   {totalItems}
                 </span>
               )}
@@ -132,18 +105,28 @@ const Header = () => {
               variant="ghost"
               size="icon"
               onClick={handleSignOut}
-              className="hidden md:flex text-primary-foreground hover:bg-primary-foreground/10"
+              className="hidden md:flex"
               title="Sign out"
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-5 w-5" />
             </Button>
           )}
+
+          {/* Mobile menu toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
         </div>
       </div>
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden border-t border-primary-foreground/10 bg-primary">
+        <div className="md:hidden border-t border-border bg-background">
           <nav className="container py-4 flex flex-col gap-4">
             {navLinks.map((link) => (
               <Link
@@ -151,8 +134,8 @@ const Header = () => {
                 to={link.href}
                 onClick={() => setIsMenuOpen(false)}
                 className={cn(
-                  "text-xs font-medium uppercase tracking-widest transition-colors hover:text-gold py-2",
-                  isActive(link.href) ? "text-gold" : "text-primary-foreground/70"
+                  "text-sm font-medium transition-colors hover:text-gold py-2",
+                  isActive(link.href) ? "text-gold" : "text-muted-foreground"
                 )}
               >
                 {link.label}
@@ -162,7 +145,7 @@ const Header = () => {
               <Link
                 to="/profile"
                 onClick={() => setIsMenuOpen(false)}
-                className="text-xs font-medium uppercase tracking-widest text-primary-foreground/70 hover:text-gold py-2"
+                className="text-sm font-medium text-muted-foreground hover:text-gold py-2"
               >
                 My Profile
               </Link>
@@ -171,7 +154,7 @@ const Header = () => {
               <Link
                 to="/orders"
                 onClick={() => setIsMenuOpen(false)}
-                className="text-xs font-medium uppercase tracking-widest text-primary-foreground/70 hover:text-gold py-2"
+                className="text-sm font-medium text-muted-foreground hover:text-gold py-2"
               >
                 My Orders
               </Link>
@@ -180,7 +163,7 @@ const Header = () => {
               <Link
                 to="/delivery"
                 onClick={() => setIsMenuOpen(false)}
-                className="text-xs font-medium uppercase tracking-widest text-primary-foreground/70 hover:text-gold py-2"
+                className="text-sm font-medium text-muted-foreground hover:text-gold py-2"
               >
                 Driver Dashboard
               </Link>
@@ -189,7 +172,7 @@ const Header = () => {
               <Link
                 to="/admin"
                 onClick={() => setIsMenuOpen(false)}
-                className="text-xs font-medium uppercase tracking-widest text-primary-foreground/70 hover:text-gold py-2"
+                className="text-sm font-medium text-muted-foreground hover:text-gold py-2"
               >
                 Admin
               </Link>
@@ -200,7 +183,7 @@ const Header = () => {
                   handleSignOut();
                   setIsMenuOpen(false);
                 }}
-                className="text-xs font-medium uppercase tracking-widest text-primary-foreground/70 hover:text-gold py-2 text-left"
+                className="text-sm font-medium text-muted-foreground hover:text-gold py-2 text-left"
               >
                 Sign Out
               </button>
