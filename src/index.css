@@ -231,3 +231,8 @@
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
+
+@keyframes shopHeroZoom {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.08); }
+}
