@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Loader2, Smartphone, Phone, Mail, Lock, ArrowRight, Sparkles, User } from 'lucide-react';
+import { Loader2, Smartphone, Phone, Mail, Lock, ArrowRight, Sparkles, User, Shield, Truck, Award } from 'lucide-react';
 import logo from '@/assets/logo.png';
+import authHero from '@/assets/auth-hero.jpg';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -145,70 +146,79 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-background">
-      {/* Left side - Branding (hidden on mobile) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-hero relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,hsl(var(--gold)/0.15),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,hsl(var(--gold)/0.1),transparent_40%)]" />
+      {/* Left side - Hero Visual */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        {/* Hero Image */}
+        <img
+          src={authHero}
+          alt="Premium iPhone accessories"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        {/* Overlay gradients */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/60 to-primary/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-primary via-transparent to-primary/50" />
         
-          <div className="relative z-10 flex flex-col justify-center px-16 text-primary-foreground">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="relative">
-                <div className="absolute inset-0 -m-3 rounded-full bg-gold/10 blur-xl" />
-                <img src={logo} alt="iTechGlass" className="relative h-14 drop-shadow-[0_2px_12px_hsl(43_74%_49%/0.3)]" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight">
-                  iTech<span className="text-gold">Glass</span>
-                </h1>
-                <p className="text-sm text-primary-foreground/60">Premium Protection · Smart Price</p>
-              </div>
-            </div>
-          
-          <h2 className="text-4xl md:text-5xl font-bold leading-tight mb-6">
-            Elevate Your iPhone
-            <br />
-            <span className="text-gradient-gold">Experience</span>
-          </h2>
-          
-          <p className="text-lg text-primary-foreground/70 max-w-md mb-10">
-            Discover premium back glass, screen protectors, and stylish covers crafted for perfection.
-          </p>
-          
-          <div className="space-y-4">
-            {[
-              'Premium quality materials',
-              'Fast delivery across Tanzania',
-              'Warranty on all products',
-            ].map((feature, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <div className="w-6 h-6 rounded-full bg-gold/20 flex items-center justify-center">
-                  <Sparkles className="h-3 w-3 text-gold" />
-                </div>
-                <span className="text-primary-foreground/80">{feature}</span>
-              </div>
-            ))}
+        <div className="relative z-10 flex flex-col justify-between p-16 w-full">
+          {/* Logo */}
+          <div className="flex items-center gap-4">
+            <img src={logo} alt="iTechGlass" className="h-12 drop-shadow-[0_2px_8px_hsl(43_74%_49%/0.4)]" />
           </div>
+          
+          {/* Hero text */}
+          <div className="space-y-6">
+            <h2 className="text-5xl font-bold leading-[1.1] text-primary-foreground tracking-tight">
+              Elevate Your
+              <br />
+              iPhone
+              <br />
+              <span className="text-gradient-gold">Experience</span>
+            </h2>
+            
+            <p className="text-base text-primary-foreground/60 max-w-sm leading-relaxed">
+              Premium back glass, screen protectors, and stylish covers — crafted for perfection.
+            </p>
+            
+            <div className="flex gap-6 pt-2">
+              {[
+                { icon: Shield, label: 'Quality' },
+                { icon: Truck, label: 'Fast Delivery' },
+                { icon: Award, label: 'Warranty' },
+              ].map(({ icon: Icon, label }) => (
+                <div key={label} className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-gold/15 border border-gold/20 flex items-center justify-center">
+                    <Icon className="h-4 w-4 text-gold" />
+                  </div>
+                  <span className="text-xs font-medium text-primary-foreground/70">{label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom tagline */}
+          <p className="text-[11px] text-primary-foreground/30 uppercase tracking-[0.3em] font-medium">
+            Premium Protection · Smart Price
+          </p>
         </div>
-        
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-gold/10 to-transparent rounded-full blur-3xl" />
-        <div className="absolute top-20 right-20 w-64 h-64 border border-gold/10 rounded-full" />
-        <div className="absolute top-40 right-40 w-32 h-32 border border-gold/20 rounded-full" />
       </div>
 
       {/* Right side - Auth Form */}
       <div className="flex-1 flex flex-col min-h-screen lg:min-h-0">
         {/* Mobile Header */}
-        <div className="lg:hidden bg-gradient-hero px-6 pt-safe-top pb-8 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(var(--gold)/0.2),transparent_60%)]" />
-          <div className="relative z-10 flex flex-col items-center pt-8">
-            <div className="relative mb-4">
-              <div className="absolute inset-0 -m-3 rounded-full bg-gold/10 blur-xl" />
-              <img src={logo} alt="iTechGlass" className="relative h-14 drop-shadow-[0_2px_12px_hsl(43_74%_49%/0.3)]" />
-            </div>
-            <h1 className="text-2xl font-bold text-primary-foreground">
+        <div className="lg:hidden relative overflow-hidden">
+          <img
+            src={authHero}
+            alt="Premium iPhone accessories"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/60 to-primary" />
+          <div className="relative z-10 flex flex-col items-center px-6 pt-12 pb-10">
+            <img src={logo} alt="iTechGlass" className="h-14 mb-3 drop-shadow-[0_2px_12px_hsl(43_74%_49%/0.4)]" />
+            <h1 className="text-2xl font-bold text-primary-foreground tracking-tight">
               iTech<span className="text-gold">Glass</span>
             </h1>
-            <p className="text-xs text-primary-foreground/50 mt-1 uppercase tracking-[0.2em] font-medium">Premium Protection · Smart Price</p>
+            <p className="text-[11px] text-primary-foreground/40 mt-1.5 uppercase tracking-[0.25em] font-medium">
+              Premium Protection · Smart Price
+            </p>
           </div>
         </div>
 
