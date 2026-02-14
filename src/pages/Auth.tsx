@@ -1,30 +1,39 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Loader2, Smartphone, Phone, Mail, Lock, ArrowRight, Sparkles } from 'lucide-react';
+import { Loader2, Smartphone, Phone, Mail, Lock, ArrowRight, Sparkles, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-const signUpSchema = z.object({
+const phoneSignInSchema = z.object({
   phone: z.string().min(10, 'Phone number must be at least 10 digits').regex(/^[0-9+\s-]+$/, 'Invalid phone number format'),
-  email: z.string().email('Please enter a valid email').optional().or(z.literal('')),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  password: z.string().min(1, 'Password is required'),
 });
 
-const signInSchema = z.object({
-  phone: z.string().min(10, 'Phone number must be at least 10 digits'),
+const emailSignInSchema = z.object({
+  email: z.string().trim().email('Please enter a valid email'),
   password: z.string().min(1, 'Password is required'),
+});
+
+const signUpSchema = z.object({
+  phone: z.string().min(10, 'Phone number must be at least 10 digits').regex(/^[0-9+\s-]+$/, 'Invalid phone number format'),
+  email: z.string().trim().email('Please enter a valid email').optional().or(z.literal('')),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  name: z.string().min(1, 'Name is required').max(100, 'Name is too long'),
 });
 
 const Auth = () => {
   const navigate = useNavigate();
   const { user, isLoading, signIn, signUp } = useAuth();
   const [isSignUp, setIsSignUp] = useState(false);
+  const [loginMethod, setLoginMethod] = useState<'phone' | 'email'>('phone');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,7 +45,6 @@ const Auth = () => {
     }
   }, [user, isLoading, navigate]);
 
-  // Generate email from phone if not provided
   const generateEmail = (phoneNumber: string) => {
     const cleanPhone = phoneNumber.replace(/[^0-9]/g, '');
     return `${cleanPhone}@itechglass.user`;
@@ -48,9 +56,11 @@ const Auth = () => {
 
     try {
       if (isSignUp) {
-        signUpSchema.parse({ phone, email, password });
+        signUpSchema.parse({ phone, email, password, name });
+      } else if (loginMethod === 'phone') {
+        phoneSignInSchema.parse({ phone, password });
       } else {
-        signInSchema.parse({ phone, password });
+        emailSignInSchema.parse({ email, password });
       }
     } catch (err) {
       if (err instanceof z.ZodError) {
@@ -73,9 +83,8 @@ const Auth = () => {
     setIsSubmitting(true);
 
     try {
-      const authEmail = email || generateEmail(phone);
-      
       if (isSignUp) {
+        const authEmail = email || generateEmail(phone);
         const { error } = await signUp(authEmail, password);
         if (error) {
           if (error.message.includes('already registered')) {
@@ -86,12 +95,29 @@ const Auth = () => {
           }
           return;
         }
-        toast.success('Account created successfully! Welcome to iTechGlass.');
+        // Send welcome email if real email provided
+        if (email && !email.endsWith('@itechglass.user')) {
+          try {
+            const { supabase } = await import('@/integrations/supabase/client');
+            await supabase.functions.invoke('send-welcome-email', {
+              body: { email, name: name || 'Customer' },
+            });
+          } catch {
+            // Non-critical, don't block signup
+          }
+        }
+        navigate('/welcome');
+        return;
       } else {
+        const authEmail = loginMethod === 'phone' ? generateEmail(phone) : email.trim();
         const { error } = await signIn(authEmail, password);
         if (error) {
           if (error.message.includes('Invalid login')) {
-            toast.error('Invalid phone number or password');
+            if (loginMethod === 'phone') {
+              toast.error('No account found with this phone number, or the password is incorrect. Please check your details or sign up.');
+            } else {
+              toast.error('No account found with this email, or the password is incorrect. Please check your details or sign up.');
+            }
           } else {
             toast.error(error.message || 'Failed to sign in');
           }
@@ -162,7 +188,6 @@ const Auth = () => {
           </div>
         </div>
         
-        {/* Decorative elements */}
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-gold/10 to-transparent rounded-full blur-3xl" />
         <div className="absolute top-20 right-20 w-64 h-64 border border-gold/10 rounded-full" />
         <div className="absolute top-40 right-40 w-32 h-32 border border-gold/20 rounded-full" />
@@ -170,7 +195,7 @@ const Auth = () => {
 
       {/* Right side - Auth Form */}
       <div className="flex-1 flex flex-col min-h-screen lg:min-h-0">
-        {/* Mobile Header with gradient background */}
+        {/* Mobile Header */}
         <div className="lg:hidden bg-gradient-hero px-6 pt-safe-top pb-8 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(var(--gold)/0.2),transparent_60%)]" />
           <div className="relative z-10 flex flex-col items-center pt-8">
@@ -183,6 +208,7 @@ const Auth = () => {
             <p className="text-sm text-primary-foreground/60 mt-1">Premium Protection</p>
           </div>
         </div>
+
         {/* Form Container */}
         <div className="flex-1 flex items-center justify-center px-6 py-8 lg:p-12">
           <div className="w-full max-w-md">
@@ -197,29 +223,75 @@ const Auth = () => {
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-5">
-              <div className="space-y-1.5 animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}>
-                <Label htmlFor="phone" className="text-sm font-medium flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-gold" />
-                  Phone Number <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+255 7XX XXX XXX"
-                  className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50"
-                  autoComplete="tel"
-                />
-                {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone}</p>}
-            </div>
+            {/* Login method tabs - only show on sign in */}
+            {!isSignUp && (
+              <div className="mb-5 animate-fade-in" style={{ animationDelay: '0.15s', animationFillMode: 'backwards' }}>
+                <Tabs value={loginMethod} onValueChange={(v) => { setLoginMethod(v as 'phone' | 'email'); setErrors({}); }}>
+                  <TabsList className="w-full grid grid-cols-2">
+                    <TabsTrigger value="phone" className="gap-2">
+                      <Phone className="h-4 w-4" />
+                      Phone
+                    </TabsTrigger>
+                    <TabsTrigger value="email" className="gap-2">
+                      <Mail className="h-4 w-4" />
+                      Email
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+            )}
 
+            <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-5">
+              {/* Name field - signup only */}
               {isSignUp && (
-                <div className="space-y-1.5 animate-fade-in" style={{ animationDelay: '0.25s', animationFillMode: 'backwards' }}>
+                <div className="space-y-1.5 animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}>
+                  <Label htmlFor="name" className="text-sm font-medium flex items-center gap-2">
+                    <User className="h-4 w-4 text-gold" />
+                    Full Name <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="John Doe"
+                    className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50"
+                    autoComplete="name"
+                  />
+                  {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
+                </div>
+              )}
+
+              {/* Phone field - show on signup or phone login */}
+              {(isSignUp || loginMethod === 'phone') && (
+                <div className="space-y-1.5 animate-fade-in" style={{ animationDelay: isSignUp ? '0.25s' : '0.2s', animationFillMode: 'backwards' }}>
+                  <Label htmlFor="phone" className="text-sm font-medium flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-gold" />
+                    Phone Number <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+255 7XX XXX XXX"
+                    className="h-11 lg:h-12 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50"
+                    autoComplete="tel"
+                  />
+                  {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone}</p>}
+                </div>
+              )}
+
+              {/* Email field - show on signup (optional) or email login (required) */}
+              {(isSignUp || loginMethod === 'email') && (
+                <div className="space-y-1.5 animate-fade-in" style={{ animationDelay: isSignUp ? '0.3s' : '0.2s', animationFillMode: 'backwards' }}>
                   <Label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
                     <Mail className="h-4 w-4 text-muted-foreground" />
-                    Email <span className="text-muted-foreground text-xs">(Optional)</span>
+                    Email {isSignUp ? (
+                      <span className="text-muted-foreground text-xs">(Optional - for order updates)</span>
+                    ) : (
+                      <span className="text-destructive">*</span>
+                    )}
                   </Label>
                   <Input
                     id="email"
@@ -234,7 +306,7 @@ const Auth = () => {
                 </div>
               )}
 
-              <div className="space-y-1.5 animate-fade-in" style={{ animationDelay: isSignUp ? '0.3s' : '0.25s', animationFillMode: 'backwards' }}>
+              <div className="space-y-1.5 animate-fade-in" style={{ animationDelay: isSignUp ? '0.35s' : '0.25s', animationFillMode: 'backwards' }}>
                 <Label htmlFor="password" className="text-sm font-medium flex items-center gap-2">
                   <Lock className="h-4 w-4 text-muted-foreground" />
                   Password
@@ -252,7 +324,7 @@ const Auth = () => {
               </div>
 
               {isSignUp && (
-                <div className="space-y-1.5 animate-fade-in" style={{ animationDelay: '0.35s', animationFillMode: 'backwards' }}>
+                <div className="space-y-1.5 animate-fade-in" style={{ animationDelay: '0.4s', animationFillMode: 'backwards' }}>
                   <Label htmlFor="confirmPassword" className="text-sm font-medium flex items-center gap-2">
                     <Lock className="h-4 w-4 text-muted-foreground" />
                     Confirm Password
@@ -283,7 +355,7 @@ const Auth = () => {
                 </div>
               )}
 
-              <div className="animate-fade-in" style={{ animationDelay: isSignUp ? '0.4s' : '0.35s', animationFillMode: 'backwards' }}>
+              <div className="animate-fade-in" style={{ animationDelay: isSignUp ? '0.45s' : '0.35s', animationFillMode: 'backwards' }}>
                 <Button
                   type="submit"
                   variant="gold"
@@ -306,7 +378,7 @@ const Auth = () => {
               </div>
             </form>
 
-            <div className="mt-6 lg:mt-8 text-center animate-fade-in" style={{ animationDelay: isSignUp ? '0.45s' : '0.35s', animationFillMode: 'backwards' }}>
+            <div className="mt-6 lg:mt-8 text-center animate-fade-in" style={{ animationDelay: isSignUp ? '0.5s' : '0.4s', animationFillMode: 'backwards' }}>
               <p className="text-sm text-muted-foreground">
                 {isSignUp ? 'Already have an account?' : "Don't have an account?"}
                 <button
@@ -322,7 +394,7 @@ const Auth = () => {
               </p>
             </div>
 
-            <p className="mt-6 text-center text-xs text-muted-foreground px-4 animate-fade-in" style={{ animationDelay: isSignUp ? '0.5s' : '0.4s', animationFillMode: 'backwards' }}>
+            <p className="mt-6 text-center text-xs text-muted-foreground px-4 animate-fade-in" style={{ animationDelay: isSignUp ? '0.55s' : '0.45s', animationFillMode: 'backwards' }}>
               By continuing, you agree to our Terms of Service and Privacy Policy
             </p>
           </div>
