@@ -65,50 +65,91 @@ const Shop = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      {/* Premium Page Header */}
-      <section className="relative overflow-hidden text-primary-foreground py-20 md:py-28">
-        {/* Background image with slow zoom animation */}
+      {/* Cinematic Shop Hero */}
+      <section className="relative overflow-hidden text-primary-foreground py-24 md:py-36 lg:py-44">
+        {/* Background image with Ken Burns zoom */}
         <img
           src={shopHero}
           alt=""
-          className="absolute inset-0 w-full h-full object-cover animate-[scale-in_1.2s_ease-out_forwards] scale-105"
-          style={{ animation: 'shopHeroZoom 20s ease-in-out infinite alternate' }}
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ animation: 'shopHeroZoom 25s ease-in-out infinite alternate' }}
           aria-hidden="true"
         />
-        {/* Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/75 to-primary/50" />
-        <div className="absolute inset-0 bg-gradient-to-t from-primary via-transparent to-primary/40" />
 
-        {/* Decorative elements */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
-          <div className="absolute bottom-0 left-0 w-72 h-72 bg-gold/3 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4" />
+        {/* Multi-layer cinematic overlays */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/98 via-primary/80 to-primary/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/30 to-primary/60" />
+        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-gold/[0.03] to-transparent" />
+
+        {/* Animated gold accent lines */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" style={{ animation: 'heroLineSlide 4s ease-in-out infinite alternate' }} />
           <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
+          {/* Floating orbs */}
+          <div className="absolute top-1/4 right-1/4 w-80 h-80 bg-gold/[0.04] rounded-full blur-[100px]" style={{ animation: 'heroOrbFloat 8s ease-in-out infinite alternate' }} />
+          <div className="absolute bottom-0 left-1/6 w-96 h-96 bg-gold/[0.03] rounded-full blur-[120px]" style={{ animation: 'heroOrbFloat 10s ease-in-out infinite alternate-reverse' }} />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary-foreground/[0.02] rounded-full blur-[80px]" style={{ animation: 'heroOrbFloat 12s ease-in-out infinite alternate' }} />
+        </div>
+
+        {/* Watermark / ambient text */}
+        <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
+          <span
+            className="absolute -right-10 top-1/2 -translate-y-1/2 text-[12rem] md:text-[18rem] font-bold uppercase tracking-tighter text-primary-foreground/[0.02] leading-none"
+            style={{ animation: 'heroTextDrift 20s ease-in-out infinite alternate' }}
+            aria-hidden="true"
+          >
+            {activeCategory === 'all' ? 'LUXURY' : activeCategory === 'back-glass' ? 'GLASS' : activeCategory === 'screen-glass' ? 'SHIELD' : 'STYLE'}
+          </span>
         </div>
 
         <div className="container relative z-10">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-            <div className="space-y-4 animate-fade-in">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 border border-gold/20 backdrop-blur-sm animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}>
-                <Sparkles className="h-3.5 w-3.5 text-gold" />
-                <span className="text-xs font-semibold text-gold uppercase tracking-wider">
-                  {activeCategory === 'all' ? 'All Collections' : categories.find(c => c.slug === activeCategory)?.name}
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+            <div className="space-y-5 max-w-xl">
+              {/* Animated tag */}
+              <div
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gold/20 backdrop-blur-md"
+                style={{ background: 'hsl(43 74% 49% / 0.08)', animation: 'fade-in 0.6s ease-out 0.2s backwards' }}
+              >
+                <Sparkles className="h-3.5 w-3.5 text-gold animate-[heroSparkle_2s_ease-in-out_infinite]" />
+                <span className="text-[11px] font-semibold text-gold uppercase tracking-[0.15em]">
+                  {activeCategory === 'all' ? 'Curated Collection' : categories.find(c => c.slug === activeCategory)?.name}
                 </span>
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight animate-fade-in" style={{ animationDelay: '0.3s', animationFillMode: 'backwards' }}>
+
+              {/* Main heading with staggered reveal */}
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[0.95]" style={{ animation: 'fade-in 0.8s ease-out 0.35s backwards' }}>
                 {activeCategory === 'all' ? (
-                  <>Our <span className="text-gradient-gold">Collection</span></>
+                  <>
+                    <span className="block">Our</span>
+                    <span className="block text-gradient-gold">Collection</span>
+                  </>
                 ) : activeCategory === 'back-glass' ? (
-                  <>Back <span className="text-gradient-gold">Glass</span></>
+                  <>
+                    <span className="block">Back</span>
+                    <span className="block text-gradient-gold">Glass</span>
+                  </>
                 ) : activeCategory === 'screen-glass' ? (
-                  <>Screen <span className="text-gradient-gold">Glass</span></>
+                  <>
+                    <span className="block">Screen</span>
+                    <span className="block text-gradient-gold">Glass</span>
+                  </>
                 ) : (
-                  <>Premium <span className="text-gradient-gold">Covers</span></>
+                  <>
+                    <span className="block">Premium</span>
+                    <span className="block text-gradient-gold">Covers</span>
+                  </>
                 )}
               </h1>
-              <p className="text-primary-foreground/50 max-w-md text-sm md:text-base leading-relaxed animate-fade-in" style={{ animationDelay: '0.4s', animationFillMode: 'backwards' }}>
+
+              {/* Accent divider */}
+              <div className="flex items-center gap-3" style={{ animation: 'fade-in 0.6s ease-out 0.5s backwards' }}>
+                <div className="h-px w-12 bg-gradient-to-r from-gold/60 to-gold/0" />
+                <span className="text-[10px] text-gold/50 uppercase tracking-[0.2em] font-medium">Since 2024</span>
+              </div>
+
+              <p className="text-primary-foreground/45 max-w-md text-sm md:text-base leading-relaxed" style={{ animation: 'fade-in 0.6s ease-out 0.55s backwards' }}>
                 {activeCategory === 'all'
-                  ? 'Curated accessories crafted for perfection — protection meets luxury.'
+                  ? 'Curated accessories crafted for perfection — where protection meets luxury.'
                   : activeCategory === 'back-glass'
                   ? 'Crystal-clear replacement glass with precise cutouts and OEM-grade quality.'
                   : activeCategory === 'screen-glass'
@@ -117,16 +158,24 @@ const Shop = () => {
               </p>
             </div>
 
-            {/* Category icons */}
-            <div className="hidden md:flex items-center gap-3 animate-fade-in" style={{ animationDelay: '0.5s', animationFillMode: 'backwards' }}>
+            {/* Floating category cards */}
+            <div className="hidden md:flex items-end gap-3" style={{ animation: 'fade-in 0.7s ease-out 0.6s backwards' }}>
               {[
-                { icon: Layers, label: 'Back Glass' },
-                { icon: Smartphone, label: 'Screens' },
-                { icon: Shield, label: 'Covers' },
-              ].map(({ icon: Icon, label }) => (
-                <div key={label} className="flex flex-col items-center gap-1.5 px-4 py-3 rounded-xl bg-primary-foreground/5 border border-primary-foreground/10 backdrop-blur-sm hover:border-gold/20 transition-colors">
-                  <Icon className="h-5 w-5 text-gold/70" />
-                  <span className="text-[10px] text-primary-foreground/40 uppercase tracking-wider font-medium">{label}</span>
+                { icon: Layers, label: 'Back Glass', stat: 'OEM Grade' },
+                { icon: Smartphone, label: 'Screens', stat: '9H Hardness' },
+                { icon: Shield, label: 'Covers', stat: 'MagSafe Ready' },
+              ].map(({ icon: Icon, label, stat }, i) => (
+                <div
+                  key={label}
+                  className="group flex flex-col items-center gap-2 px-5 py-4 rounded-2xl border border-primary-foreground/[0.08] backdrop-blur-md hover:border-gold/25 transition-all duration-500 hover:-translate-y-1"
+                  style={{
+                    background: 'hsl(0 0% 100% / 0.04)',
+                    animation: `fade-in 0.5s ease-out ${0.7 + i * 0.1}s backwards`,
+                  }}
+                >
+                  <Icon className="h-5 w-5 text-gold/60 group-hover:text-gold transition-colors duration-300" />
+                  <span className="text-[10px] text-primary-foreground/50 uppercase tracking-[0.15em] font-medium">{label}</span>
+                  <span className="text-[9px] text-gold/40 font-medium tracking-wider">{stat}</span>
                 </div>
               ))}
             </div>

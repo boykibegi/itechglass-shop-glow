@@ -234,5 +234,25 @@
 
 @keyframes shopHeroZoom {
   0% { transform: scale(1); }
-  100% { transform: scale(1.08); }
+  100% { transform: scale(1.1); }
+}
+
+@keyframes heroLineSlide {
+  0% { opacity: 0.3; transform: scaleX(0.6); }
+  100% { opacity: 0.7; transform: scaleX(1); }
+}
+
+@keyframes heroOrbFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(20px, -15px) scale(1.15); }
+}
+
+@keyframes heroTextDrift {
+  0% { transform: translateY(-50%) translateX(0); }
+  100% { transform: translateY(-50%) translateX(-40px); }
+}
+
+@keyframes heroSparkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
 }
