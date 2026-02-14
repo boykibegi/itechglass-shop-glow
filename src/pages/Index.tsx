@@ -1,5 +1,6 @@
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Shield, Truck, Award } from 'lucide-react';
+import { ArrowRight, Shield, Truck, Award, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -7,14 +8,23 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import ProductCard from '@/components/ProductCard';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import heroBg from '@/assets/hero-bg.jpg';
 
 const fetchFeaturedProducts = async () => {
   const { data, error } = await supabase
     .from('products')
     .select('*')
     .eq('featured', true)
-    .limit(4);
-  
+    .limit(6);
+  if (error) throw error;
+  return data;
+};
+
+const fetchAllProducts = async () => {
+  const { data, error } = await supabase
+    .from('products')
+    .select('id, name, price, images, category')
+    .limit(8);
   if (error) throw error;
   return data;
 };
@@ -24,6 +34,33 @@ const Index = () => {
     queryKey: ['featured-products'],
     queryFn: fetchFeaturedProducts,
   });
+
+  const { data: galleryProducts } = useQuery({
+    queryKey: ['gallery-products'],
+    queryFn: fetchAllProducts,
+  });
+
+  const [activeSlide, setActiveSlide] = useState(0);
+  const heroItems = galleryProducts?.filter(p => p.images?.[0]) || [];
+
+  const nextSlide = useCallback(() => {
+    if (heroItems.length > 0) {
+      setActiveSlide((prev) => (prev + 1) % heroItems.length);
+    }
+  }, [heroItems.length]);
+
+  const prevSlide = useCallback(() => {
+    if (heroItems.length > 0) {
+      setActiveSlide((prev) => (prev - 1 + heroItems.length) % heroItems.length);
+    }
+  }, [heroItems.length]);
+
+  // Auto-rotate gallery
+  useEffect(() => {
+    if (heroItems.length <= 1) return;
+    const interval = setInterval(nextSlide, 4000);
+    return () => clearInterval(interval);
+  }, [nextSlide, heroItems.length]);
 
   const categories = [
     {
@@ -47,69 +84,175 @@ const Index = () => {
   ];
 
   const features = [
-    {
-      icon: Shield,
-      title: 'Premium Quality',
-      description: 'Only the finest materials for lasting protection',
-    },
-    {
-      icon: Truck,
-      title: 'Fast Delivery',
-      description: 'Quick shipping across Tanzania',
-    },
-    {
-      icon: Award,
-      title: 'Warranty Included',
-      description: 'Every product backed by our guarantee',
-    },
+    { icon: Shield, title: 'Premium Quality', description: 'Only the finest materials for lasting protection' },
+    { icon: Truck, title: 'Fast Delivery', description: 'Quick shipping across Tanzania' },
+    { icon: Award, title: 'Warranty Included', description: 'Every product backed by our guarantee' },
   ];
+
+  const currentProduct = heroItems[activeSlide];
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
-      {/* Hero Section */}
-      <section className="relative bg-gradient-hero text-primary-foreground">
-        <div className="container py-24 md:py-32">
-          <div className="max-w-2xl space-y-6 animate-fade-in">
-            <span className="text-gold text-sm font-semibold uppercase tracking-widest">
-              Premium iPhone Accessories
-            </span>
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight">
-              Protect Your iPhone with{' '}
-              <span className="text-gradient-gold">Premium Glass</span>
-            </h1>
-            <p className="text-lg text-primary-foreground/70 max-w-lg">
-              Discover our collection of high-quality back glass, screen protectors, and stylish covers designed for your iPhone.
-            </p>
-            <div className="flex flex-wrap gap-4 pt-4">
-              <Button asChild variant="hero-gold" size="xl">
-                <Link to="/shop">
-                  Shop Now
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline-white" size="xl">
-                <Link to="/shop?category=back-glass">
-                  Explore Back Glass
-                </Link>
-              </Button>
+
+      {/* ═══ LUXURY HERO ═══ */}
+      <section className="relative min-h-[85vh] flex items-center overflow-hidden">
+        {/* Background image */}
+        <img
+          src={heroBg}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+          aria-hidden="true"
+        />
+        {/* Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/70 to-primary/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-primary via-transparent to-primary/30" />
+
+        <div className="container relative z-10 py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Left — Text */}
+            <div className="space-y-8 animate-fade-in">
+              <div className="space-y-2">
+                <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold/10 border border-gold/20 text-gold text-xs font-semibold uppercase tracking-[0.2em]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
+                  New Collection Available
+                </span>
+              </div>
+
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.08] text-primary-foreground">
+                Protect Your
+                <br />
+                iPhone with
+                <br />
+                <span className="text-gradient-gold">Premium Glass</span>
+              </h1>
+
+              <p className="text-lg text-primary-foreground/60 max-w-md leading-relaxed">
+                Discover our curated collection of high-quality back glass, screen protectors, and stylish covers.
+              </p>
+
+              <div className="flex flex-wrap gap-4 pt-2">
+                <Button asChild variant="hero-gold" size="xl">
+                  <Link to="/shop">
+                    Shop Now
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline-white" size="xl">
+                  <Link to="/shop?category=back-glass">
+                    Explore Back Glass
+                  </Link>
+                </Button>
+              </div>
+
+              {/* Stats */}
+              <div className="flex gap-10 pt-4">
+                {[
+                  { value: '500+', label: 'Happy Customers' },
+                  { value: '50+', label: 'Products' },
+                  { value: '24h', label: 'Delivery' },
+                ].map((stat) => (
+                  <div key={stat.label}>
+                    <p className="text-2xl font-bold text-gold">{stat.value}</p>
+                    <p className="text-xs text-primary-foreground/40 uppercase tracking-wider mt-0.5">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right — Dynamic Product Gallery */}
+            <div className="relative hidden lg:block animate-fade-in" style={{ animationDelay: '0.3s', animationFillMode: 'backwards' }}>
+              {heroItems.length > 0 && currentProduct ? (
+                <div className="relative">
+                  {/* Main showcase card */}
+                  <div className="relative rounded-2xl overflow-hidden border border-gold/20 shadow-[0_20px_60px_-15px_hsl(43_74%_49%/0.2)] bg-card/5 backdrop-blur-sm">
+                    <Link to={`/product/${currentProduct.id}`} className="block">
+                      <div className="aspect-[4/5] relative overflow-hidden">
+                        <img
+                          key={activeSlide}
+                          src={currentProduct.images?.[0] || '/placeholder.svg'}
+                          alt={currentProduct.name}
+                          className="w-full h-full object-cover animate-fade-in"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent" />
+                      </div>
+                      <div className="absolute bottom-0 left-0 right-0 p-6">
+                        <span className="text-xs text-gold font-semibold uppercase tracking-wider">
+                          {currentProduct.category.replace('-', ' ')}
+                        </span>
+                        <h3 className="text-xl font-bold text-primary-foreground mt-1 leading-tight">
+                          {currentProduct.name}
+                        </h3>
+                        <p className="text-lg font-bold text-gold mt-2">
+                          TSh {Number(currentProduct.price).toLocaleString()}
+                        </p>
+                      </div>
+                    </Link>
+                  </div>
+
+                  {/* Gallery navigation */}
+                  <div className="flex items-center justify-between mt-4">
+                    <div className="flex gap-1.5">
+                      {heroItems.map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setActiveSlide(i)}
+                          className={`h-1 rounded-full transition-all duration-500 ${
+                            i === activeSlide ? 'w-8 bg-gold' : 'w-3 bg-primary-foreground/20'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={prevSlide}
+                        className="w-9 h-9 rounded-full border border-primary-foreground/20 flex items-center justify-center text-primary-foreground/60 hover:border-gold hover:text-gold transition-colors"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={nextSlide}
+                        className="w-9 h-9 rounded-full border border-primary-foreground/20 flex items-center justify-center text-primary-foreground/60 hover:border-gold hover:text-gold transition-colors"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Floating thumbnails */}
+                  <div className="absolute -left-6 top-1/2 -translate-y-1/2 space-y-3 hidden xl:block">
+                    {heroItems.slice(0, 4).map((item, i) => (
+                      <button
+                        key={item.id}
+                        onClick={() => setActiveSlide(i)}
+                        className={`w-16 h-16 rounded-xl overflow-hidden border-2 transition-all duration-300 shadow-lg ${
+                          i === activeSlide ? 'border-gold scale-110' : 'border-primary-foreground/10 opacity-60 hover:opacity-100'
+                        }`}
+                      >
+                        <img src={item.images?.[0] || '/placeholder.svg'} alt="" className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="aspect-[4/5] rounded-2xl bg-secondary/20 animate-pulse" />
+              )}
             </div>
           </div>
         </div>
-        
-        {/* Decorative element */}
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-gold/5 to-transparent pointer-events-none" />
+
+        {/* Bottom shimmer line */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
       </section>
 
-      {/* Features */}
+      {/* ═══ FEATURES ═══ */}
       <section className="py-16 border-b border-border">
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {features.map((feature) => (
-              <div key={feature.title} className="flex items-start gap-4 p-6 rounded-lg bg-secondary/50">
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gold/10 flex items-center justify-center">
-                  <feature.icon className="h-6 w-6 text-gold" />
+              <div key={feature.title} className="flex items-start gap-4 p-6 rounded-xl bg-secondary/50 border border-border/50 hover:border-gold/20 transition-colors">
+                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gold/10 border border-gold/15 flex items-center justify-center">
+                  <feature.icon className="h-5 w-5 text-gold" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-foreground">{feature.title}</h3>
@@ -121,22 +264,23 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Categories */}
+      {/* ═══ CATEGORIES ═══ */}
       <section className="py-20">
         <div className="container">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Shop by Category</h2>
+            <span className="text-gold text-xs font-semibold uppercase tracking-[0.2em]">Collections</span>
+            <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">Shop by Category</h2>
             <p className="text-muted-foreground max-w-lg mx-auto">
               Find the perfect protection for your iPhone from our curated collections
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {categories.map((category) => (
               <Link
                 key={category.slug}
                 to={`/shop?category=${category.slug}`}
-                className="group relative overflow-hidden rounded-xl aspect-[4/5] hover-lift"
+                className="group relative overflow-hidden rounded-2xl aspect-[4/5] hover-lift"
               >
                 <img
                   src={category.image}
@@ -157,24 +301,25 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Featured Products */}
+      {/* ═══ FEATURED PRODUCTS ═══ */}
       <section className="py-20 bg-secondary/30">
         <div className="container">
           <div className="flex items-center justify-between mb-12">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-2">Featured Products</h2>
+              <span className="text-gold text-xs font-semibold uppercase tracking-[0.2em]">Bestsellers</span>
+              <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-1">Featured Products</h2>
               <p className="text-muted-foreground">Our most popular items</p>
             </div>
             <Button asChild variant="outline">
               <Link to="/shop">View All</Link>
             </Button>
           </div>
-          
+
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="bg-card rounded-lg overflow-hidden border border-border animate-pulse">
-                  <div className="aspect-square bg-muted" />
+                <div key={i} className="bg-card rounded-xl overflow-hidden border border-border animate-pulse">
+                  <div className="aspect-[4/5] bg-muted" />
                   <div className="p-4 space-y-3">
                     <div className="h-3 bg-muted rounded w-1/3" />
                     <div className="h-4 bg-muted rounded w-2/3" />
@@ -208,13 +353,15 @@ const Index = () => {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-20 bg-gradient-hero text-primary-foreground">
-        <div className="container text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+      {/* ═══ CTA ═══ */}
+      <section className="relative py-24 overflow-hidden">
+        <img src={heroBg} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />
+        <div className="absolute inset-0 bg-primary/80" />
+        <div className="container relative z-10 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-primary-foreground">
             Ready to Protect Your iPhone?
           </h2>
-          <p className="text-primary-foreground/70 max-w-lg mx-auto mb-8">
+          <p className="text-primary-foreground/60 max-w-lg mx-auto mb-8">
             Join thousands of satisfied customers who trust iTechGlass for premium iPhone protection.
           </p>
           <Button asChild variant="hero-gold" size="xl">
