@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Loader2, Smartphone, Phone, Mail, Lock, ArrowRight, Sparkles, User } from 'lucide-react';
+import logo from '@/assets/logo.png';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -149,18 +150,19 @@ const Auth = () => {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,hsl(var(--gold)/0.15),transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,hsl(var(--gold)/0.1),transparent_40%)]" />
         
-        <div className="relative z-10 flex flex-col justify-center px-16 text-primary-foreground">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-14 h-14 rounded-2xl bg-gold/20 backdrop-blur-sm flex items-center justify-center border border-gold/30">
-              <Smartphone className="h-7 w-7 text-gold" />
+          <div className="relative z-10 flex flex-col justify-center px-16 text-primary-foreground">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="relative">
+                <div className="absolute inset-0 -m-3 rounded-full bg-gold/10 blur-xl" />
+                <img src={logo} alt="iTechGlass" className="relative h-14 drop-shadow-[0_2px_12px_hsl(43_74%_49%/0.3)]" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight">
+                  iTech<span className="text-gold">Glass</span>
+                </h1>
+                <p className="text-sm text-primary-foreground/60">Premium Protection · Smart Price</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">
-                iTech<span className="text-gold">Glass</span>
-              </h1>
-              <p className="text-sm text-primary-foreground/60">Premium Protection</p>
-            </div>
-          </div>
           
           <h2 className="text-4xl md:text-5xl font-bold leading-tight mb-6">
             Elevate Your iPhone
@@ -199,13 +201,14 @@ const Auth = () => {
         <div className="lg:hidden bg-gradient-hero px-6 pt-safe-top pb-8 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(var(--gold)/0.2),transparent_60%)]" />
           <div className="relative z-10 flex flex-col items-center pt-8">
-            <div className="w-14 h-14 rounded-2xl bg-gold/20 backdrop-blur-sm flex items-center justify-center mb-3 border border-gold/30">
-              <Smartphone className="h-7 w-7 text-gold" />
+            <div className="relative mb-4">
+              <div className="absolute inset-0 -m-3 rounded-full bg-gold/10 blur-xl" />
+              <img src={logo} alt="iTechGlass" className="relative h-14 drop-shadow-[0_2px_12px_hsl(43_74%_49%/0.3)]" />
             </div>
             <h1 className="text-2xl font-bold text-primary-foreground">
               iTech<span className="text-gold">Glass</span>
             </h1>
-            <p className="text-sm text-primary-foreground/60 mt-1">Premium Protection</p>
+            <p className="text-xs text-primary-foreground/50 mt-1 uppercase tracking-[0.2em] font-medium">Premium Protection · Smart Price</p>
           </div>
         </div>
 
