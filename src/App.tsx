@@ -16,6 +16,7 @@ import OrderDetail from "./pages/OrderDetail";
 import TrackOrder from "./pages/TrackOrder";
 import DriverDashboard from "./pages/DriverDashboard";
 import Auth from "./pages/Auth";
+import Welcome from "./pages/Welcome";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import AdminLogin from "./pages/AdminLogin";
@@ -37,6 +38,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Auth />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/welcome" element={<Welcome />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/home" element={<ProtectedRoute><Index /></ProtectedRoute>} />
