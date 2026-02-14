@@ -4,6 +4,7 @@ import {
   Smartphone, Sparkles, ShoppingBag, ArrowRight, ArrowLeft,
   CheckCircle, Shield, Truck, MessageCircle, Search, Zap, Star, Gift
 } from 'lucide-react';
+import logo from '@/assets/logo.png';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { Progress } from '@/components/ui/progress';
@@ -143,12 +144,7 @@ const Welcome = () => {
       <div className="bg-gradient-hero px-6 pt-safe-top pb-10 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(var(--gold)/0.2),transparent_60%)]" />
         <div className="relative z-10 flex flex-col items-center pt-8">
-          <div className="w-14 h-14 rounded-2xl bg-gold/20 backdrop-blur-sm flex items-center justify-center mb-3 border border-gold/30 animate-fade-in">
-            <Smartphone className="h-7 w-7 text-gold" />
-          </div>
-          <h1 className="text-xl font-bold text-primary-foreground animate-fade-in" style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}>
-            iTech<span className="text-gold">Glass</span>
-          </h1>
+          <img src={logo} alt="iTechGlass" className="h-12 mb-3 animate-fade-in" />
         </div>
       </div>
 
