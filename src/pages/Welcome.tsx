@@ -4,7 +4,7 @@ import {
   Smartphone, Sparkles, ShoppingBag, ArrowRight, ArrowLeft,
   CheckCircle, Shield, Truck, MessageCircle, Search, Zap, Star, Gift
 } from 'lucide-react';
-import logo from '@/assets/logo.png';
+
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import WhatsAppButton from '@/components/WhatsAppButton';
@@ -150,10 +150,10 @@ const Welcome = () => {
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
 
         <div className="relative z-10 flex flex-col items-center pt-10 pb-2">
-          {/* Logo with refined glow backdrop */}
+          {/* Brand with refined glow backdrop */}
           <div className="relative mb-5 animate-fade-in">
             <div className="absolute inset-0 -m-4 rounded-full bg-gold/5 blur-2xl" />
-            <img src={logo} alt="iTechGlass" className="relative h-16 drop-shadow-[0_2px_12px_hsl(43_74%_49%/0.3)]" />
+            <span className="relative text-3xl font-bold tracking-tight text-primary-foreground drop-shadow-[0_2px_12px_hsl(43_74%_49%/0.3)]">iTech<span className="text-gold">Glass</span></span>
           </div>
           {/* Tagline */}
           <p className="text-primary-foreground/50 text-[11px] font-medium uppercase tracking-[0.25em] animate-fade-in" style={{ animationDelay: '0.15s', animationFillMode: 'backwards' }}>
