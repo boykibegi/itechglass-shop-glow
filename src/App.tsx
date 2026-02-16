@@ -25,6 +25,7 @@ import AdminProducts from "./pages/admin/AdminProducts";
 import AdminOrders from "./pages/admin/AdminOrders";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import { SessionTimeoutDialog } from "./components/SessionTimeoutDialog";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <SessionTimeoutDialog />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Auth />} />
