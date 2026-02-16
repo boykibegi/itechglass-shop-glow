@@ -20,6 +20,7 @@ import Welcome from "./pages/Welcome";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import AdminLogin from "./pages/AdminLogin";
+import TrackOrderPublic from "./pages/TrackOrderPublic";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminOrders from "./pages/admin/AdminOrders";
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/welcome" element={<Welcome />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/track-order" element={<TrackOrderPublic />} />
             <Route path="/home" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/shop" element={<ProtectedRoute><Shop /></ProtectedRoute>} />
             <Route path="/product/:id" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
