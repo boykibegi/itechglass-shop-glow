@@ -10,13 +10,16 @@ interface ProductCardProps {
   name: string;
   price: number;
   image: string;
+  images?: string[];
   category: string;
   compatibleModels?: string[];
 }
 
-const ProductCard = ({ id, name, price, image, category, compatibleModels }: ProductCardProps) => {
+const ProductCard = ({ id, name, price, image, images, category, compatibleModels }: ProductCardProps) => {
   const { addItem } = useCart();
   const [quickViewOpen, setQuickViewOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const allImages = images && images.length > 0 ? images : [image];
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -56,9 +59,9 @@ const ProductCard = ({ id, name, price, image, category, compatibleModels }: Pro
       <Link to={`/product/${id}`} className="group block">
         <div className="bg-card rounded-xl overflow-hidden border border-border/50 hover:border-gold/30 transition-all duration-300 hover:shadow-lg">
           {/* Image */}
-          <div className="aspect-[4/5] bg-secondary relative overflow-hidden">
+          <div className="aspect-square bg-secondary relative overflow-hidden">
             <img
-              src={image || '/placeholder.svg'}
+              src={allImages[currentImageIndex] || '/placeholder.svg'}
               alt={name}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
@@ -74,6 +77,18 @@ const ProductCard = ({ id, name, price, image, category, compatibleModels }: Pro
             >
               <Eye className="h-4 w-4" />
             </button>
+            {/* Image dots */}
+            {allImages.length > 1 && (
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                {allImages.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentImageIndex(idx); }}
+                    className={`w-1.5 h-1.5 rounded-full transition-all ${idx === currentImageIndex ? 'bg-gold w-3' : 'bg-background/60'}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Content */}

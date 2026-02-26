@@ -241,6 +241,7 @@ const Shop = () => {
                   name={product.name}
                   price={Number(product.price)}
                   image={product.images?.[0] || '/placeholder.svg'}
+                  images={product.images || []}
                   category={product.category}
                   compatibleModels={product.compatible_models || []}
                 />
