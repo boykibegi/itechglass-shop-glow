@@ -256,7 +256,7 @@ const ProductDetail = () => {
           </div>
 
           {/* Customer Reviews */}
-          <ProductReviews />
+          <ProductReviews productId={product.id} />
         </div>
       </main>
 

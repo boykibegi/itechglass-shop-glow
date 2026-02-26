@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Package, Clock, CheckCircle, Truck, XCircle, MapPin, Phone, Mail, CreditCard, Navigation } from 'lucide-react';
+import { ArrowLeft, Package, Clock, CheckCircle, Truck, XCircle, MapPin, Phone, Mail, CreditCard, Navigation, Star } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import Header from '@/components/layout/Header';
@@ -12,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
 import { format } from 'date-fns';
+import ReviewForm from '@/components/ReviewForm';
 
 interface OrderItem {
   name: string;
@@ -19,6 +21,7 @@ interface OrderItem {
   price: number;
   quantity: number;
   selectedModel?: string;
+  productId?: string;
 }
 
 const statusSteps = ['pending', 'processing', 'shipped', 'delivered'];
@@ -34,6 +37,7 @@ const statusConfig: Record<string, { icon: React.ReactNode; label: string }> = {
 const OrderDetail = () => {
   const { orderId } = useParams<{ orderId: string }>();
   const { user } = useAuth();
+  const [reviewedProducts, setReviewedProducts] = useState<Set<string>>(new Set());
 
   const { data: order, isLoading, error } = useQuery({
     queryKey: ['order', orderId],
@@ -51,6 +55,20 @@ const OrderDetail = () => {
       return data;
     },
     enabled: !!orderId && !!user?.email,
+  });
+
+  // Fetch existing reviews for this order
+  const { data: existingReviews } = useQuery({
+    queryKey: ['orderReviews', orderId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('reviews')
+        .select('product_id')
+        .eq('order_id', orderId!);
+      if (error) throw error;
+      return new Set((data || []).map((r) => r.product_id));
+    },
+    enabled: !!orderId && order?.order_status === 'delivered',
   });
 
   const formatPrice = (price: number) => {
@@ -272,6 +290,44 @@ const OrderDetail = () => {
                     Track Live Delivery
                   </Link>
                 </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Review Section - Only for delivered orders */}
+          {order.order_status === 'delivered' && (
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Star className="h-5 w-5 text-gold" />
+                  Leave a Review
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {items.map((item, index) => {
+                  const pid = item.productId;
+                  const alreadyReviewed = pid && (existingReviews?.has(pid) || reviewedProducts.has(pid));
+
+                  if (!pid) return null;
+
+                  return (
+                    <div key={index} className="border-b border-border last:border-0 pb-6 last:pb-0">
+                      {alreadyReviewed ? (
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <span>You've reviewed <strong>{item.name}</strong></span>
+                        </div>
+                      ) : (
+                        <ReviewForm
+                          orderId={order.id}
+                          productId={pid}
+                          productName={item.name}
+                          onSuccess={() => setReviewedProducts(prev => new Set(prev).add(pid))}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
               </CardContent>
             </Card>
           )}
