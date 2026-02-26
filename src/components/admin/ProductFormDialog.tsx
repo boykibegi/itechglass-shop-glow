@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Loader2, Upload, X } from 'lucide-react';
+import { Loader2, Upload, X, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Dialog,
@@ -81,6 +81,7 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
   });
   const [images, setImages] = useState<string[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [generatingDescription, setGeneratingDescription] = useState(false);
 
   useEffect(() => {
     if (product) {
@@ -282,7 +283,50 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="description">Description</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={generatingDescription || images.length === 0}
+                onClick={async () => {
+                  if (images.length === 0) {
+                    toast.error('Upload at least one image first');
+                    return;
+                  }
+                  setGeneratingDescription(true);
+                  try {
+                    const res = await supabase.functions.invoke('generate-product-description', {
+                      body: {
+                        imageUrl: images[0],
+                        category: formData.category,
+                        productName: formData.name || undefined,
+                      },
+                    });
+                    if (res.error) throw res.error;
+                    const desc = res.data?.description;
+                    if (desc) {
+                      setFormData((prev) => ({ ...prev, description: desc }));
+                      toast.success('Description generated!');
+                    }
+                  } catch (err) {
+                    console.error(err);
+                    toast.error('Failed to generate description');
+                  } finally {
+                    setGeneratingDescription(false);
+                  }
+                }}
+                className="gap-1.5"
+              >
+                {generatingDescription ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Sparkles className="h-3.5 w-3.5" />
+                )}
+                {generatingDescription ? 'Generating...' : 'AI Generate'}
+              </Button>
+            </div>
             <Textarea
               id="description"
               value={formData.description}
@@ -291,6 +335,9 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
               rows={3}
               maxLength={2000}
             />
+            {images.length === 0 && (
+              <p className="text-xs text-muted-foreground">Upload an image first to enable AI description generation</p>
+            )}
             {validationErrors.description && <p className="text-sm text-destructive">{validationErrors.description}</p>}
           </div>
 
