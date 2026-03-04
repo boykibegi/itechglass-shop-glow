@@ -32,9 +32,9 @@ serve(async (req) => {
 
     const categoryDesc = categoryLabels[category] || category;
 
-    const systemPrompt = `You are a professional e-commerce copywriter for a premium phone accessories store called iTech Glass. Write compelling, concise product descriptions (2-3 sentences max). Focus on quality, protection, and style. Mention material quality, compatibility, and key features. Keep it professional and luxurious in tone. Do NOT use markdown formatting. Do NOT include the product name in the description.`;
+    const systemPrompt = `You are a professional e-commerce copywriter for a premium phone accessories store called iTech Glass. You will be given a product image and its category. Return a JSON object with two fields: "name" (a short, catchy product name, max 10 words) and "description" (a compelling 2-3 sentence description). Focus on quality, protection, and style. Keep it professional and luxurious in tone. Do NOT use markdown formatting. Return ONLY valid JSON, no extra text.`;
 
-    const userPrompt = `Write a product description for this ${categoryDesc}${productName ? ` named "${productName}"` : ""}. Look at the product image and describe its key visual features, color, material, and selling points.`;
+    const userPrompt = `Generate a product name and description for this ${categoryDesc}${productName ? ` (current name: "${productName}")` : ""}. Look at the product image and describe its key visual features, color, material, and selling points.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -74,9 +74,20 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    const description = data.choices?.[0]?.message?.content?.trim() || "";
+    const raw = data.choices?.[0]?.message?.content?.trim() || "";
 
-    return new Response(JSON.stringify({ description }), {
+    let name = "";
+    let description = "";
+    try {
+      const jsonStr = raw.replace(/^```json?\s*/i, "").replace(/```\s*$/, "").trim();
+      const parsed = JSON.parse(jsonStr);
+      name = parsed.name || "";
+      description = parsed.description || "";
+    } catch {
+      description = raw;
+    }
+
+    return new Response(JSON.stringify({ name, description }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
