@@ -305,10 +305,15 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
                       },
                     });
                     if (res.error) throw res.error;
-                    const desc = res.data?.description;
-                    if (desc) {
-                      setFormData((prev) => ({ ...prev, description: desc }));
-                      toast.success('Description generated!');
+                    const { name: aiName, description: aiDesc } = res.data || {};
+                    if (aiName || aiDesc) {
+                      setFormData((prev) => ({
+                        ...prev,
+                        ...(aiName && !prev.name ? { name: aiName } : {}),
+                        ...(aiName && prev.name ? { name: aiName } : {}),
+                        ...(aiDesc ? { description: aiDesc } : {}),
+                      }));
+                      toast.success('Name & description generated!');
                     }
                   } catch (err) {
                     console.error(err);
