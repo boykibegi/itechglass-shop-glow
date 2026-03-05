@@ -83,6 +83,30 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
   const [uploadingImage, setUploadingImage] = useState(false);
   const [generatingDescription, setGeneratingDescription] = useState(false);
 
+  const generateFromAI = async (imageUrl: string, category: string) => {
+    setGeneratingDescription(true);
+    try {
+      const res = await supabase.functions.invoke('generate-product-description', {
+        body: { imageUrl, category },
+      });
+      if (res.error) throw res.error;
+      const { name: aiName, description: aiDesc } = res.data || {};
+      if (aiName || aiDesc) {
+        setFormData((prev) => ({
+          ...prev,
+          ...(aiName ? { name: aiName } : {}),
+          ...(aiDesc ? { description: aiDesc } : {}),
+        }));
+        toast.success('Name & description generated!');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to generate description');
+    } finally {
+      setGeneratingDescription(false);
+    }
+  };
+
   useEffect(() => {
     if (product) {
       setFormData({
@@ -168,7 +192,13 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
         .from('product-images')
         .getPublicUrl(fileName);
 
-      setImages((prev) => [...prev, publicUrl]);
+      const newImages = [...images, publicUrl];
+      setImages(newImages);
+
+      // Auto-generate name & description after first image upload
+      if (newImages.length === 1) {
+        generateFromAI(publicUrl, formData.category);
+      }
     } catch (error) {
       toast.error('Failed to upload image');
     } finally {
@@ -290,37 +320,12 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
                 variant="outline"
                 size="sm"
                 disabled={generatingDescription || images.length === 0}
-                onClick={async () => {
+                onClick={() => {
                   if (images.length === 0) {
                     toast.error('Upload at least one image first');
                     return;
                   }
-                  setGeneratingDescription(true);
-                  try {
-                    const res = await supabase.functions.invoke('generate-product-description', {
-                      body: {
-                        imageUrl: images[0],
-                        category: formData.category,
-                        productName: formData.name || undefined,
-                      },
-                    });
-                    if (res.error) throw res.error;
-                    const { name: aiName, description: aiDesc } = res.data || {};
-                    if (aiName || aiDesc) {
-                      setFormData((prev) => ({
-                        ...prev,
-                        ...(aiName && !prev.name ? { name: aiName } : {}),
-                        ...(aiName && prev.name ? { name: aiName } : {}),
-                        ...(aiDesc ? { description: aiDesc } : {}),
-                      }));
-                      toast.success('Name & description generated!');
-                    }
-                  } catch (err) {
-                    console.error(err);
-                    toast.error('Failed to generate description');
-                  } finally {
-                    setGeneratingDescription(false);
-                  }
+                  generateFromAI(images[0], formData.category);
                 }}
                 className="gap-1.5"
               >
