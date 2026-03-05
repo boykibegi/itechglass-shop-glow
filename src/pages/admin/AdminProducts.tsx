@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Pencil, Trash2, Loader2, Search } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, Search, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import {
   Table,
   TableBody,
@@ -36,6 +37,7 @@ const AdminProducts = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [batchProgress, setBatchProgress] = useState<{ current: number; total: number } | null>(null);
 
   const { data: products, isLoading } = useQuery({
     queryKey: ['admin-products'],
@@ -49,6 +51,39 @@ const AdminProducts = () => {
       return data as Product[];
     },
   });
+
+  const batchGenerate = useCallback(async () => {
+    if (!products || products.length === 0) return;
+    const toProcess = products.filter(p => p.images && p.images.length > 0);
+    setBatchProgress({ current: 0, total: toProcess.length });
+
+    for (let i = 0; i < toProcess.length; i++) {
+      const p = toProcess[i];
+      try {
+        const res = await supabase.functions.invoke('generate-product-description', {
+          body: { imageUrl: p.images![0], category: p.category },
+        });
+        if (res.error) {
+          console.error(`Failed for ${p.id}:`, res.error);
+        } else {
+          const { name, description } = res.data || {};
+          if (name || description) {
+            await supabase.from('products').update({
+              ...(name ? { name } : {}),
+              ...(description ? { description } : {}),
+            }).eq('id', p.id);
+          }
+        }
+      } catch (err) {
+        console.error(`Error processing ${p.id}:`, err);
+      }
+      setBatchProgress({ current: i + 1, total: toProcess.length });
+    }
+
+    queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+    toast.success(`Generated names & descriptions for ${toProcess.length} products!`);
+    setBatchProgress(null);
+  }, [products, queryClient]);
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -89,11 +124,30 @@ const AdminProducts = () => {
             <h1 className="text-3xl font-bold">Products</h1>
             <p className="text-muted-foreground">Manage your product inventory</p>
           </div>
-          <Button variant="gold" onClick={() => setIsFormOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Product
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={batchGenerate}
+              disabled={!!batchProgress || isLoading}
+            >
+              <Sparkles className="mr-2 h-4 w-4" />
+              {batchProgress ? `Generating ${batchProgress.current}/${batchProgress.total}...` : 'AI Generate All'}
+            </Button>
+            <Button variant="gold" onClick={() => setIsFormOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Product
+            </Button>
+          </div>
         </div>
+
+        {batchProgress && (
+          <div className="space-y-2">
+            <Progress value={(batchProgress.current / batchProgress.total) * 100} />
+            <p className="text-sm text-muted-foreground text-center">
+              Processing {batchProgress.current} of {batchProgress.total} products...
+            </p>
+          </div>
+        )}
 
         <div className="flex items-center gap-4">
           <div className="relative flex-1 max-w-sm">
