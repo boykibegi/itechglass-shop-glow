@@ -62,24 +62,43 @@ const Index = () => {
     return () => clearInterval(interval);
   }, [nextSlide, heroItems.length]);
 
+  const { data: categoryImages } = useQuery({
+    queryKey: ['category-images'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('category, images')
+        .not('images', 'is', null)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      const map: Record<string, string> = {};
+      for (const p of data || []) {
+        if (!map[p.category] && p.images?.[0]) {
+          map[p.category] = p.images[0];
+        }
+      }
+      return map;
+    },
+  });
+
   const categories = [
     {
       name: 'Back Glass',
       slug: 'back-glass',
       description: 'Premium replacement glass for iPhone backs',
-      image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop',
+      image: categoryImages?.['back-glass'] || '/placeholder.svg',
     },
     {
       name: 'Screen Glass',
       slug: 'screen-glass',
       description: 'Crystal-clear screen protectors',
-      image: 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400&h=400&fit=crop',
+      image: categoryImages?.['screen-glass'] || '/placeholder.svg',
     },
     {
       name: 'Covers',
       slug: 'covers',
       description: 'Stylish and protective cases',
-      image: 'https://images.unsplash.com/photo-1609081219090-a6d81d3085bf?w=400&h=400&fit=crop',
+      image: categoryImages?.['covers'] || '/placeholder.svg',
     },
   ];
 
