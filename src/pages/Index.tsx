@@ -8,6 +8,7 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import ProductCard from '@/components/ProductCard';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import { useLanguage } from '@/hooks/useLanguage';
 import heroBg from '@/assets/hero-bg.jpg';
 
 const fetchFeaturedProducts = async () => {
@@ -30,6 +31,8 @@ const fetchAllProducts = async () => {
 };
 
 const Index = () => {
+  const { t } = useLanguage();
+
   const { data: featuredProducts, isLoading } = useQuery({
     queryKey: ['featured-products'],
     queryFn: fetchFeaturedProducts,
@@ -55,7 +58,6 @@ const Index = () => {
     }
   }, [heroItems.length]);
 
-  // Auto-rotate gallery
   useEffect(() => {
     if (heroItems.length <= 1) return;
     const interval = setInterval(nextSlide, 4000);
@@ -83,29 +85,29 @@ const Index = () => {
 
   const categories = [
     {
-      name: 'Back Glass',
+      name: t('nav.backGlass'),
       slug: 'back-glass',
-      description: 'Premium replacement glass for iPhone backs',
+      description: t('category.backGlassDesc'),
       image: categoryImages?.['back-glass'] || '/placeholder.svg',
     },
     {
-      name: 'Screen Glass',
+      name: t('nav.screenGlass'),
       slug: 'screen-glass',
-      description: 'Crystal-clear screen protectors',
+      description: t('category.screenGlassDesc'),
       image: categoryImages?.['screen-glass'] || '/placeholder.svg',
     },
     {
-      name: 'Covers',
+      name: t('nav.covers'),
       slug: 'covers',
-      description: 'Stylish and protective cases',
+      description: t('category.coversDesc'),
       image: categoryImages?.['covers'] || '/placeholder.svg',
     },
   ];
 
   const features = [
-    { icon: Shield, title: 'Premium Quality', description: 'Only the finest materials for lasting protection' },
-    { icon: Truck, title: 'Fast Delivery', description: 'Quick shipping across Tanzania' },
-    { icon: Award, title: 'Warranty Included', description: 'Every product backed by our guarantee' },
+    { icon: Shield, title: t('feature.premiumQuality'), description: t('feature.premiumQualityDesc') },
+    { icon: Truck, title: t('feature.fastDelivery'), description: t('feature.fastDeliveryDesc') },
+    { icon: Award, title: t('feature.warrantyIncluded'), description: t('feature.warrantyIncludedDesc') },
   ];
 
   const currentProduct = heroItems[activeSlide];
@@ -116,60 +118,51 @@ const Index = () => {
 
       {/* ═══ LUXURY HERO ═══ */}
       <section className="relative min-h-[85vh] flex items-center overflow-hidden">
-        {/* Background image */}
-        <img
-          src={heroBg}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-          aria-hidden="true"
-        />
-        {/* Overlays */}
+        <img src={heroBg} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />
         <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/70 to-primary/40" />
         <div className="absolute inset-0 bg-gradient-to-t from-primary via-transparent to-primary/30" />
 
         <div className="container relative z-10 py-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            {/* Left — Text */}
             <div className="space-y-8 animate-fade-in">
               <div className="space-y-2">
                 <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold/10 border border-gold/20 text-gold text-xs font-semibold uppercase tracking-[0.2em]">
                   <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
-                  New Collection Available
+                  {t('hero.badge')}
                 </span>
               </div>
 
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.08] text-primary-foreground">
-                Protect Your
+                {t('hero.title1')}
                 <br />
-                iPhone with
+                {t('hero.title2')}
                 <br />
-                <span className="text-gradient-gold">Premium Glass</span>
+                <span className="text-gradient-gold">{t('hero.title3')}</span>
               </h1>
 
               <p className="text-lg text-primary-foreground/60 max-w-md leading-relaxed">
-                Discover our curated collection of high-quality back glass, screen protectors, and stylish covers.
+                {t('hero.description')}
               </p>
 
               <div className="flex flex-wrap gap-4 pt-2">
                 <Button asChild variant="hero-gold" size="xl">
                   <Link to="/shop">
-                    Shop Now
+                    {t('hero.shopNow')}
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
                 <Button asChild variant="outline-white" size="xl">
                   <Link to="/shop?category=back-glass">
-                    Explore Back Glass
+                    {t('hero.exploreBackGlass')}
                   </Link>
                 </Button>
               </div>
 
-              {/* Stats */}
               <div className="flex gap-10 pt-4">
                 {[
-                  { value: '500+', label: 'Happy Customers' },
-                  { value: '50+', label: 'Products' },
-                  { value: '24h', label: 'Delivery' },
+                  { value: '500+', label: t('hero.happyCustomers') },
+                  { value: '50+', label: t('hero.products') },
+                  { value: '24h', label: t('hero.delivery') },
                 ].map((stat) => (
                   <div key={stat.label}>
                     <p className="text-2xl font-bold text-gold">{stat.value}</p>
@@ -183,16 +176,10 @@ const Index = () => {
             <div className="relative hidden lg:block animate-fade-in" style={{ animationDelay: '0.3s', animationFillMode: 'backwards' }}>
               {heroItems.length > 0 && currentProduct ? (
                 <div className="relative">
-                  {/* Main showcase card */}
                   <div className="relative rounded-2xl overflow-hidden border border-gold/20 shadow-[0_20px_60px_-15px_hsl(43_74%_49%/0.2)] bg-card/5 backdrop-blur-sm">
                     <Link to={`/product/${currentProduct.id}`} className="block">
                       <div className="aspect-[4/5] relative overflow-hidden">
-                        <img
-                          key={activeSlide}
-                          src={currentProduct.images?.[0] || '/placeholder.svg'}
-                          alt={currentProduct.name}
-                          className="w-full h-full object-cover animate-fade-in"
-                        />
+                        <img key={activeSlide} src={currentProduct.images?.[0] || '/placeholder.svg'} alt={currentProduct.name} className="w-full h-full object-cover animate-fade-in" />
                         <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent" />
                       </div>
                       <div className="absolute bottom-0 left-0 right-0 p-6">
@@ -209,45 +196,25 @@ const Index = () => {
                     </Link>
                   </div>
 
-                  {/* Gallery navigation */}
                   <div className="flex items-center justify-between mt-4">
                     <div className="flex gap-1.5">
                       {heroItems.map((_, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setActiveSlide(i)}
-                          className={`h-1 rounded-full transition-all duration-500 ${
-                            i === activeSlide ? 'w-8 bg-gold' : 'w-3 bg-primary-foreground/20'
-                          }`}
-                        />
+                        <button key={i} onClick={() => setActiveSlide(i)} className={`h-1 rounded-full transition-all duration-500 ${i === activeSlide ? 'w-8 bg-gold' : 'w-3 bg-primary-foreground/20'}`} />
                       ))}
                     </div>
                     <div className="flex gap-2">
-                      <button
-                        onClick={prevSlide}
-                        className="w-9 h-9 rounded-full border border-primary-foreground/20 flex items-center justify-center text-primary-foreground/60 hover:border-gold hover:text-gold transition-colors"
-                      >
+                      <button onClick={prevSlide} className="w-9 h-9 rounded-full border border-primary-foreground/20 flex items-center justify-center text-primary-foreground/60 hover:border-gold hover:text-gold transition-colors">
                         <ChevronLeft className="h-4 w-4" />
                       </button>
-                      <button
-                        onClick={nextSlide}
-                        className="w-9 h-9 rounded-full border border-primary-foreground/20 flex items-center justify-center text-primary-foreground/60 hover:border-gold hover:text-gold transition-colors"
-                      >
+                      <button onClick={nextSlide} className="w-9 h-9 rounded-full border border-primary-foreground/20 flex items-center justify-center text-primary-foreground/60 hover:border-gold hover:text-gold transition-colors">
                         <ChevronRight className="h-4 w-4" />
                       </button>
                     </div>
                   </div>
 
-                  {/* Floating thumbnails */}
                   <div className="absolute -left-6 top-1/2 -translate-y-1/2 space-y-3 hidden xl:block">
                     {heroItems.slice(0, 4).map((item, i) => (
-                      <button
-                        key={item.id}
-                        onClick={() => setActiveSlide(i)}
-                        className={`w-16 h-16 rounded-xl overflow-hidden border-2 transition-all duration-300 shadow-lg ${
-                          i === activeSlide ? 'border-gold scale-110' : 'border-primary-foreground/10 opacity-60 hover:opacity-100'
-                        }`}
-                      >
+                      <button key={item.id} onClick={() => setActiveSlide(i)} className={`w-16 h-16 rounded-xl overflow-hidden border-2 transition-all duration-300 shadow-lg ${i === activeSlide ? 'border-gold scale-110' : 'border-primary-foreground/10 opacity-60 hover:opacity-100'}`}>
                         <img src={item.images?.[0] || '/placeholder.svg'} alt="" className="w-full h-full object-cover" />
                       </button>
                     ))}
@@ -260,7 +227,6 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Bottom shimmer line */}
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
       </section>
 
@@ -287,31 +253,23 @@ const Index = () => {
       <section className="py-20">
         <div className="container">
           <div className="text-center mb-12">
-            <span className="text-gold text-xs font-semibold uppercase tracking-[0.2em]">Collections</span>
-            <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">Shop by Category</h2>
+            <span className="text-gold text-xs font-semibold uppercase tracking-[0.2em]">{t('category.collections')}</span>
+            <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">{t('category.shopByCategory')}</h2>
             <p className="text-muted-foreground max-w-lg mx-auto">
-              Find the perfect protection for your iPhone from our curated collections
+              {t('category.shopByCategoryDesc')}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {categories.map((category) => (
-              <Link
-                key={category.slug}
-                to={`/shop?category=${category.slug}`}
-                className="group relative overflow-hidden rounded-2xl aspect-[4/5] hover-lift"
-              >
-                <img
-                  src={category.image}
-                  alt={category.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                />
+              <Link key={category.slug} to={`/shop?category=${category.slug}`} className="group relative overflow-hidden rounded-2xl aspect-[4/5] hover-lift">
+                <img src={category.image} alt={category.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/40 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6 text-primary-foreground">
                   <h3 className="text-2xl font-bold mb-2">{category.name}</h3>
                   <p className="text-sm text-primary-foreground/70 mb-4">{category.description}</p>
                   <span className="inline-flex items-center text-gold text-sm font-semibold group-hover:gap-2 transition-all">
-                    Shop Now <ArrowRight className="h-4 w-4 ml-1" />
+                    {t('common.shopNow')} <ArrowRight className="h-4 w-4 ml-1" />
                   </span>
                 </div>
               </Link>
@@ -325,12 +283,12 @@ const Index = () => {
         <div className="container">
           <div className="flex items-center justify-between mb-12">
             <div>
-              <span className="text-gold text-xs font-semibold uppercase tracking-[0.2em]">Bestsellers</span>
-              <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-1">Featured Products</h2>
-              <p className="text-muted-foreground">Our most popular items</p>
+              <span className="text-gold text-xs font-semibold uppercase tracking-[0.2em]">{t('featured.bestsellers')}</span>
+              <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-1">{t('featured.title')}</h2>
+              <p className="text-muted-foreground">{t('featured.subtitle')}</p>
             </div>
             <Button asChild variant="outline">
-              <Link to="/shop">View All</Link>
+              <Link to="/shop">{t('featured.viewAll')}</Link>
             </Button>
           </div>
 
@@ -363,9 +321,9 @@ const Index = () => {
             </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-muted-foreground mb-4">No featured products yet.</p>
+              <p className="text-muted-foreground mb-4">{t('featured.noProducts')}</p>
               <Button asChild variant="outline">
-                <Link to="/shop">Browse All Products</Link>
+                <Link to="/shop">{t('featured.browseAll')}</Link>
               </Button>
             </div>
           )}
@@ -378,14 +336,14 @@ const Index = () => {
         <div className="absolute inset-0 bg-primary/80" />
         <div className="container relative z-10 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-primary-foreground">
-            Ready to Protect Your iPhone?
+            {t('cta.title')}
           </h2>
           <p className="text-primary-foreground/60 max-w-lg mx-auto mb-8">
-            Join thousands of satisfied customers who trust iTechGlass for premium iPhone protection.
+            {t('cta.description')}
           </p>
           <Button asChild variant="hero-gold" size="xl">
             <Link to="/shop">
-              Start Shopping
+              {t('cta.startShopping')}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>

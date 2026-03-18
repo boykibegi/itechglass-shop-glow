@@ -5,21 +5,24 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/lib/cart';
 import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/hooks/useLanguage';
 import { cn } from '@/lib/utils';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const { getTotalItems } = useCart();
   const { user, isAdmin, isDriver, signOut } = useAuth();
+  const { t } = useLanguage();
   const totalItems = getTotalItems();
 
   const navLinks = [
-    { href: '/home', label: 'Home' },
-    { href: '/shop', label: 'Shop' },
-    { href: '/shop?category=back-glass', label: 'Back Glass' },
-    { href: '/shop?category=screen-glass', label: 'Screen Glass' },
-    { href: '/shop?category=covers', label: 'Covers' },
+    { href: '/home', label: t('nav.home') },
+    { href: '/shop', label: t('nav.shop') },
+    { href: '/shop?category=back-glass', label: t('nav.backGlass') },
+    { href: '/shop?category=screen-glass', label: t('nav.screenGlass') },
+    { href: '/shop?category=covers', label: t('nav.covers') },
   ];
 
   const isActive = (href: string) => {
@@ -57,8 +60,10 @@ const Header = () => {
 
         {/* Actions */}
         <div className="flex items-center gap-2">
+          <LanguageSwitcher />
+
           {user && (
-            <Link to="/profile" className="hidden md:block" title="My Profile">
+            <Link to="/profile" className="hidden md:block" title={t('nav.myProfile')}>
               <Button variant="ghost" size="icon">
                 <User className="h-5 w-5" />
               </Button>
@@ -66,7 +71,7 @@ const Header = () => {
           )}
 
           {user && (
-            <Link to="/orders" className="hidden md:block" title="My Orders">
+            <Link to="/orders" className="hidden md:block" title={t('nav.myOrders')}>
               <Button variant="ghost" size="icon">
                 <Package className="h-5 w-5" />
               </Button>
@@ -74,7 +79,7 @@ const Header = () => {
           )}
 
           {isDriver && (
-            <Link to="/delivery" className="hidden md:block" title="Driver Dashboard">
+            <Link to="/delivery" className="hidden md:block" title={t('nav.driverDashboard')}>
               <Button variant="ghost" size="icon">
                 <Truck className="h-5 w-5" />
               </Button>
@@ -82,7 +87,7 @@ const Header = () => {
           )}
 
           {isAdmin && (
-            <Link to="/admin" className="hidden md:block" title="Admin Dashboard">
+            <Link to="/admin" className="hidden md:block" title={t('nav.admin')}>
               <Button variant="ghost" size="icon">
                 <Package className="h-5 w-5" />
               </Button>
@@ -106,7 +111,7 @@ const Header = () => {
               size="icon"
               onClick={handleSignOut}
               className="hidden md:flex"
-              title="Sign out"
+              title={t('nav.signOut')}
             >
               <LogOut className="h-5 w-5" />
             </Button>
@@ -147,7 +152,7 @@ const Header = () => {
                 onClick={() => setIsMenuOpen(false)}
                 className="text-sm font-medium text-muted-foreground hover:text-gold py-2"
               >
-                My Profile
+                {t('nav.myProfile')}
               </Link>
             )}
             {user && (
@@ -156,7 +161,7 @@ const Header = () => {
                 onClick={() => setIsMenuOpen(false)}
                 className="text-sm font-medium text-muted-foreground hover:text-gold py-2"
               >
-                My Orders
+                {t('nav.myOrders')}
               </Link>
             )}
             {isDriver && (
@@ -165,7 +170,7 @@ const Header = () => {
                 onClick={() => setIsMenuOpen(false)}
                 className="text-sm font-medium text-muted-foreground hover:text-gold py-2"
               >
-                Driver Dashboard
+                {t('nav.driverDashboard')}
               </Link>
             )}
             {isAdmin && (
@@ -174,7 +179,7 @@ const Header = () => {
                 onClick={() => setIsMenuOpen(false)}
                 className="text-sm font-medium text-muted-foreground hover:text-gold py-2"
               >
-                Admin
+                {t('nav.admin')}
               </Link>
             )}
             {user && (
@@ -185,7 +190,7 @@ const Header = () => {
                 }}
                 className="text-sm font-medium text-muted-foreground hover:text-gold py-2 text-left"
               >
-                Sign Out
+                {t('nav.signOut')}
               </button>
             )}
           </nav>

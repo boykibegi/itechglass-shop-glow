@@ -13,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { useClickPesaPayment, PaymentStatus } from '@/hooks/useClickPesaPayment';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useAuth } from '@/hooks/useAuth';
  const checkoutSchema = z.object({
    name: z.string().min(2, 'Name is required').max(100),
@@ -24,6 +25,7 @@ import { useAuth } from '@/hooks/useAuth';
 const Checkout = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const { items, getTotalPrice, clearCart } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderReference, setOrderReference] = useState<string | null>(null);
@@ -241,11 +243,11 @@ const Checkout = () => {
              className="mb-6"
              onClick={() => navigate('/cart')}
            >
-             <ArrowLeft className="mr-2 h-4 w-4" />
-             Back to Cart
-           </Button>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              {t('checkout.backToCart')}
+            </Button>
  
-           <h1 className="text-3xl font-bold mb-8">Checkout</h1>
+           <h1 className="text-3xl font-bold mb-8">{t('checkout.title')}</h1>
  
            <form onSubmit={handleSubmit}>
              <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
@@ -253,10 +255,10 @@ const Checkout = () => {
                <div className="lg:col-span-3 space-y-8">
                  {/* Customer Info */}
                  <div className="bg-card rounded-lg border border-border p-6 space-y-4">
-                   <h2 className="text-xl font-semibold">Customer Information</h2>
+                   <h2 className="text-xl font-semibold">{t('checkout.customerInfo')}</h2>
                    
                    <div className="space-y-2">
-                     <Label htmlFor="name">Full Name</Label>
+                     <Label htmlFor="name">{t('checkout.fullName')}</Label>
                      <Input
                        id="name"
                        value={formData.name}
@@ -267,7 +269,7 @@ const Checkout = () => {
                    </div>
  
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="email">{t('checkout.email')}</Label>
                       <Input
                         id="email"
                         type="email"
@@ -276,16 +278,16 @@ const Checkout = () => {
                         disabled
                         className="bg-muted cursor-not-allowed"
                       />
-                      <p className="text-xs text-muted-foreground">Email is linked to your account and cannot be changed.</p>
+                      <p className="text-xs text-muted-foreground">{t('checkout.emailLinked')}</p>
                     </div>
  
                    <div className="space-y-2">
-                     <Label htmlFor="address">Shipping Address</Label>
+                     <Label htmlFor="address">{t('checkout.shippingAddress')}</Label>
                      <Textarea
                        id="address"
                        value={formData.address}
                        onChange={(e) => handleInputChange('address', e.target.value)}
-                       placeholder="Street address, city, region..."
+                       placeholder={t('checkout.addressPlaceholder')}
                        rows={3}
                      />
                      {errors.address && <p className="text-sm text-destructive">{errors.address}</p>}
@@ -294,14 +296,14 @@ const Checkout = () => {
  
                  {/* Payment */}
                  <div className="bg-card rounded-lg border border-border p-6 space-y-4">
-                   <h2 className="text-xl font-semibold">Mobile Money Payment</h2>
-                   <p className="text-sm text-muted-foreground">
-                     Enter your mobile money number to pay via M-Pesa, Tigo Pesa, or Airtel Money.
-                   </p>
+                    <h2 className="text-xl font-semibold">{t('checkout.mobileMoney')}</h2>
+                    <p className="text-sm text-muted-foreground">
+                      {t('checkout.mobileMoneyDesc')}
+                    </p>
  
                    <div className="space-y-4">
                      <div className="space-y-2">
-                       <Label htmlFor="phone">Phone Number</Label>
+                       <Label htmlFor="phone">{t('checkout.phoneNumber')}</Label>
                        <div className="flex gap-2">
                          <div className="flex-1">
                            <Input
@@ -322,10 +324,10 @@ const Checkout = () => {
                            {paymentStatus === 'previewing' ? (
                              <Loader2 className="h-4 w-4 animate-spin" />
                            ) : (
-                             <>
-                               <Phone className="h-4 w-4 mr-2" />
-                               Verify
-                             </>
+                              <>
+                                <Phone className="h-4 w-4 mr-2" />
+                                {t('checkout.verify')}
+                              </>
                            )}
                          </Button>
                        </div>
@@ -335,7 +337,7 @@ const Checkout = () => {
                      {/* Available payment methods */}
                      {availableMethods.length > 0 && (
                        <div className="bg-secondary/50 rounded-lg p-4 space-y-2">
-                         <p className="text-sm font-medium">Available payment methods:</p>
+                         <p className="text-sm font-medium">{t('checkout.availableMethods')}</p>
                          <div className="flex flex-wrap gap-2">
                            {availableMethods.map((method) => (
                              <div
@@ -351,8 +353,8 @@ const Checkout = () => {
                              </div>
                            ))}
                          </div>
-                         <p className="text-sm text-muted-foreground mt-2">
-                           Amount: <span className="font-semibold">TSh {getTotalPrice().toLocaleString()}</span>
+                          <p className="text-sm text-muted-foreground mt-2">
+                            {t('checkout.amount')}: <span className="font-semibold">TSh {getTotalPrice().toLocaleString()}</span>
                          </p>
                        </div>
                      )}
@@ -369,12 +371,12 @@ const Checkout = () => {
                      
                      {paymentStatus === 'processing' && (
                        <div className="bg-gold/10 rounded-lg p-4 border border-gold/20">
-                         <p className="text-sm text-gold font-medium">
-                           A payment request has been sent to your phone.
-                         </p>
-                         <p className="text-xs text-muted-foreground mt-1">
-                           Enter your mobile money PIN to complete the payment.
-                         </p>
+                          <p className="text-sm text-gold font-medium">
+                            {t('checkout.paymentSent')}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {t('checkout.enterPin')}
+                          </p>
                        </div>
                      )}
                    </div>
@@ -384,7 +386,7 @@ const Checkout = () => {
                {/* Order Summary */}
                <div className="lg:col-span-2">
                  <div className="bg-card rounded-lg border border-border p-6 sticky top-24">
-                   <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+                   <h2 className="text-xl font-semibold mb-4">{t('cart.orderSummary')}</h2>
                    
                    <div className="space-y-3 max-h-60 overflow-y-auto mb-4">
                      {items.map((item) => (
@@ -403,15 +405,15 @@ const Checkout = () => {
  
                    <div className="border-t border-border pt-4 space-y-2">
                      <div className="flex justify-between text-sm">
-                       <span className="text-muted-foreground">Subtotal</span>
+                       <span className="text-muted-foreground">{t('cart.subtotal')}</span>
                        <span>TSh {getTotalPrice().toLocaleString()}</span>
                      </div>
                      <div className="flex justify-between text-sm">
-                       <span className="text-muted-foreground">Shipping</span>
-                       <span className="text-gold">Free</span>
+                        <span className="text-muted-foreground">{t('cart.shipping')}</span>
+                        <span className="text-gold">{t('cart.free')}</span>
                      </div>
                      <div className="flex justify-between text-lg font-semibold pt-2">
-                       <span>Total</span>
+                       <span>{t('cart.total')}</span>
                        <span>TSh {getTotalPrice().toLocaleString()}</span>
                      </div>
                    </div>
@@ -426,10 +428,10 @@ const Checkout = () => {
                      {isSubmitting || paymentStatus === 'processing' || paymentStatus === 'initiating' ? (
                        <>
                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                         {paymentStatus === 'processing' ? 'Awaiting Payment...' : 'Processing...'}
+                         {paymentStatus === 'processing' ? t('checkout.awaitingPayment') : t('checkout.processing')}
                        </>
                      ) : (
-                       'Pay Now'
+                       t('checkout.payNow')
                      )}
                    </Button>
                  </div>

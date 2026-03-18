@@ -136,10 +136,12 @@ export type Database = {
           compatible_models: string[] | null
           created_at: string
           description: string | null
+          description_sw: string | null
           featured: boolean | null
           id: string
           images: string[] | null
           name: string
+          name_sw: string | null
           price: number
           stock: number
           updated_at: string
@@ -149,10 +151,12 @@ export type Database = {
           compatible_models?: string[] | null
           created_at?: string
           description?: string | null
+          description_sw?: string | null
           featured?: boolean | null
           id?: string
           images?: string[] | null
           name: string
+          name_sw?: string | null
           price: number
           stock?: number
           updated_at?: string
@@ -162,10 +166,12 @@ export type Database = {
           compatible_models?: string[] | null
           created_at?: string
           description?: string | null
+          description_sw?: string | null
           featured?: boolean | null
           id?: string
           images?: string[] | null
           name?: string
+          name_sw?: string | null
           price?: number
           stock?: number
           updated_at?: string

@@ -9,6 +9,7 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import ProductCard from '@/components/ProductCard';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import { useLanguage } from '@/hooks/useLanguage';
 import shopHero from '@/assets/shop-hero.jpg';
 
 const fetchProducts = async () => {
@@ -25,6 +26,7 @@ const fetchProducts = async () => {
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
+  const { t, language } = useLanguage();
   
   const activeCategory = searchParams.get('category') || 'all';
 
@@ -34,10 +36,10 @@ const Shop = () => {
   });
 
   const categories = [
-    { slug: 'all', name: 'All Products' },
-    { slug: 'back-glass', name: 'Back Glass' },
-    { slug: 'screen-glass', name: 'Screen Glass' },
-    { slug: 'covers', name: 'Covers' },
+    { slug: 'all', name: t('shop.allProducts') },
+    { slug: 'back-glass', name: t('nav.backGlass') },
+    { slug: 'screen-glass', name: t('nav.screenGlass') },
+    { slug: 'covers', name: t('nav.covers') },
   ];
 
   const filteredProducts = useMemo(() => {
@@ -61,43 +63,36 @@ const Shop = () => {
     setSearchParams(searchParams);
   };
 
+  const getHeroDescription = () => {
+    switch (activeCategory) {
+      case 'back-glass': return t('shop.heroBackGlass');
+      case 'screen-glass': return t('shop.heroScreenGlass');
+      case 'covers': return t('shop.heroCovers');
+      default: return t('shop.heroAll');
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       
       {/* Cinematic Shop Hero */}
       <section className="relative overflow-hidden text-primary-foreground py-24 md:py-36 lg:py-44">
-        {/* Background image with Ken Burns zoom */}
-        <img
-          src={shopHero}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ animation: 'shopHeroZoom 25s ease-in-out infinite alternate' }}
-          aria-hidden="true"
-        />
-
-        {/* Multi-layer cinematic overlays */}
+        <img src={shopHero} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ animation: 'shopHeroZoom 25s ease-in-out infinite alternate' }} aria-hidden="true" />
         <div className="absolute inset-0 bg-gradient-to-r from-primary/98 via-primary/80 to-primary/40" />
         <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/30 to-primary/60" />
         <div className="absolute inset-0 bg-gradient-to-br from-transparent via-gold/[0.03] to-transparent" />
 
-        {/* Animated gold accent lines */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" style={{ animation: 'heroLineSlide 4s ease-in-out infinite alternate' }} />
           <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
-          {/* Floating orbs */}
           <div className="absolute top-1/4 right-1/4 w-80 h-80 bg-gold/[0.04] rounded-full blur-[100px]" style={{ animation: 'heroOrbFloat 8s ease-in-out infinite alternate' }} />
           <div className="absolute bottom-0 left-1/6 w-96 h-96 bg-gold/[0.03] rounded-full blur-[120px]" style={{ animation: 'heroOrbFloat 10s ease-in-out infinite alternate-reverse' }} />
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary-foreground/[0.02] rounded-full blur-[80px]" style={{ animation: 'heroOrbFloat 12s ease-in-out infinite alternate' }} />
         </div>
 
-        {/* Watermark / ambient text */}
         <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
-          <span
-            className="absolute -right-10 top-1/2 -translate-y-1/2 text-[12rem] md:text-[18rem] font-bold uppercase tracking-tighter text-primary-foreground/[0.02] leading-none"
-            style={{ animation: 'heroTextDrift 20s ease-in-out infinite alternate' }}
-            aria-hidden="true"
-          >
+          <span className="absolute -right-10 top-1/2 -translate-y-1/2 text-[12rem] md:text-[18rem] font-bold uppercase tracking-tighter text-primary-foreground/[0.02] leading-none" style={{ animation: 'heroTextDrift 20s ease-in-out infinite alternate' }} aria-hidden="true">
             {activeCategory === 'all' ? 'LUXURY' : activeCategory === 'back-glass' ? 'GLASS' : activeCategory === 'screen-glass' ? 'SHIELD' : 'STYLE'}
           </span>
         </div>
@@ -105,74 +100,54 @@ const Shop = () => {
         <div className="container relative z-10">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
             <div className="space-y-5 max-w-xl">
-              {/* Animated tag */}
-              <div
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gold/20 backdrop-blur-md"
-                style={{ background: 'hsl(43 74% 49% / 0.08)', animation: 'fade-in 0.6s ease-out 0.2s backwards' }}
-              >
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gold/20 backdrop-blur-md" style={{ background: 'hsl(43 74% 49% / 0.08)', animation: 'fade-in 0.6s ease-out 0.2s backwards' }}>
                 <Sparkles className="h-3.5 w-3.5 text-gold animate-[heroSparkle_2s_ease-in-out_infinite]" />
                 <span className="text-[11px] font-semibold text-gold uppercase tracking-[0.15em]">
-                  {activeCategory === 'all' ? 'Curated Collection' : categories.find(c => c.slug === activeCategory)?.name}
+                  {activeCategory === 'all' ? t('shop.curatedCollection') : categories.find(c => c.slug === activeCategory)?.name}
                 </span>
               </div>
 
-              {/* Main heading with staggered reveal */}
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[0.95]" style={{ animation: 'fade-in 0.8s ease-out 0.35s backwards' }}>
                 {activeCategory === 'all' ? (
                   <>
-                    <span className="block">Our</span>
-                    <span className="block text-gradient-gold">Collection</span>
+                    <span className="block">{t('shop.ourCollection')}</span>
+                    <span className="block text-gradient-gold">{t('shop.collection')}</span>
                   </>
                 ) : activeCategory === 'back-glass' ? (
                   <>
-                    <span className="block">Back</span>
-                    <span className="block text-gradient-gold">Glass</span>
+                    <span className="block">{language === 'sw' ? 'Glasi ya' : 'Back'}</span>
+                    <span className="block text-gradient-gold">{language === 'sw' ? 'Nyuma' : 'Glass'}</span>
                   </>
                 ) : activeCategory === 'screen-glass' ? (
                   <>
-                    <span className="block">Screen</span>
-                    <span className="block text-gradient-gold">Glass</span>
+                    <span className="block">{language === 'sw' ? 'Glasi ya' : 'Screen'}</span>
+                    <span className="block text-gradient-gold">{language === 'sw' ? 'Skrini' : 'Glass'}</span>
                   </>
                 ) : (
                   <>
-                    <span className="block">Premium</span>
-                    <span className="block text-gradient-gold">Covers</span>
+                    <span className="block">{t('shop.premiumCovers')}</span>
+                    <span className="block text-gradient-gold">{t('shop.coversWord')}</span>
                   </>
                 )}
               </h1>
 
-              {/* Accent divider */}
               <div className="flex items-center gap-3" style={{ animation: 'fade-in 0.6s ease-out 0.5s backwards' }}>
                 <div className="h-px w-12 bg-gradient-to-r from-gold/60 to-gold/0" />
                 <span className="text-[10px] text-gold/50 uppercase tracking-[0.2em] font-medium">Since 2024</span>
               </div>
 
               <p className="text-primary-foreground/45 max-w-md text-sm md:text-base leading-relaxed" style={{ animation: 'fade-in 0.6s ease-out 0.55s backwards' }}>
-                {activeCategory === 'all'
-                  ? 'Curated accessories crafted for perfection — where protection meets luxury.'
-                  : activeCategory === 'back-glass'
-                  ? 'Crystal-clear replacement glass with precise cutouts and OEM-grade quality.'
-                  : activeCategory === 'screen-glass'
-                  ? '9H tempered glass with edge-to-edge clarity and anti-fingerprint coating.'
-                  : 'Elegant cases in leather, silicone, and MagSafe — style meets defense.'}
+                {getHeroDescription()}
               </p>
             </div>
 
-            {/* Floating category cards */}
             <div className="hidden md:flex items-end gap-3" style={{ animation: 'fade-in 0.7s ease-out 0.6s backwards' }}>
               {[
-                { icon: Layers, label: 'Back Glass', stat: 'OEM Grade' },
-                { icon: Smartphone, label: 'Screens', stat: '9H Hardness' },
-                { icon: Shield, label: 'Covers', stat: 'MagSafe Ready' },
+                { icon: Layers, label: t('nav.backGlass'), stat: 'OEM Grade' },
+                { icon: Smartphone, label: t('nav.screenGlass'), stat: '9H Hardness' },
+                { icon: Shield, label: t('nav.covers'), stat: 'MagSafe Ready' },
               ].map(({ icon: Icon, label, stat }, i) => (
-                <div
-                  key={label}
-                  className="group flex flex-col items-center gap-2 px-5 py-4 rounded-2xl border border-primary-foreground/[0.08] backdrop-blur-md hover:border-gold/25 transition-all duration-500 hover:-translate-y-1"
-                  style={{
-                    background: 'hsl(0 0% 100% / 0.04)',
-                    animation: `fade-in 0.5s ease-out ${0.7 + i * 0.1}s backwards`,
-                  }}
-                >
+                <div key={label} className="group flex flex-col items-center gap-2 px-5 py-4 rounded-2xl border border-primary-foreground/[0.08] backdrop-blur-md hover:border-gold/25 transition-all duration-500 hover:-translate-y-1" style={{ background: 'hsl(0 0% 100% / 0.04)', animation: `fade-in 0.5s ease-out ${0.7 + i * 0.1}s backwards` }}>
                   <Icon className="h-5 w-5 text-gold/60 group-hover:text-gold transition-colors duration-300" />
                   <span className="text-[10px] text-primary-foreground/50 uppercase tracking-[0.15em] font-medium">{label}</span>
                   <span className="text-[9px] text-gold/40 font-medium tracking-wider">{stat}</span>
@@ -185,20 +160,17 @@ const Shop = () => {
 
       <main className="flex-1 py-12">
         <div className="container">
-          {/* Filters */}
           <div className="flex flex-col md:flex-row gap-4 mb-8">
-            {/* Search */}
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search products..."
+                placeholder={t('shop.searchProducts')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
               />
             </div>
 
-            {/* Category filters */}
             <div className="flex flex-wrap gap-2">
               {categories.map((category) => (
                 <Button
@@ -213,12 +185,10 @@ const Shop = () => {
             </div>
           </div>
 
-          {/* Results count */}
           <p className="text-sm text-muted-foreground mb-6">
-            {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} found
+            {filteredProducts.length} {filteredProducts.length !== 1 ? t('shop.productsFoundPlural') : t('shop.productsFound')} {t('shop.found')}
           </p>
 
-          {/* Products Grid */}
           {isLoading ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
               {[...Array(10)].map((_, i) => (
@@ -250,12 +220,10 @@ const Shop = () => {
           ) : (
             <div className="text-center py-16">
               <SlidersHorizontal className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No products found</h3>
-              <p className="text-muted-foreground mb-6">
-                Try adjusting your search or filter criteria
-              </p>
+              <h3 className="text-lg font-semibold mb-2">{t('shop.noProducts')}</h3>
+              <p className="text-muted-foreground mb-6">{t('shop.noProductsDesc')}</p>
               <Button variant="outline" onClick={() => { setSearchQuery(''); handleCategoryChange('all'); }}>
-                Clear Filters
+                {t('shop.clearFilters')}
               </Button>
             </div>
           )}

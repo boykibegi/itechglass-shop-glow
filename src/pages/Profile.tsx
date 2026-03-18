@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/hooks/useLanguage';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -27,6 +27,7 @@ const passwordSchema = z.object({
 const Profile = () => {
   const navigate = useNavigate();
   const { user, isLoading } = useAuth();
+  const { t } = useLanguage();
   const [phoneNumber, setPhoneNumber] = useState('');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -39,25 +40,17 @@ const Profile = () => {
   const [profileLoading, setProfileLoading] = useState(true);
 
   useEffect(() => {
-    if (!isLoading && !user) {
-      navigate('/');
-    }
+    if (!isLoading && !user) navigate('/');
   }, [user, isLoading, navigate]);
 
   useEffect(() => {
     const loadProfile = async () => {
       if (!user) return;
-      const { data } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
+      const { data } = await supabase.from('profiles').select('*').eq('user_id', user.id).maybeSingle();
       if (data) {
         setPhoneNumber(data.phone_number || '');
         setFullName(data.full_name || '');
       }
-      // Set email from auth user
       const authEmail = user.email || '';
       setEmail(authEmail.endsWith('@itechglass.user') ? '' : authEmail);
       setProfileLoading(false);
@@ -67,96 +60,38 @@ const Profile = () => {
 
   const handleSaveProfile = async () => {
     if (!user) return;
-    try {
-      phoneSchema.parse(phoneNumber);
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        toast.error(err.errors[0].message);
-        return;
-      }
-    }
-
+    try { phoneSchema.parse(phoneNumber); } catch (err) { if (err instanceof z.ZodError) { toast.error(err.errors[0].message); return; } }
     setSavingProfile(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .upsert({
-          user_id: user.id,
-          phone_number: phoneNumber,
-          full_name: fullName || null,
-          updated_at: new Date().toISOString(),
-        }, { onConflict: 'user_id' });
-
+      const { error } = await supabase.from('profiles').upsert({ user_id: user.id, phone_number: phoneNumber, full_name: fullName || null, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
       if (error) throw error;
-      toast.success('Profile updated successfully');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to update profile');
-    } finally {
-      setSavingProfile(false);
-    }
+      toast.success(t('profile.saveProfile'));
+    } catch (error: any) { toast.error(error.message || 'Failed to update profile'); } finally { setSavingProfile(false); }
   };
 
   const handleUpdateEmail = async () => {
-    if (!email) {
-      toast.error('Please enter an email address');
-      return;
-    }
-    try {
-      emailSchema.parse(email);
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        toast.error(err.errors[0].message);
-        return;
-      }
-    }
-
+    if (!email) { toast.error('Please enter an email address'); return; }
+    try { emailSchema.parse(email); } catch (err) { if (err instanceof z.ZodError) { toast.error(err.errors[0].message); return; } }
     setSavingEmail(true);
     try {
       const { error } = await supabase.auth.updateUser({ email });
       if (error) throw error;
-      toast.success('Confirmation email sent. Please check your inbox to verify the new email.');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to update email');
-    } finally {
-      setSavingEmail(false);
-    }
+      toast.success('Confirmation email sent.');
+    } catch (error: any) { toast.error(error.message || 'Failed to update email'); } finally { setSavingEmail(false); }
   };
 
   const handleUpdatePassword = async () => {
-    try {
-      passwordSchema.parse({ currentPassword, newPassword, confirmPassword });
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        toast.error(err.errors[0].message);
-        return;
-      }
-    }
-
+    try { passwordSchema.parse({ currentPassword, newPassword, confirmPassword }); } catch (err) { if (err instanceof z.ZodError) { toast.error(err.errors[0].message); return; } }
     setSavingPassword(true);
     try {
-      // Verify current password by re-authenticating
       const userEmail = user?.email || '';
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: userEmail,
-        password: currentPassword,
-      });
-      if (signInError) {
-        toast.error('Current password is incorrect');
-        setSavingPassword(false);
-        return;
-      }
-
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email: userEmail, password: currentPassword });
+      if (signInError) { toast.error('Current password is incorrect'); setSavingPassword(false); return; }
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) throw error;
-      toast.success('Password updated successfully');
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to update password');
-    } finally {
-      setSavingPassword(false);
-    }
+      toast.success(t('profile.updatePassword'));
+      setCurrentPassword(''); setNewPassword(''); setConfirmPassword('');
+    } catch (error: any) { toast.error(error.message || 'Failed to update password'); } finally { setSavingPassword(false); }
   };
 
   if (isLoading || profileLoading) {
@@ -172,13 +107,9 @@ const Profile = () => {
       <Header />
       <main className="flex-1 container max-w-2xl py-8 px-4">
         <div className="animate-fade-in" style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}>
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
-            className="mb-6 -ml-2 text-muted-foreground hover:text-foreground"
-          >
+          <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6 -ml-2 text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
+            {t('profile.back')}
           </Button>
 
           <div className="flex items-center gap-3 mb-8">
@@ -186,149 +117,90 @@ const Profile = () => {
               <User className="h-6 w-6 text-gold" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">My Profile</h1>
-              <p className="text-sm text-muted-foreground">Manage your account settings</p>
+              <h1 className="text-2xl font-bold text-foreground">{t('profile.title')}</h1>
+              <p className="text-sm text-muted-foreground">{t('profile.subtitle')}</p>
             </div>
           </div>
         </div>
 
         <div className="space-y-6">
-          {/* Profile Info */}
           <Card className="animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}>
             <CardHeader>
-              <CardTitle className="text-lg">Personal Information</CardTitle>
-              <CardDescription>Update your name and phone number</CardDescription>
+              <CardTitle className="text-lg">{t('profile.personalInfo')}</CardTitle>
+              <CardDescription>{t('profile.personalInfoDesc')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-1.5">
                 <Label htmlFor="fullName" className="text-sm font-medium flex items-center gap-2">
                   <User className="h-4 w-4 text-gold" />
-                  Full Name
+                  {t('profile.fullName')}
                 </Label>
-                <Input
-                  id="fullName"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Your full name"
-                  className="h-11 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50"
-                />
+                <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder={t('profile.fullName')} className="h-11 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50" />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="phone" className="text-sm font-medium flex items-center gap-2">
                   <Phone className="h-4 w-4 text-gold" />
-                  Phone Number
+                  {t('profile.phone')}
                 </Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="+255 7XX XXX XXX"
-                  className="h-11 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50"
-                />
+                <Input id="phone" type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="+255 7XX XXX XXX" className="h-11 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50" />
               </div>
-              <Button
-                variant="gold"
-                onClick={handleSaveProfile}
-                disabled={savingProfile}
-                className="w-full h-11 font-semibold transition-all duration-300 hover:shadow-gold hover:scale-[1.02] active:scale-[0.98]"
-              >
+              <Button variant="gold" onClick={handleSaveProfile} disabled={savingProfile} className="w-full h-11 font-semibold transition-all duration-300 hover:shadow-gold hover:scale-[1.02] active:scale-[0.98]">
                 {savingProfile ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Check className="h-4 w-4 mr-2" />}
-                Save Profile
+                {t('profile.saveProfile')}
               </Button>
             </CardContent>
           </Card>
 
-          {/* Email */}
           <Card className="animate-fade-in" style={{ animationDelay: '0.3s', animationFillMode: 'backwards' }}>
             <CardHeader>
-              <CardTitle className="text-lg">Email Address</CardTitle>
-              <CardDescription>Update your email for order notifications</CardDescription>
+              <CardTitle className="text-lg">{t('profile.emailAddress')}</CardTitle>
+              <CardDescription>{t('profile.emailDesc')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-1.5">
                 <Label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
                   <Mail className="h-4 w-4 text-gold" />
-                  Email
+                  {t('auth.email')}
                 </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  className="h-11 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50"
-                />
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" className="h-11 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50" />
               </div>
-              <Button
-                variant="gold"
-                onClick={handleUpdateEmail}
-                disabled={savingEmail}
-                className="w-full h-11 font-semibold transition-all duration-300 hover:shadow-gold hover:scale-[1.02] active:scale-[0.98]"
-              >
+              <Button variant="gold" onClick={handleUpdateEmail} disabled={savingEmail} className="w-full h-11 font-semibold transition-all duration-300 hover:shadow-gold hover:scale-[1.02] active:scale-[0.98]">
                 {savingEmail ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Check className="h-4 w-4 mr-2" />}
-                Update Email
+                {t('profile.updateEmail')}
               </Button>
             </CardContent>
           </Card>
 
-          {/* Password */}
           <Card className="animate-fade-in" style={{ animationDelay: '0.4s', animationFillMode: 'backwards' }}>
             <CardHeader>
-              <CardTitle className="text-lg">Change Password</CardTitle>
-              <CardDescription>Update your account password</CardDescription>
+              <CardTitle className="text-lg">{t('profile.changePassword')}</CardTitle>
+              <CardDescription>{t('profile.changePasswordDesc')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-1.5">
                 <Label htmlFor="currentPassword" className="text-sm font-medium flex items-center gap-2">
                   <Lock className="h-4 w-4 text-muted-foreground" />
-                  Current Password
+                  {t('profile.currentPassword')}
                 </Label>
-                <Input
-                  id="currentPassword"
-                  type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="h-11 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50"
-                />
+                <Input id="currentPassword" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="••••••••" className="h-11 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50" />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="newPassword" className="text-sm font-medium flex items-center gap-2">
                   <Lock className="h-4 w-4 text-muted-foreground" />
-                  New Password
+                  {t('profile.newPassword')}
                 </Label>
-                <Input
-                  id="newPassword"
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="h-11 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50"
-                />
+                <Input id="newPassword" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="••••••••" className="h-11 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50" />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="confirmNewPassword" className="text-sm font-medium flex items-center gap-2">
                   <Lock className="h-4 w-4 text-muted-foreground" />
-                  Confirm New Password
+                  {t('profile.confirmPassword')}
                 </Label>
-                <Input
-                  id="confirmNewPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="h-11 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50"
-                />
+                <Input id="confirmNewPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" className="h-11 bg-secondary/50 border-border/50 focus:border-gold focus:ring-gold/20 text-base transition-all duration-200 hover:border-gold/50" />
               </div>
-              <Button
-                variant="gold"
-                onClick={handleUpdatePassword}
-                disabled={savingPassword}
-                className="w-full h-11 font-semibold transition-all duration-300 hover:shadow-gold hover:scale-[1.02] active:scale-[0.98]"
-              >
+              <Button variant="gold" onClick={handleUpdatePassword} disabled={savingPassword} className="w-full h-11 font-semibold transition-all duration-300 hover:shadow-gold hover:scale-[1.02] active:scale-[0.98]">
                 {savingPassword ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Check className="h-4 w-4 mr-2" />}
-                Update Password
+                {t('profile.updatePassword')}
               </Button>
             </CardContent>
           </Card>

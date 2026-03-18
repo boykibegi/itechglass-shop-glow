@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
+import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -31,6 +32,7 @@ const signUpSchema = z.object({
 const Auth = () => {
   const navigate = useNavigate();
   const { user, isLoading, signIn, signUp } = useAuth();
+  const { t } = useLanguage();
   const [isSignUp, setIsSignUp] = useState(false);
   const [loginMethod, setLoginMethod] = useState<'phone' | 'email'>('phone');
   const [phone, setPhone] = useState('');
@@ -138,7 +140,7 @@ const Auth = () => {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-10 w-10 animate-spin text-gold" />
-          <p className="text-muted-foreground animate-pulse">Loading...</p>
+          <p className="text-muted-foreground animate-pulse">{t('auth.loading')}</p>
         </div>
       </div>
     );
@@ -233,12 +235,10 @@ const Auth = () => {
             <div className="rounded-2xl border border-border/60 bg-card p-6 lg:p-8 shadow-[0_8px_40px_-12px_hsl(0_0%_0%/0.15)] dark:shadow-[0_8px_40px_-12px_hsl(0_0%_0%/0.4)]">
               <div className="space-y-1 mb-6 text-center animate-fade-in" style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}>
                 <h2 className="text-2xl lg:text-3xl font-bold text-foreground tracking-tight">
-                  {isSignUp ? 'Create Account' : 'Welcome Back'}
+                  {isSignUp ? t('auth.createAccount') : t('auth.welcomeBack')}
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  {isSignUp
-                    ? 'Join us for premium iPhone protection'
-                    : 'Sign in to continue shopping'}
+                  {isSignUp ? t('auth.joinUs') : t('auth.signInContinue')}
                 </p>
               </div>
 
@@ -249,11 +249,11 @@ const Auth = () => {
                     <TabsList className="w-full grid grid-cols-2 h-12 rounded-xl bg-secondary/80 p-1">
                       <TabsTrigger value="phone" className="gap-2 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-foreground text-sm font-medium transition-all">
                         <Phone className="h-4 w-4" />
-                        Phone
+                        {t('auth.phone')}
                       </TabsTrigger>
                       <TabsTrigger value="email" className="gap-2 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-foreground text-sm font-medium transition-all">
                         <Mail className="h-4 w-4" />
-                        Email
+                        {t('auth.email')}
                       </TabsTrigger>
                     </TabsList>
                   </Tabs>
@@ -266,7 +266,7 @@ const Auth = () => {
                   <div className="space-y-2 animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}>
                     <Label htmlFor="name" className="text-sm font-medium flex items-center gap-2">
                       <User className="h-3.5 w-3.5 text-gold" />
-                      Full Name <span className="text-destructive text-xs">*</span>
+                      {t('auth.fullName')} <span className="text-destructive text-xs">*</span>
                     </Label>
                     <Input
                       id="name"
@@ -286,7 +286,7 @@ const Auth = () => {
                   <div className="space-y-2 animate-fade-in" style={{ animationDelay: isSignUp ? '0.25s' : '0.2s', animationFillMode: 'backwards' }}>
                     <Label htmlFor="phone" className="text-sm font-medium flex items-center gap-2">
                       <Phone className="h-3.5 w-3.5 text-gold" />
-                      Phone Number <span className="text-destructive text-xs">*</span>
+                      {t('auth.phoneNumber')} <span className="text-destructive text-xs">*</span>
                     </Label>
                     <Input
                       id="phone"
@@ -306,8 +306,8 @@ const Auth = () => {
                   <div className="space-y-2 animate-fade-in" style={{ animationDelay: isSignUp ? '0.3s' : '0.2s', animationFillMode: 'backwards' }}>
                     <Label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
                       <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                      Email {isSignUp ? (
-                        <span className="text-muted-foreground/60 text-xs font-normal">(Optional)</span>
+                      {t('auth.email')} {isSignUp ? (
+                        <span className="text-muted-foreground/60 text-xs font-normal">{t('auth.optional')}</span>
                       ) : (
                         <span className="text-destructive text-xs">*</span>
                       )}
@@ -329,14 +329,14 @@ const Auth = () => {
                   <div className="flex items-center justify-between">
                     <Label htmlFor="password" className="text-sm font-medium flex items-center gap-2">
                       <Lock className="h-3.5 w-3.5 text-muted-foreground" />
-                      Password
+                      {t('auth.password')}
                     </Label>
                     {!isSignUp && (
                       <Link
                         to="/forgot-password"
                         className="text-xs text-gold hover:text-gold/80 font-medium transition-colors hover:underline underline-offset-4"
                       >
-                        Forgot?
+                        {t('auth.forgot')}
                       </Link>
                     )}
                   </div>
@@ -356,7 +356,7 @@ const Auth = () => {
                   <div className="space-y-2 animate-fade-in" style={{ animationDelay: '0.4s', animationFillMode: 'backwards' }}>
                     <Label htmlFor="confirmPassword" className="text-sm font-medium flex items-center gap-2">
                       <Lock className="h-3.5 w-3.5 text-muted-foreground" />
-                      Confirm Password
+                      {t('auth.confirmPassword')}
                     </Label>
                     <Input
                       id="confirmPassword"
@@ -384,11 +384,11 @@ const Auth = () => {
                     {isSubmitting ? (
                       <>
                         <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        {isSignUp ? 'Creating account...' : 'Signing in...'}
+                        {isSignUp ? t('auth.creatingAccount') : t('auth.signingIn')}
                       </>
                     ) : (
                       <>
-                        {isSignUp ? 'Create Account' : 'Sign In'}
+                        {isSignUp ? t('auth.signUp') : t('auth.signIn')}
                         <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                       </>
                     )}
@@ -400,7 +400,7 @@ const Auth = () => {
             {/* Below card */}
             <div className="mt-6 text-center animate-fade-in" style={{ animationDelay: isSignUp ? '0.5s' : '0.4s', animationFillMode: 'backwards' }}>
               <p className="text-sm text-muted-foreground">
-                {isSignUp ? 'Already have an account?' : "Don't have an account?"}
+                {isSignUp ? t('auth.haveAccount') : t('auth.noAccount')}
                 <button
                   type="button"
                   onClick={() => {
@@ -409,7 +409,7 @@ const Auth = () => {
                   }}
                   className="ml-2 text-gold hover:text-gold/80 font-semibold transition-colors hover:underline underline-offset-4"
                 >
-                  {isSignUp ? 'Sign in' : 'Sign up'}
+                  {isSignUp ? t('auth.signIn') : t('auth.signUp')}
                 </button>
               </p>
             </div>
