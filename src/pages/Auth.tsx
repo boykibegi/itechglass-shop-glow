@@ -32,6 +32,7 @@ const signUpSchema = z.object({
 const Auth = () => {
   const navigate = useNavigate();
   const { user, isLoading, signIn, signUp } = useAuth();
+  const { t } = useLanguage();
   const [isSignUp, setIsSignUp] = useState(false);
   const [loginMethod, setLoginMethod] = useState<'phone' | 'email'>('phone');
   const [phone, setPhone] = useState('');
