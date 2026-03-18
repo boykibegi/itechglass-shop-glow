@@ -13,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { useClickPesaPayment, PaymentStatus } from '@/hooks/useClickPesaPayment';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useAuth } from '@/hooks/useAuth';
  const checkoutSchema = z.object({
    name: z.string().min(2, 'Name is required').max(100),
