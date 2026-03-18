@@ -386,7 +386,7 @@ const Checkout = () => {
                {/* Order Summary */}
                <div className="lg:col-span-2">
                  <div className="bg-card rounded-lg border border-border p-6 sticky top-24">
-                   <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+                   <h2 className="text-xl font-semibold mb-4">{t('cart.orderSummary')}</h2>
                    
                    <div className="space-y-3 max-h-60 overflow-y-auto mb-4">
                      {items.map((item) => (
