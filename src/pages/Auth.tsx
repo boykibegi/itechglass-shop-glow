@@ -384,7 +384,7 @@ const Auth = () => {
                     {isSubmitting ? (
                       <>
                         <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        {isSignUp ? 'Creating account...' : 'Signing in...'}
+                        {isSignUp ? t('auth.creatingAccount') : t('auth.signingIn')}
                       </>
                     ) : (
                       <>
