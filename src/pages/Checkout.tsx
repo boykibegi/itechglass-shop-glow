@@ -247,7 +247,7 @@ const Checkout = () => {
               {t('checkout.backToCart')}
             </Button>
  
-           <h1 className="text-3xl font-bold mb-8">Checkout</h1>
+           <h1 className="text-3xl font-bold mb-8">{t('checkout.title')}</h1>
  
            <form onSubmit={handleSubmit}>
              <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
