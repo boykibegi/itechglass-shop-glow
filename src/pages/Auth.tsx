@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Loader2, Smartphone, Phone, Mail, Lock, ArrowRight, Sparkles, User, Shield, Truck, Award } from 'lucide-react';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 import authHero from '@/assets/auth-hero.jpg';
 import { Button } from '@/components/ui/button';
