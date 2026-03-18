@@ -266,7 +266,7 @@ const Auth = () => {
                   <div className="space-y-2 animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}>
                     <Label htmlFor="name" className="text-sm font-medium flex items-center gap-2">
                       <User className="h-3.5 w-3.5 text-gold" />
-                      Full Name <span className="text-destructive text-xs">*</span>
+                      {t('auth.fullName')} <span className="text-destructive text-xs">*</span>
                     </Label>
                     <Input
                       id="name"
