@@ -255,7 +255,7 @@ const Checkout = () => {
                <div className="lg:col-span-3 space-y-8">
                  {/* Customer Info */}
                  <div className="bg-card rounded-lg border border-border p-6 space-y-4">
-                   <h2 className="text-xl font-semibold">Customer Information</h2>
+                   <h2 className="text-xl font-semibold">{t('checkout.customerInfo')}</h2>
                    
                    <div className="space-y-2">
                      <Label htmlFor="name">Full Name</Label>
