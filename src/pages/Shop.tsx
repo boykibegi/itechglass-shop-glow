@@ -1,6 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, lazy, Suspense } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, SlidersHorizontal, Sparkles, Shield, Smartphone, Layers } from 'lucide-react';
+import { Search, SlidersHorizontal, Sparkles, Shield, Smartphone, Layers, LayoutGrid, Box } from 'lucide-react';
+
+const VirtualShowroom = lazy(() => import('@/components/showroom/VirtualShowroom'));
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/layout/Header';
