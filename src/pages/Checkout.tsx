@@ -258,7 +258,7 @@ const Checkout = () => {
                    <h2 className="text-xl font-semibold">{t('checkout.customerInfo')}</h2>
                    
                    <div className="space-y-2">
-                     <Label htmlFor="name">Full Name</Label>
+                     <Label htmlFor="name">{t('checkout.fullName')}</Label>
                      <Input
                        id="name"
                        value={formData.name}
