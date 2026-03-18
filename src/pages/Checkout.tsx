@@ -269,7 +269,7 @@ const Checkout = () => {
                    </div>
  
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="email">{t('checkout.email')}</Label>
                       <Input
                         id="email"
                         type="email"
