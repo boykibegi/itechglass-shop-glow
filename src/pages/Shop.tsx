@@ -1,6 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, lazy, Suspense } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, SlidersHorizontal, Sparkles, Shield, Smartphone, Layers } from 'lucide-react';
+import { Search, SlidersHorizontal, Sparkles, Shield, Smartphone, Layers, LayoutGrid, Box } from 'lucide-react';
+
+const VirtualShowroom = lazy(() => import('@/components/showroom/VirtualShowroom'));
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/layout/Header';
@@ -26,6 +28,7 @@ const fetchProducts = async () => {
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<'grid' | '3d'>('grid');
   const { t, language } = useLanguage();
   
   const activeCategory = searchParams.get('category') || 'all';
@@ -160,6 +163,7 @@ const Shop = () => {
 
       <main className="flex-1 py-12">
         <div className="container">
+          {/* View mode toggle + search/filters */}
           <div className="flex flex-col md:flex-row gap-4 mb-8">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -171,7 +175,7 @@ const Shop = () => {
               />
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 items-center">
               {categories.map((category) => (
                 <Button
                   key={category.slug}
@@ -182,6 +186,26 @@ const Shop = () => {
                   {category.name}
                 </Button>
               ))}
+
+              <div className="h-6 w-px bg-border mx-1 hidden md:block" />
+
+              {/* View toggle */}
+              <div className="flex rounded-lg border border-border overflow-hidden">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors ${viewMode === 'grid' ? 'bg-accent text-accent-foreground' : 'bg-background text-muted-foreground hover:text-foreground'}`}
+                >
+                  <LayoutGrid className="h-3.5 w-3.5" />
+                  Grid
+                </button>
+                <button
+                  onClick={() => setViewMode('3d')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors ${viewMode === '3d' ? 'bg-accent text-accent-foreground' : 'bg-background text-muted-foreground hover:text-foreground'}`}
+                >
+                  <Box className="h-3.5 w-3.5" />
+                  3D Showroom
+                </button>
+              </div>
             </div>
           </div>
 
@@ -189,7 +213,15 @@ const Shop = () => {
             {filteredProducts.length} {filteredProducts.length !== 1 ? t('shop.productsFoundPlural') : t('shop.productsFound')} {t('shop.found')}
           </p>
 
-          {isLoading ? (
+          {viewMode === '3d' ? (
+            <Suspense fallback={
+              <div className="w-full h-[70vh] rounded-2xl bg-secondary animate-pulse flex items-center justify-center">
+                <p className="text-muted-foreground text-sm">Loading 3D Showroom...</p>
+              </div>
+            }>
+              <VirtualShowroom products={filteredProducts} />
+            </Suspense>
+          ) : isLoading ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
               {[...Array(10)].map((_, i) => (
                 <div key={i} className="bg-card rounded-xl overflow-hidden border border-border/50 animate-pulse">
