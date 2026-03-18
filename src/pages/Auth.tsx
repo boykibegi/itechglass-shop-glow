@@ -336,7 +336,7 @@ const Auth = () => {
                         to="/forgot-password"
                         className="text-xs text-gold hover:text-gold/80 font-medium transition-colors hover:underline underline-offset-4"
                       >
-                        Forgot?
+                        {t('auth.forgot')}
                       </Link>
                     )}
                   </div>
