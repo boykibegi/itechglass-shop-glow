@@ -25,6 +25,7 @@ import { useAuth } from '@/hooks/useAuth';
 const Checkout = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const { items, getTotalPrice, clearCart } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderReference, setOrderReference] = useState<string | null>(null);
