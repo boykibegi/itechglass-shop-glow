@@ -243,9 +243,9 @@ const Checkout = () => {
              className="mb-6"
              onClick={() => navigate('/cart')}
            >
-             <ArrowLeft className="mr-2 h-4 w-4" />
-             Back to Cart
-           </Button>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              {t('checkout.backToCart')}
+            </Button>
  
            <h1 className="text-3xl font-bold mb-8">Checkout</h1>
  
