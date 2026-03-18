@@ -28,6 +28,7 @@ const fetchProducts = async () => {
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<'grid' | '3d'>('grid');
   const { t, language } = useLanguage();
   
   const activeCategory = searchParams.get('category') || 'all';
