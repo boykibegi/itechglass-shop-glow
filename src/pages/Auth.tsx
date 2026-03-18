@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Loader2, Smartphone, Phone, Mail, Lock, ArrowRight, Sparkles, User, Shield, Truck, Award } from 'lucide-react';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 import authHero from '@/assets/auth-hero.jpg';
 import { Button } from '@/components/ui/button';
@@ -201,7 +202,11 @@ const Auth = () => {
       </div>
 
       {/* Right side - Auth Form */}
-      <div className="flex-1 flex flex-col min-h-screen lg:min-h-0">
+      <div className="flex-1 flex flex-col min-h-screen lg:min-h-0 relative">
+        {/* Language Switcher */}
+        <div className="absolute top-4 right-4 z-20">
+          <LanguageSwitcher />
+        </div>
         {/* Mobile Header */}
         <div className="lg:hidden relative overflow-hidden">
           <img
