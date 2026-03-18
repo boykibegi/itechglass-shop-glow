@@ -371,12 +371,12 @@ const Checkout = () => {
                      
                      {paymentStatus === 'processing' && (
                        <div className="bg-gold/10 rounded-lg p-4 border border-gold/20">
-                         <p className="text-sm text-gold font-medium">
-                           A payment request has been sent to your phone.
-                         </p>
-                         <p className="text-xs text-muted-foreground mt-1">
-                           Enter your mobile money PIN to complete the payment.
-                         </p>
+                          <p className="text-sm text-gold font-medium">
+                            {t('checkout.paymentSent')}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {t('checkout.enterPin')}
+                          </p>
                        </div>
                      )}
                    </div>
