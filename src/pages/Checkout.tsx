@@ -282,7 +282,7 @@ const Checkout = () => {
                     </div>
  
                    <div className="space-y-2">
-                     <Label htmlFor="address">Shipping Address</Label>
+                     <Label htmlFor="address">{t('checkout.shippingAddress')}</Label>
                      <Textarea
                        id="address"
                        value={formData.address}
