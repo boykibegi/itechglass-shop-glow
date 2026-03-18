@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Instagram, Facebook, Twitter } from 'lucide-react';
-
+import { useLanguage } from '@/hooks/useLanguage';
 
 const Footer = () => {
+  const { t } = useLanguage();
+
   return (
     <footer className="bg-primary text-primary-foreground">
       <div className="container py-12 md:py-16">
@@ -13,51 +15,51 @@ const Footer = () => {
               <span className="text-lg font-bold tracking-tight text-primary-foreground">iTech<span className="text-gold">Glass</span></span>
             </Link>
             <p className="text-sm text-primary-foreground/70 max-w-xs">
-              Premium iPhone accessories. Quality glass protection and stylish covers for your device.
+              {t('footer.description')}
             </p>
           </div>
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-gold">Quick Links</h4>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-gold">{t('footer.quickLinks')}</h4>
             <nav className="flex flex-col gap-2">
               <Link to="/shop" className="text-sm text-primary-foreground/70 hover:text-gold transition-colors">
-                All Products
+                {t('footer.allProducts')}
               </Link>
               <Link to="/shop?category=back-glass" className="text-sm text-primary-foreground/70 hover:text-gold transition-colors">
-                Back Glass
+                {t('nav.backGlass')}
               </Link>
               <Link to="/shop?category=screen-glass" className="text-sm text-primary-foreground/70 hover:text-gold transition-colors">
-                Screen Glass
+                {t('nav.screenGlass')}
               </Link>
               <Link to="/shop?category=covers" className="text-sm text-primary-foreground/70 hover:text-gold transition-colors">
-                Covers
+                {t('nav.covers')}
               </Link>
             </nav>
           </div>
 
           {/* Customer Service */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-gold">Support</h4>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-gold">{t('footer.support')}</h4>
             <nav className="flex flex-col gap-2">
               <Link to="/cart" className="text-sm text-primary-foreground/70 hover:text-gold transition-colors">
-                Cart
+                {t('footer.cart')}
               </Link>
               <Link to="/checkout" className="text-sm text-primary-foreground/70 hover:text-gold transition-colors">
-                Checkout
+                {t('footer.checkout')}
               </Link>
               <span className="text-sm text-primary-foreground/70">
-                Track Order
+                {t('footer.trackOrder')}
               </span>
               <span className="text-sm text-primary-foreground/70">
-                Returns
+                {t('footer.returns')}
               </span>
             </nav>
           </div>
 
           {/* Contact */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-gold">Contact Us</h4>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-gold">{t('footer.contactUs')}</h4>
             <div className="flex flex-col gap-3">
               <a href="tel:+255746582989" className="flex items-center gap-2 text-sm text-primary-foreground/70 hover:text-gold transition-colors">
                 <Phone className="h-4 w-4" />
@@ -91,7 +93,7 @@ const Footer = () => {
         {/* Bottom */}
         <div className="border-t border-primary-foreground/10 mt-12 pt-8 text-center">
           <p className="text-sm text-primary-foreground/50">
-            © {new Date().getFullYear()} iTechGlass. All rights reserved.
+            © {new Date().getFullYear()} iTechGlass. {t('footer.rights')}
           </p>
         </div>
       </div>
