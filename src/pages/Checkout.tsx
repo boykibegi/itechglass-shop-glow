@@ -303,7 +303,7 @@ const Checkout = () => {
  
                    <div className="space-y-4">
                      <div className="space-y-2">
-                       <Label htmlFor="phone">Phone Number</Label>
+                       <Label htmlFor="phone">{t('checkout.phoneNumber')}</Label>
                        <div className="flex gap-2">
                          <div className="flex-1">
                            <Input
