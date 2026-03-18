@@ -353,8 +353,8 @@ const Checkout = () => {
                              </div>
                            ))}
                          </div>
-                         <p className="text-sm text-muted-foreground mt-2">
-                           Amount: <span className="font-semibold">TSh {getTotalPrice().toLocaleString()}</span>
+                          <p className="text-sm text-muted-foreground mt-2">
+                            {t('checkout.amount')}: <span className="font-semibold">TSh {getTotalPrice().toLocaleString()}</span>
                          </p>
                        </div>
                      )}
