@@ -428,7 +428,7 @@ const Checkout = () => {
                      {isSubmitting || paymentStatus === 'processing' || paymentStatus === 'initiating' ? (
                        <>
                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                         {paymentStatus === 'processing' ? 'Awaiting Payment...' : 'Processing...'}
+                         {paymentStatus === 'processing' ? t('checkout.awaitingPayment') : t('checkout.processing')}
                        </>
                      ) : (
                        'Pay Now'
