@@ -388,7 +388,7 @@ const Auth = () => {
                       </>
                     ) : (
                       <>
-                        {isSignUp ? 'Create Account' : 'Sign In'}
+                        {isSignUp ? t('auth.signUp') : t('auth.signIn')}
                         <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                       </>
                     )}
