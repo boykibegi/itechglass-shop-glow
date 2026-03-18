@@ -431,7 +431,7 @@ const Checkout = () => {
                          {paymentStatus === 'processing' ? t('checkout.awaitingPayment') : t('checkout.processing')}
                        </>
                      ) : (
-                       'Pay Now'
+                       t('checkout.payNow')
                      )}
                    </Button>
                  </div>
