@@ -235,12 +235,10 @@ const Auth = () => {
             <div className="rounded-2xl border border-border/60 bg-card p-6 lg:p-8 shadow-[0_8px_40px_-12px_hsl(0_0%_0%/0.15)] dark:shadow-[0_8px_40px_-12px_hsl(0_0%_0%/0.4)]">
               <div className="space-y-1 mb-6 text-center animate-fade-in" style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}>
                 <h2 className="text-2xl lg:text-3xl font-bold text-foreground tracking-tight">
-                  {isSignUp ? 'Create Account' : 'Welcome Back'}
+                  {isSignUp ? t('auth.createAccount') : t('auth.welcomeBack')}
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  {isSignUp
-                    ? 'Join us for premium iPhone protection'
-                    : 'Sign in to continue shopping'}
+                  {isSignUp ? t('auth.joinUs') : t('auth.signInContinue')}
                 </p>
               </div>
 
