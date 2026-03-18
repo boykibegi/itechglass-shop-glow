@@ -286,7 +286,7 @@ const Auth = () => {
                   <div className="space-y-2 animate-fade-in" style={{ animationDelay: isSignUp ? '0.25s' : '0.2s', animationFillMode: 'backwards' }}>
                     <Label htmlFor="phone" className="text-sm font-medium flex items-center gap-2">
                       <Phone className="h-3.5 w-3.5 text-gold" />
-                      Phone Number <span className="text-destructive text-xs">*</span>
+                      {t('auth.phoneNumber')} <span className="text-destructive text-xs">*</span>
                     </Label>
                     <Input
                       id="phone"
