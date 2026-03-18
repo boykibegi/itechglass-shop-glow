@@ -287,7 +287,7 @@ const Checkout = () => {
                        id="address"
                        value={formData.address}
                        onChange={(e) => handleInputChange('address', e.target.value)}
-                       placeholder="Street address, city, region..."
+                       placeholder={t('checkout.addressPlaceholder')}
                        rows={3}
                      />
                      {errors.address && <p className="text-sm text-destructive">{errors.address}</p>}
