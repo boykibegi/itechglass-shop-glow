@@ -278,7 +278,7 @@ const Checkout = () => {
                         disabled
                         className="bg-muted cursor-not-allowed"
                       />
-                      <p className="text-xs text-muted-foreground">Email is linked to your account and cannot be changed.</p>
+                      <p className="text-xs text-muted-foreground">{t('checkout.emailLinked')}</p>
                     </div>
  
                    <div className="space-y-2">
