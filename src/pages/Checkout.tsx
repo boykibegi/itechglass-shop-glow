@@ -409,8 +409,8 @@ const Checkout = () => {
                        <span>TSh {getTotalPrice().toLocaleString()}</span>
                      </div>
                      <div className="flex justify-between text-sm">
-                       <span className="text-muted-foreground">Shipping</span>
-                       <span className="text-gold">Free</span>
+                        <span className="text-muted-foreground">{t('cart.shipping')}</span>
+                        <span className="text-gold">{t('cart.free')}</span>
                      </div>
                      <div className="flex justify-between text-lg font-semibold pt-2">
                        <span>Total</span>
