@@ -400,7 +400,7 @@ const Auth = () => {
             {/* Below card */}
             <div className="mt-6 text-center animate-fade-in" style={{ animationDelay: isSignUp ? '0.5s' : '0.4s', animationFillMode: 'backwards' }}>
               <p className="text-sm text-muted-foreground">
-                {isSignUp ? 'Already have an account?' : "Don't have an account?"}
+                {isSignUp ? t('auth.haveAccount') : t('auth.noAccount')}
                 <button
                   type="button"
                   onClick={() => {
