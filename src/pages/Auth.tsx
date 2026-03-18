@@ -356,7 +356,7 @@ const Auth = () => {
                   <div className="space-y-2 animate-fade-in" style={{ animationDelay: '0.4s', animationFillMode: 'backwards' }}>
                     <Label htmlFor="confirmPassword" className="text-sm font-medium flex items-center gap-2">
                       <Lock className="h-3.5 w-3.5 text-muted-foreground" />
-                      Confirm Password
+                      {t('auth.confirmPassword')}
                     </Label>
                     <Input
                       id="confirmPassword"
