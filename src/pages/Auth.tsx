@@ -409,7 +409,7 @@ const Auth = () => {
                   }}
                   className="ml-2 text-gold hover:text-gold/80 font-semibold transition-colors hover:underline underline-offset-4"
                 >
-                  {isSignUp ? 'Sign in' : 'Sign up'}
+                  {isSignUp ? t('auth.signIn') : t('auth.signUp')}
                 </button>
               </p>
             </div>
