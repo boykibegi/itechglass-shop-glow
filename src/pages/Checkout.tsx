@@ -296,10 +296,10 @@ const Checkout = () => {
  
                  {/* Payment */}
                  <div className="bg-card rounded-lg border border-border p-6 space-y-4">
-                   <h2 className="text-xl font-semibold">Mobile Money Payment</h2>
-                   <p className="text-sm text-muted-foreground">
-                     Enter your mobile money number to pay via M-Pesa, Tigo Pesa, or Airtel Money.
-                   </p>
+                    <h2 className="text-xl font-semibold">{t('checkout.mobileMoney')}</h2>
+                    <p className="text-sm text-muted-foreground">
+                      {t('checkout.mobileMoneyDesc')}
+                    </p>
  
                    <div className="space-y-4">
                      <div className="space-y-2">
