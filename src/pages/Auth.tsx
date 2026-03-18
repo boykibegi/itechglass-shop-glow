@@ -202,7 +202,11 @@ const Auth = () => {
       </div>
 
       {/* Right side - Auth Form */}
-      <div className="flex-1 flex flex-col min-h-screen lg:min-h-0">
+      <div className="flex-1 flex flex-col min-h-screen lg:min-h-0 relative">
+        {/* Language Switcher */}
+        <div className="absolute top-4 right-4 z-20">
+          <LanguageSwitcher />
+        </div>
         {/* Mobile Header */}
         <div className="lg:hidden relative overflow-hidden">
           <img
