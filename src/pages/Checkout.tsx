@@ -405,7 +405,7 @@ const Checkout = () => {
  
                    <div className="border-t border-border pt-4 space-y-2">
                      <div className="flex justify-between text-sm">
-                       <span className="text-muted-foreground">Subtotal</span>
+                       <span className="text-muted-foreground">{t('cart.subtotal')}</span>
                        <span>TSh {getTotalPrice().toLocaleString()}</span>
                      </div>
                      <div className="flex justify-between text-sm">
