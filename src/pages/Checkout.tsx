@@ -324,10 +324,10 @@ const Checkout = () => {
                            {paymentStatus === 'previewing' ? (
                              <Loader2 className="h-4 w-4 animate-spin" />
                            ) : (
-                             <>
-                               <Phone className="h-4 w-4 mr-2" />
-                               Verify
-                             </>
+                              <>
+                                <Phone className="h-4 w-4 mr-2" />
+                                {t('checkout.verify')}
+                              </>
                            )}
                          </Button>
                        </div>
