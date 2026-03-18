@@ -306,8 +306,8 @@ const Auth = () => {
                   <div className="space-y-2 animate-fade-in" style={{ animationDelay: isSignUp ? '0.3s' : '0.2s', animationFillMode: 'backwards' }}>
                     <Label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
                       <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                      Email {isSignUp ? (
-                        <span className="text-muted-foreground/60 text-xs font-normal">(Optional)</span>
+                      {t('auth.email')} {isSignUp ? (
+                        <span className="text-muted-foreground/60 text-xs font-normal">{t('auth.optional')}</span>
                       ) : (
                         <span className="text-destructive text-xs">*</span>
                       )}
