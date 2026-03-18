@@ -413,7 +413,7 @@ const Checkout = () => {
                         <span className="text-gold">{t('cart.free')}</span>
                      </div>
                      <div className="flex justify-between text-lg font-semibold pt-2">
-                       <span>Total</span>
+                       <span>{t('cart.total')}</span>
                        <span>TSh {getTotalPrice().toLocaleString()}</span>
                      </div>
                    </div>
