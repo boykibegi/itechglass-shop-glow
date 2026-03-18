@@ -10,6 +10,7 @@ import ProductReviews from '@/components/ProductReviews';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { useCart } from '@/lib/cart';
+import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
 
 const fetchProduct = async (id: string) => {
@@ -29,6 +30,7 @@ const ProductDetail = () => {
   const [selectedModel, setSelectedModel] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
   const { addItem } = useCart();
+  const { t, language } = useLanguage();
 
   const { data: product, isLoading, error } = useQuery({
     queryKey: ['product', id],
@@ -40,7 +42,7 @@ const ProductDetail = () => {
     if (!product) return;
     
     if (product.compatible_models && product.compatible_models.length > 0 && !selectedModel) {
-      toast.error('Please select an iPhone model');
+      toast.error(language === 'sw' ? 'Tafadhali chagua modeli ya iPhone' : 'Please select an iPhone model');
       return;
     }
 
@@ -53,7 +55,7 @@ const ProductDetail = () => {
       selectedModel: selectedModel || 'Universal',
     });
 
-    toast.success('Added to cart!', {
+    toast.success(t('product.addedToCart'), {
       description: `${quantity}x ${product.name}`,
     });
   };
@@ -85,9 +87,9 @@ const ProductDetail = () => {
         <Header />
         <main className="flex-1 py-12">
           <div className="container text-center">
-            <h1 className="text-2xl font-bold mb-4">Product not found</h1>
+            <h1 className="text-2xl font-bold mb-4">{t('product.notFound')}</h1>
             <Button asChild variant="outline">
-              <Link to="/shop">Back to Shop</Link>
+              <Link to="/shop">{t('product.backToShop')}</Link>
             </Button>
           </div>
         </main>
@@ -102,12 +104,16 @@ const ProductDetail = () => {
 
   const getCategoryLabel = (cat: string) => {
     switch (cat) {
-      case 'back-glass': return 'Back Glass';
-      case 'screen-glass': return 'Screen Glass';
-      case 'covers': return 'Cover';
+      case 'back-glass': return t('nav.backGlass');
+      case 'screen-glass': return t('nav.screenGlass');
+      case 'covers': return language === 'sw' ? 'Kesi' : 'Cover';
       default: return cat;
     }
   };
+
+  // Use Swahili name/description if available
+  const productName = (language === 'sw' && (product as any).name_sw) || product.name;
+  const productDescription = (language === 'sw' && (product as any).description_sw) || product.description;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -115,33 +121,21 @@ const ProductDetail = () => {
       
       <main className="flex-1 py-8 md:py-12">
         <div className="container">
-          {/* Breadcrumb */}
           <Link to="/shop" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-gold mb-8">
             <ArrowLeft className="h-4 w-4" />
-            Back to Shop
+            {t('product.backToShop')}
           </Link>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-            {/* Images */}
             <div className="space-y-4">
               <div className="aspect-square bg-secondary rounded-lg overflow-hidden">
-                <img
-                  src={images[selectedImage]}
-                  alt={product.name}
-                  className="w-full h-full object-cover"
-                />
+                <img src={images[selectedImage]} alt={productName} className="w-full h-full object-cover" />
               </div>
               
               {images.length > 1 && (
                 <div className="flex gap-3 overflow-x-auto pb-2">
                   {images.map((img, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setSelectedImage(idx)}
-                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
-                        selectedImage === idx ? 'border-gold' : 'border-transparent'
-                      }`}
-                    >
+                    <button key={idx} onClick={() => setSelectedImage(idx)} className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${selectedImage === idx ? 'border-gold' : 'border-transparent'}`}>
                       <img src={img} alt="" className="w-full h-full object-cover" />
                     </button>
                   ))}
@@ -149,105 +143,76 @@ const ProductDetail = () => {
               )}
             </div>
 
-            {/* Details */}
             <div className="space-y-6">
               <div>
                 <span className="text-sm font-medium text-gold uppercase tracking-wider">
                   {getCategoryLabel(product.category)}
                 </span>
-                <h1 className="text-3xl md:text-4xl font-bold mt-2">{product.name}</h1>
+                <h1 className="text-3xl md:text-4xl font-bold mt-2">{productName}</h1>
               </div>
 
               <p className="text-3xl font-bold">TSh {Number(product.price).toLocaleString()}</p>
 
-              {product.description && (
-                <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+              {productDescription && (
+                <p className="text-muted-foreground leading-relaxed">{productDescription}</p>
               )}
 
-              {/* Stock status */}
               <div className="flex items-center gap-2">
                 {product.stock > 0 ? (
                   <>
                     <Check className="h-4 w-4 text-green-500" />
-                    <span className="text-sm text-green-600">In Stock ({product.stock} available)</span>
+                    <span className="text-sm text-green-600">{t('product.inStock')} ({product.stock} {t('product.available')})</span>
                   </>
                 ) : (
-                  <span className="text-sm text-destructive">Out of Stock</span>
+                  <span className="text-sm text-destructive">{t('product.outOfStock')}</span>
                 )}
               </div>
 
-              {/* Model selector */}
               {product.compatible_models && product.compatible_models.length > 0 && (
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Select iPhone Model</label>
+                  <label className="text-sm font-medium">{t('product.selectModel')}</label>
                   <Select value={selectedModel} onValueChange={setSelectedModel}>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Choose your model" />
+                      <SelectValue placeholder={t('product.chooseModel')} />
                     </SelectTrigger>
                     <SelectContent>
                       {product.compatible_models.map((model) => (
-                        <SelectItem key={model} value={model}>
-                          {model}
-                        </SelectItem>
+                        <SelectItem key={model} value={model}>{model}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
               )}
 
-              {/* Quantity */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Quantity</label>
+                <label className="text-sm font-medium">{t('product.quantity')}</label>
                 <div className="flex items-center gap-3">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    disabled={quantity <= 1}
-                  >
+                  <Button variant="outline" size="icon" onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={quantity <= 1}>
                     <Minus className="h-4 w-4" />
                   </Button>
                   <span className="text-lg font-semibold w-12 text-center">{quantity}</span>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                    disabled={quantity >= product.stock}
-                  >
+                  <Button variant="outline" size="icon" onClick={() => setQuantity(Math.min(product.stock, quantity + 1))} disabled={quantity >= product.stock}>
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
 
-              {/* Add to cart */}
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Button
-                  variant="gold"
-                  size="xl"
-                  className="flex-1"
-                  onClick={handleAddToCart}
-                  disabled={product.stock <= 0}
-                >
+                <Button variant="gold" size="xl" className="flex-1" onClick={handleAddToCart} disabled={product.stock <= 0}>
                   <ShoppingCart className="mr-2 h-5 w-5" />
-                  Add to Cart
+                  {t('product.addToCart')}
                 </Button>
                 <Button asChild variant="outline" size="xl">
-                  <Link to="/cart">View Cart</Link>
+                  <Link to="/cart">{t('product.viewCart')}</Link>
                 </Button>
               </div>
 
-              {/* Compatible models list */}
               {product.compatible_models && product.compatible_models.length > 0 && (
                 <div className="border-t border-border pt-6">
-                  <h3 className="text-sm font-medium mb-3">Compatible Models</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('product.compatibleModels')}</h3>
                   <div className="flex flex-wrap gap-2">
                     {product.compatible_models.map((model) => (
-                      <span
-                        key={model}
-                        className="px-3 py-1 bg-secondary text-sm rounded-full"
-                      >
-                        {model}
-                      </span>
+                      <span key={model} className="px-3 py-1 bg-secondary text-sm rounded-full">{model}</span>
                     ))}
                   </div>
                 </div>
@@ -255,7 +220,6 @@ const ProductDetail = () => {
             </div>
           </div>
 
-          {/* Customer Reviews */}
           <ProductReviews productId={product.id} />
         </div>
       </main>
