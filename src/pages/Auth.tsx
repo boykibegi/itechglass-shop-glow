@@ -329,7 +329,7 @@ const Auth = () => {
                   <div className="flex items-center justify-between">
                     <Label htmlFor="password" className="text-sm font-medium flex items-center gap-2">
                       <Lock className="h-3.5 w-3.5 text-muted-foreground" />
-                      Password
+                      {t('auth.password')}
                     </Label>
                     {!isSignUp && (
                       <Link
