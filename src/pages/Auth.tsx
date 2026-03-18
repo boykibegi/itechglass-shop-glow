@@ -249,7 +249,7 @@ const Auth = () => {
                     <TabsList className="w-full grid grid-cols-2 h-12 rounded-xl bg-secondary/80 p-1">
                       <TabsTrigger value="phone" className="gap-2 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-foreground text-sm font-medium transition-all">
                         <Phone className="h-4 w-4" />
-                        Phone
+                        {t('auth.phone')}
                       </TabsTrigger>
                       <TabsTrigger value="email" className="gap-2 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-foreground text-sm font-medium transition-all">
                         <Mail className="h-4 w-4" />
