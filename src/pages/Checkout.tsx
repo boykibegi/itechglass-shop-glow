@@ -337,7 +337,7 @@ const Checkout = () => {
                      {/* Available payment methods */}
                      {availableMethods.length > 0 && (
                        <div className="bg-secondary/50 rounded-lg p-4 space-y-2">
-                         <p className="text-sm font-medium">Available payment methods:</p>
+                         <p className="text-sm font-medium">{t('checkout.availableMethods')}</p>
                          <div className="flex flex-wrap gap-2">
                            {availableMethods.map((method) => (
                              <div
