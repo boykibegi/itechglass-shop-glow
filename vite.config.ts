@@ -15,13 +15,12 @@ export default defineConfig(({ mode }) => ({
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   // Force pre-bundle react-leaflet with React to avoid duplicate instances
   optimizeDeps: {
-    include: ["react", "react-dom", "react-dom/client", "react-leaflet", "@react-leaflet/core", "leaflet"],
+    include: ["react", "react-dom", "react-dom/client", "react-leaflet", "@react-leaflet/core", "leaflet", "@tanstack/react-query"],
   },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
-    // Prevent duplicate React instances causing react-leaflet errors
     dedupe: ["react", "react-dom", "react-dom/client", "react/jsx-runtime", "react/jsx-dev-runtime"],
   },
   build: {
