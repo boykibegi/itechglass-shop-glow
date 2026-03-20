@@ -1,6 +1,5 @@
 import { useRef, useMemo } from 'react';
-import { useFrame } from '@react-three/fiber';
-import { Environment, Float, Text, MeshReflectorMaterial } from '@react-three/drei';
+import { Float, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import ProductFrame from './ProductFrame';
 
@@ -58,14 +57,15 @@ const ShowroomScene = ({ products, onProductClick }: ShowroomSceneProps) => {
 
   return (
     <>
-      {/* Lighting */}
-      <ambientLight intensity={0.15} />
-      <directionalLight position={[5, 8, 5]} intensity={0.5} castShadow color="#fff5e0" />
-      
+      {/* Lighting — brighter for visibility */}
+      <ambientLight intensity={0.4} />
+      <directionalLight position={[5, 8, 5]} intensity={1} castShadow color="#fff5e0" />
+      <directionalLight position={[-3, 6, 2]} intensity={0.5} color="#ffffff" />
+
       {/* Spotlights on walls */}
-      <spotLight position={[0, 5, -3]} angle={0.6} penumbra={0.8} intensity={1.5} color="#c9a227" castShadow target-position={[0, 1, -5]} />
-      <spotLight position={[-4, 5, 0]} angle={0.6} penumbra={0.8} intensity={1} color="#fff5e0" target-position={[-6, 1, 0]} />
-      <spotLight position={[4, 5, 0]} angle={0.6} penumbra={0.8} intensity={1} color="#fff5e0" target-position={[6, 1, 0]} />
+      <spotLight position={[0, 5, -3]} angle={0.8} penumbra={0.5} intensity={2} color="#c9a227" castShadow />
+      <spotLight position={[-4, 5, 0]} angle={0.8} penumbra={0.5} intensity={1.5} color="#fff5e0" />
+      <spotLight position={[4, 5, 0]} angle={0.8} penumbra={0.5} intensity={1.5} color="#fff5e0" />
 
       {/* Ceiling lights */}
       {[-3, 0, 3].map((x) => (
@@ -74,48 +74,38 @@ const ShowroomScene = ({ products, onProductClick }: ShowroomSceneProps) => {
             <cylinderGeometry args={[0.15, 0.15, 0.05, 16]} />
             <meshStandardMaterial color="#c9a227" metalness={0.9} roughness={0.1} emissive="#c9a227" emissiveIntensity={0.5} />
           </mesh>
-          <pointLight intensity={0.8} distance={8} color="#fff5e0" position={[0, -0.1, 0]} />
+          <pointLight intensity={1.5} distance={10} color="#fff5e0" position={[0, -0.1, 0]} />
         </group>
       ))}
 
-      {/* Floor */}
+      {/* Floor — simple material for compatibility */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
         <planeGeometry args={[16, 16]} />
-        <MeshReflectorMaterial
-          mirror={0.4}
-          blur={[300, 100]}
-          resolution={1024}
-          mixBlur={1}
-          mixStrength={0.6}
-          roughness={0.8}
-          depthScale={1.2}
-          color="#0a0a0a"
-          metalness={0.5}
-        />
+        <meshStandardMaterial color="#1a1a1a" metalness={0.6} roughness={0.4} />
       </mesh>
 
       {/* Ceiling */}
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 5, 0]}>
         <planeGeometry args={[16, 16]} />
-        <meshStandardMaterial color="#0d0d0d" />
+        <meshStandardMaterial color="#1a1a1a" />
       </mesh>
 
       {/* Back wall */}
       <mesh position={[0, 2.5, -6]}>
         <planeGeometry args={[16, 5]} />
-        <meshStandardMaterial color="#111111" />
+        <meshStandardMaterial color="#222222" />
       </mesh>
 
       {/* Left wall */}
       <mesh position={[-7, 2.5, 0]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[16, 5]} />
-        <meshStandardMaterial color="#0f0f0f" />
+        <meshStandardMaterial color="#1e1e1e" />
       </mesh>
 
       {/* Right wall */}
       <mesh position={[7, 2.5, 0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[16, 5]} />
-        <meshStandardMaterial color="#0f0f0f" />
+        <meshStandardMaterial color="#1e1e1e" />
       </mesh>
 
       {/* Store sign */}
@@ -156,22 +146,17 @@ const ShowroomScene = ({ products, onProductClick }: ShowroomSceneProps) => {
       {/* Pedestal displays for featured items */}
       {displayProducts.slice(0, 2).map((product, i) => (
         <group key={`pedestal-${product.id}`} position={[i === 0 ? -2 : 2, 0, 1]}>
-          {/* Pedestal */}
           <mesh position={[0, 0.4, 0]} castShadow>
             <cylinderGeometry args={[0.5, 0.6, 0.8, 32]} />
-            <meshStandardMaterial color="#1a1a1a" metalness={0.7} roughness={0.3} />
+            <meshStandardMaterial color="#2a2a2a" metalness={0.7} roughness={0.3} />
           </mesh>
-          {/* Gold ring */}
           <mesh position={[0, 0.8, 0]}>
             <torusGeometry args={[0.52, 0.015, 8, 32]} />
             <meshStandardMaterial color="#c9a227" metalness={0.9} roughness={0.1} emissive="#c9a227" emissiveIntensity={0.3} />
           </mesh>
-          {/* Spotlight on pedestal */}
-          <spotLight position={[0, 4, 0]} angle={0.3} penumbra={0.5} intensity={2} color="#c9a227" target-position={[0, 0.8, 0]} />
+          <spotLight position={[0, 4, 0]} angle={0.3} penumbra={0.5} intensity={2} color="#c9a227" />
         </group>
       ))}
-
-      <Environment preset="night" />
     </>
   );
 };
