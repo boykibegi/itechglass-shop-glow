@@ -20,46 +20,41 @@ interface ShowroomSceneProps {
 const ShowroomScene = ({ products, onProductClick }: ShowroomSceneProps) => {
   const groupRef = useRef<THREE.Group>(null);
 
-  // Arrange products on 3 walls (back, left, right)
+  // Limit products to fit the room and arrange on 3 walls
+  const displayProducts = useMemo(() => products.slice(0, 12), [products]);
+
   const productPositions = useMemo(() => {
     const positions: { position: [number, number, number]; rotation: [number, number, number]; product: Product }[] = [];
-    const perWall = Math.ceil(products.length / 3);
+    const total = displayProducts.length;
+    const backCount = Math.min(4, total);
+    const leftCount = Math.min(4, Math.max(0, total - backCount));
+    const rightCount = Math.max(0, total - backCount - leftCount);
 
-    products.forEach((product, i) => {
-      const wall = Math.floor(i / perWall);
-      const indexOnWall = i % perWall;
-      const spacing = 2.8;
-      const wallWidth = perWall * spacing;
+    let idx = 0;
 
-      if (wall === 0) {
-        // Back wall
-        const x = (indexOnWall - (Math.min(perWall, products.length) - 1) / 2) * spacing;
-        positions.push({
-          position: [x, 1.2, -5],
-          rotation: [0, 0, 0],
-          product,
-        });
-      } else if (wall === 1) {
-        // Left wall
-        const z = -5 + indexOnWall * spacing + 1.5;
-        positions.push({
-          position: [-6, 1.2, z],
-          rotation: [0, Math.PI / 2, 0],
-          product,
-        });
-      } else {
-        // Right wall
-        const z = -5 + indexOnWall * spacing + 1.5;
-        positions.push({
-          position: [6, 1.2, z],
-          rotation: [0, -Math.PI / 2, 0],
-          product,
-        });
-      }
-    });
+    // Back wall — max 4 products, evenly spaced across 10 units
+    for (let i = 0; i < backCount; i++, idx++) {
+      const spacing = 10 / (backCount + 1);
+      const x = -5 + spacing * (i + 1);
+      positions.push({ position: [x, 1.2, -5], rotation: [0, 0, 0], product: displayProducts[idx] });
+    }
+
+    // Left wall
+    for (let i = 0; i < leftCount; i++, idx++) {
+      const spacing = 8 / (leftCount + 1);
+      const z = -4 + spacing * (i + 1);
+      positions.push({ position: [-6, 1.2, z], rotation: [0, Math.PI / 2, 0], product: displayProducts[idx] });
+    }
+
+    // Right wall
+    for (let i = 0; i < rightCount; i++, idx++) {
+      const spacing = 8 / (rightCount + 1);
+      const z = -4 + spacing * (i + 1);
+      positions.push({ position: [6, 1.2, z], rotation: [0, -Math.PI / 2, 0], product: displayProducts[idx] });
+    }
 
     return positions;
-  }, [products]);
+  }, [displayProducts]);
 
   return (
     <>
