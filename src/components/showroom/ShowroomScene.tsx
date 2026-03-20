@@ -154,7 +154,7 @@ const ShowroomScene = ({ products, onProductClick }: ShowroomSceneProps) => {
       </group>
 
       {/* Pedestal displays for featured items */}
-      {products.slice(0, 2).map((product, i) => (
+      {displayProducts.slice(0, 2).map((product, i) => (
         <group key={`pedestal-${product.id}`} position={[i === 0 ? -2 : 2, 0, 1]}>
           {/* Pedestal */}
           <mesh position={[0, 0.4, 0]} castShadow>
