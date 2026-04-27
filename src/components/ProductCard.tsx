@@ -48,7 +48,7 @@ const ProductCard = ({ id, name, price, image, images, category, compatibleModel
   const getCategoryLabel = (cat: string) => {
     switch (cat) {
       case 'back-glass': return 'Back Glass';
-      case 'screen-glass': return 'Screen Glass';
+      case 'screen-glass': return 'LCD Screen';
       case 'covers': return 'Cover';
       default: return cat;
     }

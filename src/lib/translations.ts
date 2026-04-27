@@ -5,7 +5,7 @@ export const translations = {
   'nav.home': { en: 'Home', sw: 'Nyumbani' },
   'nav.shop': { en: 'Shop', sw: 'Duka' },
   'nav.backGlass': { en: 'Back Glass', sw: 'Glasi ya Nyuma' },
-  'nav.screenGlass': { en: 'Screen Glass', sw: 'Glasi ya Skrini' },
+  'nav.screenGlass': { en: 'LCD Screen', sw: 'Skrini ya LCD' },
   'nav.covers': { en: 'Covers', sw: 'Kesi' },
   'nav.myProfile': { en: 'My Profile', sw: 'Wasifu Wangu' },
   'nav.myOrders': { en: 'My Orders', sw: 'Oda Zangu' },
