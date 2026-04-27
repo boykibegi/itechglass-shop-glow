@@ -51,7 +51,7 @@ interface ProductFormDialogProps {
 
 const categories = [
   { value: 'back-glass', label: 'Back Glass' },
-  { value: 'screen-glass', label: 'Screen Glass' },
+  { value: 'screen-glass', label: 'LCD Screen' },
   { value: 'covers', label: 'Covers' },
 ];
 

@@ -123,8 +123,8 @@ const Shop = () => {
                   </>
                 ) : activeCategory === 'screen-glass' ? (
                   <>
-                    <span className="block">{language === 'sw' ? 'Glasi ya' : 'Screen'}</span>
-                    <span className="block text-gradient-gold">{language === 'sw' ? 'Skrini' : 'Glass'}</span>
+                    <span className="block">{language === 'sw' ? 'Skrini ya' : 'LCD'}</span>
+                    <span className="block text-gradient-gold">{language === 'sw' ? 'LCD' : 'Screen'}</span>
                   </>
                 ) : (
                   <>
