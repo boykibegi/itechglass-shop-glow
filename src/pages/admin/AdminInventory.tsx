@@ -320,6 +320,12 @@ const AdminInventory = () => {
             </Table>
           )}
         </div>
+          </TabsContent>
+
+          <TabsContent value="sales">
+            <InventorySalesTab />
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Add/Edit Dialog */}
