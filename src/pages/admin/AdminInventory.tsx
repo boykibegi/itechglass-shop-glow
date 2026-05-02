@@ -160,13 +160,17 @@ const AdminInventory = () => {
     (acc, i) => {
       const tzCost = i.buying_price_yuan * i.exchange_rate;
       const profitPerUnit = i.selling_price_tzs - tzCost;
+      const sold = i.units_sold ?? 0;
+      const remaining = Math.max(0, i.units_bought - sold);
       acc.units += i.units_bought;
+      acc.sold += sold;
+      acc.remaining += remaining;
       acc.cost += tzCost * i.units_bought;
-      acc.revenue += i.selling_price_tzs * i.units_bought;
-      acc.profit += profitPerUnit * i.units_bought;
+      acc.revenue += i.selling_price_tzs * sold;
+      acc.profit += profitPerUnit * sold;
       return acc;
     },
-    { units: 0, cost: 0, revenue: 0, profit: 0 },
+    { units: 0, sold: 0, remaining: 0, cost: 0, revenue: 0, profit: 0 },
   );
 
   return (
