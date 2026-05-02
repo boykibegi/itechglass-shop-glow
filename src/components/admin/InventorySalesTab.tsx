@@ -301,20 +301,33 @@ const InventorySalesTab = () => {
             </div>
             <div className="grid gap-2">
               <Label>
-                Unit Price (TZS){' '}
+                Discount Selling Price (TZS){' '}
                 <span className="text-xs text-muted-foreground">
-                  (defaults to model's selling price)
+                  (leave empty to use the model's regular price
+                  {selectedItem
+                    ? `: ${fmt(selectedItem.selling_price_tzs)}`
+                    : ''}
+                  )
                 </span>
               </Label>
               <Input
                 type="number"
                 step="0.01"
                 placeholder={
-                  selectedItem ? String(selectedItem.selling_price_tzs) : ''
+                  selectedItem
+                    ? `Discount price (regular: ${fmt(selectedItem.selling_price_tzs)})`
+                    : 'Enter discounted price if any'
                 }
                 value={form.unit_price_tzs}
                 onChange={(e) => setForm({ ...form, unit_price_tzs: e.target.value })}
               />
+              {selectedItem &&
+                form.unit_price_tzs &&
+                parseFloat(form.unit_price_tzs) < selectedItem.selling_price_tzs && (
+                  <p className="text-xs text-gold">
+                    Discount: {fmt(selectedItem.selling_price_tzs - parseFloat(form.unit_price_tzs))} TZS off per unit
+                  </p>
+                )}
             </div>
             <div className="grid gap-2">
               <Label>Notes (optional)</Label>
