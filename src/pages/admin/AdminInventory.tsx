@@ -176,17 +176,34 @@ const AdminInventory = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Inventory</h1>
-            <p className="text-sm text-muted-foreground">
-              Track buying cost, units, and profit per phone model.
-            </p>
-          </div>
-          <Button onClick={openAdd} className="bg-gold text-background hover:bg-gold/90">
-            <Plus className="h-4 w-4 mr-2" /> Add Item
-          </Button>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Inventory</h1>
+          <p className="text-sm text-muted-foreground">
+            Track stock, costs, and sales per phone model.
+          </p>
         </div>
+
+        <Tabs defaultValue="stock" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="stock">Stock</TabsTrigger>
+            <TabsTrigger value="sales">Sales</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="stock" className="space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div className="relative max-w-sm flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search phone model..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+              <Button onClick={openAdd} className="bg-gold text-background hover:bg-gold/90">
+                <Plus className="h-4 w-4 mr-2" /> Add Item
+              </Button>
+            </div>
 
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
