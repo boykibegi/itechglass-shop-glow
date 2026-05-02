@@ -66,6 +66,7 @@ const fmt = (n: number) =>
 
 const AdminInventory = () => {
   const qc = useQueryClient();
+  const [category, setCategory] = useState<InventoryCategory>('backglass');
   const [search, setSearch] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [editing, setEditing] = useState<InventoryItem | null>(null);
