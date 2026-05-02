@@ -353,6 +353,10 @@ const AdminInventory = () => {
           <TabsContent value="sales">
             <InventorySalesTab />
           </TabsContent>
+
+          <TabsContent value="movements">
+            <InventoryMovementsTab category={category} />
+          </TabsContent>
         </Tabs>
       </div>
 
