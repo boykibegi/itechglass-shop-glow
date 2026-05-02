@@ -58,6 +58,42 @@ export type Database = {
           },
         ]
       }
+      inventory_items: {
+        Row: {
+          buying_price_yuan: number
+          created_at: string
+          exchange_rate: number
+          id: string
+          notes: string | null
+          phone_model: string
+          selling_price_tzs: number
+          units_bought: number
+          updated_at: string
+        }
+        Insert: {
+          buying_price_yuan?: number
+          created_at?: string
+          exchange_rate?: number
+          id?: string
+          notes?: string | null
+          phone_model: string
+          selling_price_tzs?: number
+          units_bought?: number
+          updated_at?: string
+        }
+        Update: {
+          buying_price_yuan?: number
+          created_at?: string
+          exchange_rate?: number
+          id?: string
+          notes?: string | null
+          phone_model?: string
+          selling_price_tzs?: number
+          units_bought?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           assigned_at: string | null
