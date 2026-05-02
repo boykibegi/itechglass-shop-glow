@@ -20,9 +20,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import InventorySalesTab from '@/components/admin/InventorySalesTab';
 import { toast } from 'sonner';
 
+type InventoryCategory = 'backglass' | 'cover';
+
 type InventoryItem = {
   id: string;
   phone_model: string;
+  category: InventoryCategory;
   buying_price_yuan: number;
   exchange_rate: number;
   units_bought: number;
@@ -63,6 +66,7 @@ const fmt = (n: number) =>
 
 const AdminInventory = () => {
   const qc = useQueryClient();
+  const [category, setCategory] = useState<InventoryCategory>('backglass');
   const [search, setSearch] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [editing, setEditing] = useState<InventoryItem | null>(null);
@@ -85,6 +89,7 @@ const AdminInventory = () => {
     mutationFn: async () => {
       const payload = {
         phone_model: form.phone_model.trim(),
+        category,
         buying_price_yuan: parseFloat(form.buying_price_yuan) || 0,
         exchange_rate: parseFloat(form.exchange_rate) || 0,
         units_bought: parseInt(form.units_bought) || 0,
@@ -153,8 +158,10 @@ const AdminInventory = () => {
     setForm(emptyForm);
   };
 
-  const filtered = items.filter((i) =>
-    i.phone_model.toLowerCase().includes(search.toLowerCase()),
+  const filtered = items.filter(
+    (i) =>
+      (i.category ?? 'backglass') === category &&
+      i.phone_model.toLowerCase().includes(search.toLowerCase()),
   );
 
   // Totals
@@ -178,11 +185,28 @@ const AdminInventory = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Inventory</h1>
-          <p className="text-sm text-muted-foreground">
-            Track stock, costs, and sales per phone model.
-          </p>
+        <div className="flex items-end justify-between flex-wrap gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Inventory</h1>
+            <p className="text-sm text-muted-foreground">
+              Track stock, costs, and sales per phone model.
+            </p>
+          </div>
+          <div className="inline-flex rounded-md border border-border bg-card p-1">
+            {(['backglass', 'cover'] as const).map((c) => (
+              <button
+                key={c}
+                onClick={() => setCategory(c)}
+                className={`px-4 py-1.5 text-sm rounded-sm transition-colors ${
+                  category === c
+                    ? 'bg-gold text-background font-semibold'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {c === 'backglass' ? 'Backglass' : 'Covers'}
+              </button>
+            ))}
+          </div>
         </div>
 
         <Tabs defaultValue="stock" className="space-y-4">
