@@ -24,6 +24,8 @@ type InventoryItem = {
   buying_price_yuan: number;
   exchange_rate: number;
   units_bought: number;
+  units_sold: number;
+  stock_in_date: string;
   selling_price_tzs: number;
   notes: string | null;
   created_at: string;
@@ -35,15 +37,21 @@ type FormState = {
   buying_price_yuan: string;
   exchange_rate: string;
   units_bought: string;
+  units_sold: string;
+  stock_in_date: string;
   selling_price_tzs: string;
   notes: string;
 };
+
+const today = () => new Date().toISOString().slice(0, 10);
 
 const emptyForm: FormState = {
   phone_model: '',
   buying_price_yuan: '',
   exchange_rate: '380',
   units_bought: '1',
+  units_sold: '0',
+  stock_in_date: today(),
   selling_price_tzs: '',
   notes: '',
 };
