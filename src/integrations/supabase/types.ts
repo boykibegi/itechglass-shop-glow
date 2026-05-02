@@ -100,6 +100,44 @@ export type Database = {
         }
         Relationships: []
       }
+      inventory_sales: {
+        Row: {
+          created_at: string
+          id: string
+          inventory_item_id: string
+          notes: string | null
+          quantity: number
+          sale_date: string
+          unit_price_tzs: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          inventory_item_id: string
+          notes?: string | null
+          quantity: number
+          sale_date?: string
+          unit_price_tzs?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          inventory_item_id?: string
+          notes?: string | null
+          quantity?: number
+          sale_date?: string
+          unit_price_tzs?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_sales_inventory_item_id_fkey"
+            columns: ["inventory_item_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           assigned_at: string | null
