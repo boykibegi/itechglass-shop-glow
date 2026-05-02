@@ -158,8 +158,10 @@ const AdminInventory = () => {
     setForm(emptyForm);
   };
 
-  const filtered = items.filter((i) =>
-    i.phone_model.toLowerCase().includes(search.toLowerCase()),
+  const filtered = items.filter(
+    (i) =>
+      (i.category ?? 'backglass') === category &&
+      i.phone_model.toLowerCase().includes(search.toLowerCase()),
   );
 
   // Totals
