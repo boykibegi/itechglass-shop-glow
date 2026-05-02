@@ -207,14 +207,17 @@ const AdminInventory = () => {
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-10 text-muted-foreground">
+                    <TableCell colSpan={11} className="text-center py-10 text-muted-foreground">
                       No inventory items yet.
                     </TableCell>
                   </TableRow>
                 ) : (
                   filtered.map((item) => {
                     const tzCost = item.buying_price_yuan * item.exchange_rate;
-                    const profit = (item.selling_price_tzs - tzCost) * item.units_bought;
+                    const profitPerUnit = item.selling_price_tzs - tzCost;
+                    const totalCost = tzCost * item.units_bought;
+                    const totalRevenue = item.selling_price_tzs * item.units_bought;
+                    const totalProfit = profitPerUnit * item.units_bought;
                     return (
                       <TableRow key={item.id}>
                         <TableCell className="font-medium">{item.phone_model}</TableCell>
@@ -224,9 +227,16 @@ const AdminInventory = () => {
                         <TableCell className="text-right">{item.units_bought}</TableCell>
                         <TableCell className="text-right">{fmt(item.selling_price_tzs)}</TableCell>
                         <TableCell
-                          className={`text-right font-semibold ${profit >= 0 ? 'text-green-500' : 'text-destructive'}`}
+                          className={`text-right font-semibold ${profitPerUnit >= 0 ? 'text-green-500' : 'text-destructive'}`}
                         >
-                          {fmt(profit)}
+                          {fmt(profitPerUnit)}
+                        </TableCell>
+                        <TableCell className="text-right">{fmt(totalCost)}</TableCell>
+                        <TableCell className="text-right">{fmt(totalRevenue)}</TableCell>
+                        <TableCell
+                          className={`text-right font-bold ${totalProfit >= 0 ? 'text-green-500' : 'text-destructive'}`}
+                        >
+                          {fmt(totalProfit)}
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-1">
@@ -253,6 +263,9 @@ const AdminInventory = () => {
                   <TableRow>
                     <TableCell colSpan={4} className="font-semibold">Totals</TableCell>
                     <TableCell className="text-right font-semibold">{totals.units}</TableCell>
+                    <TableCell />
+                    <TableCell />
+                    <TableCell className="text-right font-semibold">{fmt(totals.cost)}</TableCell>
                     <TableCell className="text-right font-semibold">{fmt(totals.revenue)}</TableCell>
                     <TableCell
                       className={`text-right font-bold ${totals.profit >= 0 ? 'text-green-500' : 'text-destructive'}`}
