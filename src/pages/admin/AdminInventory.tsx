@@ -86,6 +86,8 @@ const AdminInventory = () => {
         buying_price_yuan: parseFloat(form.buying_price_yuan) || 0,
         exchange_rate: parseFloat(form.exchange_rate) || 0,
         units_bought: parseInt(form.units_bought) || 0,
+        units_sold: parseInt(form.units_sold) || 0,
+        stock_in_date: form.stock_in_date || today(),
         selling_price_tzs: parseFloat(form.selling_price_tzs) || 0,
         notes: form.notes.trim() || null,
       };
