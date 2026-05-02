@@ -205,16 +205,6 @@ const AdminInventory = () => {
               </Button>
             </div>
 
-        <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search phone model..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-
         <div className="rounded-lg border border-border bg-card">
           {isLoading ? (
             <div className="flex items-center justify-center p-12">
