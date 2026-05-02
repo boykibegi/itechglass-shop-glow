@@ -208,22 +208,25 @@ const AdminInventory = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Phone Model</TableHead>
+                  <TableHead className="text-right">Stock-In Date</TableHead>
                   <TableHead className="text-right">Buying (¥)</TableHead>
                   <TableHead className="text-right">Exchange Rate</TableHead>
                   <TableHead className="text-right">TZS Cost/Unit</TableHead>
                   <TableHead className="text-right">Units Bought</TableHead>
+                  <TableHead className="text-right">Units Sold</TableHead>
+                  <TableHead className="text-right">Remaining</TableHead>
                   <TableHead className="text-right">Selling/Unit (TZS)</TableHead>
                   <TableHead className="text-right">Profit/Unit (TZS)</TableHead>
                   <TableHead className="text-right">Total Cost (TZS)</TableHead>
-                  <TableHead className="text-right">Total Revenue (TZS)</TableHead>
-                  <TableHead className="text-right">Total Profit (TZS)</TableHead>
+                  <TableHead className="text-right">Revenue (TZS)</TableHead>
+                  <TableHead className="text-right">Profit (TZS)</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={11} className="text-center py-10 text-muted-foreground">
+                    <TableCell colSpan={14} className="text-center py-10 text-muted-foreground">
                       No inventory items yet.
                     </TableCell>
                   </TableRow>
@@ -231,16 +234,29 @@ const AdminInventory = () => {
                   filtered.map((item) => {
                     const tzCost = item.buying_price_yuan * item.exchange_rate;
                     const profitPerUnit = item.selling_price_tzs - tzCost;
+                    const sold = item.units_sold ?? 0;
+                    const remaining = Math.max(0, item.units_bought - sold);
                     const totalCost = tzCost * item.units_bought;
-                    const totalRevenue = item.selling_price_tzs * item.units_bought;
-                    const totalProfit = profitPerUnit * item.units_bought;
+                    const totalRevenue = item.selling_price_tzs * sold;
+                    const totalProfit = profitPerUnit * sold;
                     return (
                       <TableRow key={item.id}>
                         <TableCell className="font-medium">{item.phone_model}</TableCell>
+                        <TableCell className="text-right whitespace-nowrap">
+                          {item.stock_in_date
+                            ? new Date(item.stock_in_date).toLocaleDateString()
+                            : '—'}
+                        </TableCell>
                         <TableCell className="text-right">¥{fmt(item.buying_price_yuan)}</TableCell>
                         <TableCell className="text-right">{item.exchange_rate}</TableCell>
                         <TableCell className="text-right">{fmt(tzCost)}</TableCell>
                         <TableCell className="text-right">{item.units_bought}</TableCell>
+                        <TableCell className="text-right">{sold}</TableCell>
+                        <TableCell
+                          className={`text-right font-semibold ${remaining === 0 ? 'text-destructive' : remaining < 3 ? 'text-gold' : ''}`}
+                        >
+                          {remaining}
+                        </TableCell>
                         <TableCell className="text-right">{fmt(item.selling_price_tzs)}</TableCell>
                         <TableCell
                           className={`text-right font-semibold ${profitPerUnit >= 0 ? 'text-green-500' : 'text-destructive'}`}
@@ -277,8 +293,10 @@ const AdminInventory = () => {
               {filtered.length > 0 && (
                 <TableFooter>
                   <TableRow>
-                    <TableCell colSpan={4} className="font-semibold">Totals</TableCell>
+                    <TableCell colSpan={5} className="font-semibold">Totals</TableCell>
                     <TableCell className="text-right font-semibold">{totals.units}</TableCell>
+                    <TableCell className="text-right font-semibold">{totals.sold}</TableCell>
+                    <TableCell className="text-right font-semibold">{totals.remaining}</TableCell>
                     <TableCell />
                     <TableCell />
                     <TableCell className="text-right font-semibold">{fmt(totals.cost)}</TableCell>
