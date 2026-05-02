@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import InventorySalesTab from '@/components/admin/InventorySalesTab';
+import InventoryMovementsTab from '@/components/admin/InventoryMovementsTab';
 import { toast } from 'sonner';
 
 type InventoryCategory = 'backglass' | 'cover';
@@ -213,6 +214,7 @@ const AdminInventory = () => {
           <TabsList>
             <TabsTrigger value="stock">Stock</TabsTrigger>
             <TabsTrigger value="sales">Sales</TabsTrigger>
+            <TabsTrigger value="movements">Movements</TabsTrigger>
           </TabsList>
 
           <TabsContent value="stock" className="space-y-4">
@@ -350,6 +352,10 @@ const AdminInventory = () => {
 
           <TabsContent value="sales">
             <InventorySalesTab />
+          </TabsContent>
+
+          <TabsContent value="movements">
+            <InventoryMovementsTab category={category} />
           </TabsContent>
         </Tabs>
       </div>

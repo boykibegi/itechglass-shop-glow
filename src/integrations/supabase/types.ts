@@ -103,6 +103,63 @@ export type Database = {
         }
         Relationships: []
       }
+      inventory_movements: {
+        Row: {
+          buying_price_yuan_after: number | null
+          buying_price_yuan_before: number | null
+          category: string
+          changed_by: string | null
+          created_at: string
+          id: string
+          inventory_item_id: string
+          movement_type: string
+          notes: string | null
+          phone_model: string
+          selling_price_tzs_after: number | null
+          selling_price_tzs_before: number | null
+          units_bought_after: number | null
+          units_bought_before: number | null
+          units_sold_after: number | null
+          units_sold_before: number | null
+        }
+        Insert: {
+          buying_price_yuan_after?: number | null
+          buying_price_yuan_before?: number | null
+          category?: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          inventory_item_id: string
+          movement_type: string
+          notes?: string | null
+          phone_model: string
+          selling_price_tzs_after?: number | null
+          selling_price_tzs_before?: number | null
+          units_bought_after?: number | null
+          units_bought_before?: number | null
+          units_sold_after?: number | null
+          units_sold_before?: number | null
+        }
+        Update: {
+          buying_price_yuan_after?: number | null
+          buying_price_yuan_before?: number | null
+          category?: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          inventory_item_id?: string
+          movement_type?: string
+          notes?: string | null
+          phone_model?: string
+          selling_price_tzs_after?: number | null
+          selling_price_tzs_before?: number | null
+          units_bought_after?: number | null
+          units_bought_before?: number | null
+          units_sold_after?: number | null
+          units_sold_before?: number | null
+        }
+        Relationships: []
+      }
       inventory_sales: {
         Row: {
           created_at: string
