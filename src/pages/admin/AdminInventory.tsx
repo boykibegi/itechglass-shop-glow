@@ -24,6 +24,8 @@ type InventoryItem = {
   buying_price_yuan: number;
   exchange_rate: number;
   units_bought: number;
+  units_sold: number;
+  stock_in_date: string;
   selling_price_tzs: number;
   notes: string | null;
   created_at: string;
@@ -35,15 +37,21 @@ type FormState = {
   buying_price_yuan: string;
   exchange_rate: string;
   units_bought: string;
+  units_sold: string;
+  stock_in_date: string;
   selling_price_tzs: string;
   notes: string;
 };
+
+const today = () => new Date().toISOString().slice(0, 10);
 
 const emptyForm: FormState = {
   phone_model: '',
   buying_price_yuan: '',
   exchange_rate: '380',
   units_bought: '1',
+  units_sold: '0',
+  stock_in_date: today(),
   selling_price_tzs: '',
   notes: '',
 };
@@ -78,6 +86,8 @@ const AdminInventory = () => {
         buying_price_yuan: parseFloat(form.buying_price_yuan) || 0,
         exchange_rate: parseFloat(form.exchange_rate) || 0,
         units_bought: parseInt(form.units_bought) || 0,
+        units_sold: parseInt(form.units_sold) || 0,
+        stock_in_date: form.stock_in_date || today(),
         selling_price_tzs: parseFloat(form.selling_price_tzs) || 0,
         notes: form.notes.trim() || null,
       };
@@ -127,6 +137,8 @@ const AdminInventory = () => {
       buying_price_yuan: String(item.buying_price_yuan),
       exchange_rate: String(item.exchange_rate),
       units_bought: String(item.units_bought),
+      units_sold: String(item.units_sold ?? 0),
+      stock_in_date: item.stock_in_date ?? today(),
       selling_price_tzs: String(item.selling_price_tzs),
       notes: item.notes ?? '',
     });
@@ -148,13 +160,17 @@ const AdminInventory = () => {
     (acc, i) => {
       const tzCost = i.buying_price_yuan * i.exchange_rate;
       const profitPerUnit = i.selling_price_tzs - tzCost;
+      const sold = i.units_sold ?? 0;
+      const remaining = Math.max(0, i.units_bought - sold);
       acc.units += i.units_bought;
+      acc.sold += sold;
+      acc.remaining += remaining;
       acc.cost += tzCost * i.units_bought;
-      acc.revenue += i.selling_price_tzs * i.units_bought;
-      acc.profit += profitPerUnit * i.units_bought;
+      acc.revenue += i.selling_price_tzs * sold;
+      acc.profit += profitPerUnit * sold;
       return acc;
     },
-    { units: 0, cost: 0, revenue: 0, profit: 0 },
+    { units: 0, sold: 0, remaining: 0, cost: 0, revenue: 0, profit: 0 },
   );
 
   return (
@@ -192,22 +208,25 @@ const AdminInventory = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Phone Model</TableHead>
+                  <TableHead className="text-right">Stock-In Date</TableHead>
                   <TableHead className="text-right">Buying (¥)</TableHead>
                   <TableHead className="text-right">Exchange Rate</TableHead>
                   <TableHead className="text-right">TZS Cost/Unit</TableHead>
                   <TableHead className="text-right">Units Bought</TableHead>
+                  <TableHead className="text-right">Units Sold</TableHead>
+                  <TableHead className="text-right">Remaining</TableHead>
                   <TableHead className="text-right">Selling/Unit (TZS)</TableHead>
                   <TableHead className="text-right">Profit/Unit (TZS)</TableHead>
                   <TableHead className="text-right">Total Cost (TZS)</TableHead>
-                  <TableHead className="text-right">Total Revenue (TZS)</TableHead>
-                  <TableHead className="text-right">Total Profit (TZS)</TableHead>
+                  <TableHead className="text-right">Revenue (TZS)</TableHead>
+                  <TableHead className="text-right">Profit (TZS)</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={11} className="text-center py-10 text-muted-foreground">
+                    <TableCell colSpan={14} className="text-center py-10 text-muted-foreground">
                       No inventory items yet.
                     </TableCell>
                   </TableRow>
@@ -215,16 +234,29 @@ const AdminInventory = () => {
                   filtered.map((item) => {
                     const tzCost = item.buying_price_yuan * item.exchange_rate;
                     const profitPerUnit = item.selling_price_tzs - tzCost;
+                    const sold = item.units_sold ?? 0;
+                    const remaining = Math.max(0, item.units_bought - sold);
                     const totalCost = tzCost * item.units_bought;
-                    const totalRevenue = item.selling_price_tzs * item.units_bought;
-                    const totalProfit = profitPerUnit * item.units_bought;
+                    const totalRevenue = item.selling_price_tzs * sold;
+                    const totalProfit = profitPerUnit * sold;
                     return (
                       <TableRow key={item.id}>
                         <TableCell className="font-medium">{item.phone_model}</TableCell>
+                        <TableCell className="text-right whitespace-nowrap">
+                          {item.stock_in_date
+                            ? new Date(item.stock_in_date).toLocaleDateString()
+                            : '—'}
+                        </TableCell>
                         <TableCell className="text-right">¥{fmt(item.buying_price_yuan)}</TableCell>
                         <TableCell className="text-right">{item.exchange_rate}</TableCell>
                         <TableCell className="text-right">{fmt(tzCost)}</TableCell>
                         <TableCell className="text-right">{item.units_bought}</TableCell>
+                        <TableCell className="text-right">{sold}</TableCell>
+                        <TableCell
+                          className={`text-right font-semibold ${remaining === 0 ? 'text-destructive' : remaining < 3 ? 'text-gold' : ''}`}
+                        >
+                          {remaining}
+                        </TableCell>
                         <TableCell className="text-right">{fmt(item.selling_price_tzs)}</TableCell>
                         <TableCell
                           className={`text-right font-semibold ${profitPerUnit >= 0 ? 'text-green-500' : 'text-destructive'}`}
@@ -261,8 +293,10 @@ const AdminInventory = () => {
               {filtered.length > 0 && (
                 <TableFooter>
                   <TableRow>
-                    <TableCell colSpan={4} className="font-semibold">Totals</TableCell>
+                    <TableCell colSpan={5} className="font-semibold">Totals</TableCell>
                     <TableCell className="text-right font-semibold">{totals.units}</TableCell>
+                    <TableCell className="text-right font-semibold">{totals.sold}</TableCell>
+                    <TableCell className="text-right font-semibold">{totals.remaining}</TableCell>
                     <TableCell />
                     <TableCell />
                     <TableCell className="text-right font-semibold">{fmt(totals.cost)}</TableCell>
@@ -324,12 +358,29 @@ const AdminInventory = () => {
                 />
               </div>
               <div className="grid gap-2">
+                <Label>Units Sold</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  value={form.units_sold}
+                  onChange={(e) => setForm({ ...form, units_sold: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
                 <Label>Selling Price (TZS)</Label>
                 <Input
                   type="number"
                   step="0.01"
                   value={form.selling_price_tzs}
                   onChange={(e) => setForm({ ...form, selling_price_tzs: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Stock-In Date</Label>
+                <Input
+                  type="date"
+                  value={form.stock_in_date}
+                  onChange={(e) => setForm({ ...form, stock_in_date: e.target.value })}
                 />
               </div>
             </div>

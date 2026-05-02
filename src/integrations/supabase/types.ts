@@ -67,7 +67,9 @@ export type Database = {
           notes: string | null
           phone_model: string
           selling_price_tzs: number
+          stock_in_date: string
           units_bought: number
+          units_sold: number
           updated_at: string
         }
         Insert: {
@@ -78,7 +80,9 @@ export type Database = {
           notes?: string | null
           phone_model: string
           selling_price_tzs?: number
+          stock_in_date?: string
           units_bought?: number
+          units_sold?: number
           updated_at?: string
         }
         Update: {
@@ -89,7 +93,9 @@ export type Database = {
           notes?: string | null
           phone_model?: string
           selling_price_tzs?: number
+          stock_in_date?: string
           units_bought?: number
+          units_sold?: number
           updated_at?: string
         }
         Relationships: []
