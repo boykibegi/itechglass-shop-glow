@@ -358,12 +358,29 @@ const AdminInventory = () => {
                 />
               </div>
               <div className="grid gap-2">
+                <Label>Units Sold</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  value={form.units_sold}
+                  onChange={(e) => setForm({ ...form, units_sold: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
                 <Label>Selling Price (TZS)</Label>
                 <Input
                   type="number"
                   step="0.01"
                   value={form.selling_price_tzs}
                   onChange={(e) => setForm({ ...form, selling_price_tzs: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Stock-In Date</Label>
+                <Input
+                  type="date"
+                  value={form.stock_in_date}
+                  onChange={(e) => setForm({ ...form, stock_in_date: e.target.value })}
                 />
               </div>
             </div>
