@@ -25,6 +25,7 @@ import TrackOrderPublic from "./pages/TrackOrderPublic";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminOrders from "./pages/admin/AdminOrders";
+import AdminInventory from "./pages/admin/AdminInventory";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import { SessionTimeoutDialog } from "./components/SessionTimeoutDialog";
@@ -62,6 +63,7 @@ const App = () => (
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/products" element={<AdminProducts />} />
             <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/admin/inventory" element={<AdminInventory />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
