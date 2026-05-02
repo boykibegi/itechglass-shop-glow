@@ -134,11 +134,18 @@ const InventorySalesTab = () => {
 
   const totals = sales.reduce(
     (acc, s) => {
+      const item = itemMap.get(s.inventory_item_id);
+      const regularPrice = item?.selling_price_tzs ?? 0;
+      const actualPrice = s.unit_price_tzs ?? regularPrice;
+      const perUnitDiscount = Math.max(0, regularPrice - actualPrice);
       acc.qty += s.quantity;
-      acc.revenue += (s.unit_price_tzs ?? 0) * s.quantity;
+      acc.revenue += actualPrice * s.quantity;
+      acc.regularRevenue += regularPrice * s.quantity;
+      acc.discount += perUnitDiscount * s.quantity;
+      if (perUnitDiscount > 0) acc.discountedQty += s.quantity;
       return acc;
     },
-    { qty: 0, revenue: 0 },
+    { qty: 0, revenue: 0, regularRevenue: 0, discount: 0, discountedQty: 0 },
   );
 
   const selectedItem = itemMap.get(form.inventory_item_id);
@@ -159,9 +166,38 @@ const InventorySalesTab = () => {
           onClick={() => setIsOpen(true)}
           className="bg-gold text-background hover:bg-gold/90"
         >
-          <Plus className="h-4 w-4 mr-2" /> Record Sale
         </Button>
       </div>
+
+      {sales.length > 0 && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="rounded-lg border border-border bg-card p-4">
+            <p className="text-xs text-muted-foreground uppercase tracking-wide">Units Sold</p>
+            <p className="text-2xl font-semibold mt-1">{totals.qty}</p>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-4">
+            <p className="text-xs text-muted-foreground uppercase tracking-wide">Regular Revenue</p>
+            <p className="text-2xl font-semibold mt-1">
+              {fmt(totals.regularRevenue)} <span className="text-xs text-muted-foreground">TZS</span>
+            </p>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-4">
+            <p className="text-xs text-muted-foreground uppercase tracking-wide">Discounted Revenue</p>
+            <p className="text-2xl font-semibold mt-1 text-gold">
+              {fmt(totals.revenue)} <span className="text-xs text-muted-foreground">TZS</span>
+            </p>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-4">
+            <p className="text-xs text-muted-foreground uppercase tracking-wide">Total Discount Given</p>
+            <p className="text-2xl font-semibold mt-1 text-destructive">
+              −{fmt(totals.discount)} <span className="text-xs text-muted-foreground">TZS</span>
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              across {totals.discountedQty} discounted unit{totals.discountedQty === 1 ? '' : 's'}
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="rounded-lg border border-border bg-card">
         {isLoading ? (
