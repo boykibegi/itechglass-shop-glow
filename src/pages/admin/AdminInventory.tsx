@@ -358,16 +358,35 @@ const AdminInventory = () => {
       <Dialog open={isOpen} onOpenChange={(o) => (o ? setIsOpen(true) : closeDialog())}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>{editing ? 'Edit Inventory Item' : 'Add Inventory Item'}</DialogTitle>
+            <DialogTitle>
+              {editing ? 'Edit' : 'Add'} {category === 'cover' ? 'Cover' : 'Backglass'} Item
+            </DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-2">
             <div className="grid gap-2">
               <Label>Phone Model</Label>
               <Input
+                list="iphone-models"
                 value={form.phone_model}
                 onChange={(e) => setForm({ ...form, phone_model: e.target.value })}
-                placeholder="e.g. iPhone 15 Pro Max"
+                placeholder={
+                  category === 'cover'
+                    ? 'e.g. iPhone 13 Pro Max cover'
+                    : 'e.g. iPhone 15 Pro Max'
+                }
               />
+              <datalist id="iphone-models">
+                {[
+                  '11', '11 Pro', '11 Pro Max',
+                  '12', '12 Pro', '12 Pro Max',
+                  '13', '13 Pro', '13 Pro Max',
+                  '14', '14 Pro', '14 Pro Max',
+                  '15', '15 Pro', '15 Pro Max',
+                  '16', '16 Pro', '16 Pro Max',
+                ].map((m) => (
+                  <option key={m} value={`iPhone ${m}`} />
+                ))}
+              </datalist>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="grid gap-2">
