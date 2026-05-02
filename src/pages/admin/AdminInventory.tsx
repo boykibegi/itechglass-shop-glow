@@ -185,11 +185,28 @@ const AdminInventory = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Inventory</h1>
-          <p className="text-sm text-muted-foreground">
-            Track stock, costs, and sales per phone model.
-          </p>
+        <div className="flex items-end justify-between flex-wrap gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Inventory</h1>
+            <p className="text-sm text-muted-foreground">
+              Track stock, costs, and sales per phone model.
+            </p>
+          </div>
+          <div className="inline-flex rounded-md border border-border bg-card p-1">
+            {(['backglass', 'cover'] as const).map((c) => (
+              <button
+                key={c}
+                onClick={() => setCategory(c)}
+                className={`px-4 py-1.5 text-sm rounded-sm transition-colors ${
+                  category === c
+                    ? 'bg-gold text-background font-semibold'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {c === 'backglass' ? 'Backglass' : 'Covers'}
+              </button>
+            ))}
+          </div>
         </div>
 
         <Tabs defaultValue="stock" className="space-y-4">
