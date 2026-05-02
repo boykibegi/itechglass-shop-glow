@@ -153,6 +153,55 @@ const InventorySalesTab = () => {
     ? selectedItem.units_bought - selectedItem.units_sold
     : 0;
 
+  const exportCsv = () => {
+    const esc = (v: unknown) => {
+      const s = v == null ? '' : String(v);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const headers = [
+      'Date', 'Phone Model', 'Quantity', 'Regular Price (TZS)',
+      'Unit Price (TZS)', 'Discount/Unit (TZS)', 'Line Total (TZS)',
+      'Line Discount (TZS)', 'Notes',
+    ];
+    const rows = sales.map((s) => {
+      const item = itemMap.get(s.inventory_item_id);
+      const regular = item?.selling_price_tzs ?? 0;
+      const actual = s.unit_price_tzs ?? regular;
+      const perDisc = Math.max(0, regular - actual);
+      return [
+        s.sale_date,
+        item?.phone_model ?? '',
+        s.quantity,
+        regular,
+        actual,
+        perDisc,
+        actual * s.quantity,
+        perDisc * s.quantity,
+        s.notes ?? '',
+      ];
+    });
+    const summary = [
+      [],
+      ['Summary'],
+      ['Units Sold', totals.qty],
+      ['Regular Revenue (TZS)', Math.round(totals.regularRevenue)],
+      ['Discounted Revenue (TZS)', Math.round(totals.revenue)],
+      ['Total Discount Given (TZS)', Math.round(totals.discount)],
+      ['Discounted Units', totals.discountedQty],
+    ];
+    const csv = [headers, ...rows, ...summary]
+      .map((r) => r.map(esc).join(','))
+      .join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `inventory-sales-${today()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Sales exported');
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-3">
