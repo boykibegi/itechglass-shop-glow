@@ -194,10 +194,13 @@ const AdminInventory = () => {
                   <TableHead>Phone Model</TableHead>
                   <TableHead className="text-right">Buying (¥)</TableHead>
                   <TableHead className="text-right">Exchange Rate</TableHead>
-                  <TableHead className="text-right">TZS Price</TableHead>
+                  <TableHead className="text-right">TZS Cost/Unit</TableHead>
                   <TableHead className="text-right">Units Bought</TableHead>
-                  <TableHead className="text-right">Selling (TZS)</TableHead>
-                  <TableHead className="text-right">Profit (TZS)</TableHead>
+                  <TableHead className="text-right">Selling/Unit (TZS)</TableHead>
+                  <TableHead className="text-right">Profit/Unit (TZS)</TableHead>
+                  <TableHead className="text-right">Total Cost (TZS)</TableHead>
+                  <TableHead className="text-right">Total Revenue (TZS)</TableHead>
+                  <TableHead className="text-right">Total Profit (TZS)</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
