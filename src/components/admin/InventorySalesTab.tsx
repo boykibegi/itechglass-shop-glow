@@ -162,11 +162,21 @@ const InventorySalesTab = () => {
             Each sale automatically reduces remaining stock.
           </p>
         </div>
-        <Button
-          onClick={() => setIsOpen(true)}
-          className="bg-gold text-background hover:bg-gold/90"
-        >
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={exportCsv}
+            disabled={sales.length === 0}
+          >
+            <Download className="h-4 w-4 mr-2" /> Export CSV
+          </Button>
+          <Button
+            onClick={() => setIsOpen(true)}
+            className="bg-gold text-background hover:bg-gold/90"
+          >
+            <Plus className="h-4 w-4 mr-2" /> Record Sale
+          </Button>
+        </div>
       </div>
 
       {sales.length > 0 && (
