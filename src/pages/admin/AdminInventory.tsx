@@ -137,6 +137,8 @@ const AdminInventory = () => {
       buying_price_yuan: String(item.buying_price_yuan),
       exchange_rate: String(item.exchange_rate),
       units_bought: String(item.units_bought),
+      units_sold: String(item.units_sold ?? 0),
+      stock_in_date: item.stock_in_date ?? today(),
       selling_price_tzs: String(item.selling_price_tzs),
       notes: item.notes ?? '',
     });
