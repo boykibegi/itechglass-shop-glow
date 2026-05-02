@@ -134,11 +134,18 @@ const InventorySalesTab = () => {
 
   const totals = sales.reduce(
     (acc, s) => {
+      const item = itemMap.get(s.inventory_item_id);
+      const regularPrice = item?.selling_price_tzs ?? 0;
+      const actualPrice = s.unit_price_tzs ?? regularPrice;
+      const perUnitDiscount = Math.max(0, regularPrice - actualPrice);
       acc.qty += s.quantity;
-      acc.revenue += (s.unit_price_tzs ?? 0) * s.quantity;
+      acc.revenue += actualPrice * s.quantity;
+      acc.regularRevenue += regularPrice * s.quantity;
+      acc.discount += perUnitDiscount * s.quantity;
+      if (perUnitDiscount > 0) acc.discountedQty += s.quantity;
       return acc;
     },
-    { qty: 0, revenue: 0 },
+    { qty: 0, revenue: 0, regularRevenue: 0, discount: 0, discountedQty: 0 },
   );
 
   const selectedItem = itemMap.get(form.inventory_item_id);
