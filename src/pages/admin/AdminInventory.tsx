@@ -20,9 +20,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import InventorySalesTab from '@/components/admin/InventorySalesTab';
 import { toast } from 'sonner';
 
+type InventoryCategory = 'backglass' | 'cover';
+
 type InventoryItem = {
   id: string;
   phone_model: string;
+  category: InventoryCategory;
   buying_price_yuan: number;
   exchange_rate: number;
   units_bought: number;
