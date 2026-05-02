@@ -61,6 +61,7 @@ export type Database = {
       inventory_items: {
         Row: {
           buying_price_yuan: number
+          category: string
           created_at: string
           exchange_rate: number
           id: string
@@ -74,6 +75,7 @@ export type Database = {
         }
         Insert: {
           buying_price_yuan?: number
+          category?: string
           created_at?: string
           exchange_rate?: number
           id?: string
@@ -87,6 +89,7 @@ export type Database = {
         }
         Update: {
           buying_price_yuan?: number
+          category?: string
           created_at?: string
           exchange_rate?: number
           id?: string
