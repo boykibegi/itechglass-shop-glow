@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Trash2, Loader2, Download } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -153,6 +153,55 @@ const InventorySalesTab = () => {
     ? selectedItem.units_bought - selectedItem.units_sold
     : 0;
 
+  const exportCsv = () => {
+    const esc = (v: unknown) => {
+      const s = v == null ? '' : String(v);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const headers = [
+      'Date', 'Phone Model', 'Quantity', 'Regular Price (TZS)',
+      'Unit Price (TZS)', 'Discount/Unit (TZS)', 'Line Total (TZS)',
+      'Line Discount (TZS)', 'Notes',
+    ];
+    const rows = sales.map((s) => {
+      const item = itemMap.get(s.inventory_item_id);
+      const regular = item?.selling_price_tzs ?? 0;
+      const actual = s.unit_price_tzs ?? regular;
+      const perDisc = Math.max(0, regular - actual);
+      return [
+        s.sale_date,
+        item?.phone_model ?? '',
+        s.quantity,
+        regular,
+        actual,
+        perDisc,
+        actual * s.quantity,
+        perDisc * s.quantity,
+        s.notes ?? '',
+      ];
+    });
+    const summary = [
+      [],
+      ['Summary'],
+      ['Units Sold', totals.qty],
+      ['Regular Revenue (TZS)', Math.round(totals.regularRevenue)],
+      ['Discounted Revenue (TZS)', Math.round(totals.revenue)],
+      ['Total Discount Given (TZS)', Math.round(totals.discount)],
+      ['Discounted Units', totals.discountedQty],
+    ];
+    const csv = [headers, ...rows, ...summary]
+      .map((r) => r.map(esc).join(','))
+      .join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `inventory-sales-${today()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Sales exported');
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -162,11 +211,21 @@ const InventorySalesTab = () => {
             Each sale automatically reduces remaining stock.
           </p>
         </div>
-        <Button
-          onClick={() => setIsOpen(true)}
-          className="bg-gold text-background hover:bg-gold/90"
-        >
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={exportCsv}
+            disabled={sales.length === 0}
+          >
+            <Download className="h-4 w-4 mr-2" /> Export CSV
+          </Button>
+          <Button
+            onClick={() => setIsOpen(true)}
+            className="bg-gold text-background hover:bg-gold/90"
+          >
+            <Plus className="h-4 w-4 mr-2" /> Record Sale
+          </Button>
+        </div>
       </div>
 
       {sales.length > 0 && (
