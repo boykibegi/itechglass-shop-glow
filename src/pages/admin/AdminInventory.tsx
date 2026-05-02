@@ -89,6 +89,7 @@ const AdminInventory = () => {
     mutationFn: async () => {
       const payload = {
         phone_model: form.phone_model.trim(),
+        category,
         buying_price_yuan: parseFloat(form.buying_price_yuan) || 0,
         exchange_rate: parseFloat(form.exchange_rate) || 0,
         units_bought: parseInt(form.units_bought) || 0,
