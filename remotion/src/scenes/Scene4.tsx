@@ -9,7 +9,7 @@ export default function Scene4() {
   const out = interpolate(frame, [78, 90], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
 
   return (
-    <AbsoluteFill style={{ opacity: out }}>
+    <AbsoluteFill style={{ opacity: 1 }}>
       <AbsoluteFill style={{ opacity: 0.25 }}>
         <Img src={staticFile('images/cover3.jpg')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </AbsoluteFill>

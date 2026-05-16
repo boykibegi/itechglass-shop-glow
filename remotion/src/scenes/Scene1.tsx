@@ -13,7 +13,7 @@ export default function Scene1() {
   const out = interpolate(frame, [60, 75], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
 
   return (
-    <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center', opacity: out }}>
+    <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center', opacity: 1 }}>
       <div
         style={{
           fontFamily: 'Inter',
