@@ -12,7 +12,7 @@ export default function Scene2() {
   const out = interpolate(frame, [78, 90], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
 
   return (
-    <AbsoluteFill style={{ opacity: out }}>
+    <AbsoluteFill style={{ opacity: 1 }}>
       <AbsoluteFill style={{ opacity: imgIn }}>
         <Img
           src={staticFile('images/cover1.jpg')}

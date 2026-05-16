@@ -17,7 +17,7 @@ export default function Scene3() {
   const bgIn = interpolate(frame, [0, 20], [0, 0.35], { extrapolateRight: 'clamp' });
 
   return (
-    <AbsoluteFill style={{ opacity: out }}>
+    <AbsoluteFill style={{ opacity: 1 }}>
       <AbsoluteFill style={{ opacity: bgIn }}>
         <Img
           src={staticFile('images/cover2.jpg')}
