@@ -11,7 +11,7 @@ export default function SceneCatalog() {
   const headerS = spring({ frame, fps, config: { damping: 22 } });
 
   return (
-    <AbsoluteFill style={{ opacity: out, padding: '120px 60px' }}>
+    <AbsoluteFill style={{ opacity: 1, padding: '120px 60px' }}>
       <div
         style={{
           fontFamily: 'Inter',

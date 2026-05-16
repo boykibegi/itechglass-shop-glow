@@ -13,7 +13,7 @@ export default function SceneSpotlight({ cover, index }: { cover: Cover; index: 
   const out = interpolate(frame, [63, 75], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
 
   return (
-    <AbsoluteFill style={{ opacity: out, background: '#000' }}>
+    <AbsoluteFill style={{ opacity: 1, background: '#000' }}>
       <AbsoluteFill style={{ opacity: imgIn }}>
         <Img
           src={staticFile(cover.file)}
