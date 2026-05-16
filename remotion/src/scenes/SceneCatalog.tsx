@@ -37,7 +37,7 @@ export default function SceneCatalog({ covers }: { covers: Cover[] }) {
           transform: `translateY(${interpolate(headerS, [0, 1], [20, 0])}px)`,
         }}
       >
-        12+ <span style={{ color: GOLD, fontStyle: 'italic' }}>Mitindo</span>
+        {covers.length}+ <span style={{ color: GOLD, fontStyle: 'italic' }}>Mitindo</span>
       </div>
       <div style={{ fontFamily: 'Inter', color: 'rgba(255,255,255,0.6)', fontSize: 26, marginTop: 12, opacity: headerS }}>
         Chagua inayokuvutia
