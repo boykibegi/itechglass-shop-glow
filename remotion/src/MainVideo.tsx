@@ -7,7 +7,7 @@ import SceneSpotlight from './scenes/SceneSpotlight';
 import Scene3 from './scenes/Scene3';
 import Scene4 from './scenes/Scene4';
 import Scene5 from './scenes/Scene5';
-import { COVERS } from './covers';
+import type { Cover } from './covers';
 
 loadHeading('normal', { weights: ['700', '900'], subsets: ['latin'] });
 loadBody('normal', { weights: ['400', '500', '700'], subsets: ['latin'] });
@@ -33,10 +33,20 @@ const GoldGrain = () => {
   );
 };
 
-// Pick a few standout covers for spotlights
-const spotlights = [COVERS[6], COVERS[8], COVERS[0], COVERS[11]];
+const pickSpotlights = (covers: Cover[]): Cover[] => {
+  if (covers.length === 0) return [];
+  const n = Math.min(4, covers.length);
+  // Spread picks across the catalog deterministically
+  const picks: Cover[] = [];
+  for (let i = 0; i < n; i++) {
+    const idx = Math.floor((i * covers.length) / n);
+    picks.push(covers[idx]);
+  }
+  return picks;
+};
 
-export const MainVideo = () => {
+export const MainVideo = ({ covers }: { covers: Cover[] }) => {
+  const spotlights = pickSpotlights(covers);
   return (
     <AbsoluteFill style={{ background: '#000' }}>
       <GoldGrain />
@@ -45,7 +55,7 @@ export const MainVideo = () => {
           <Scene1 />
         </Series.Sequence>
         <Series.Sequence durationInFrames={120}>
-          <SceneCatalog />
+          <SceneCatalog covers={covers} />
         </Series.Sequence>
         {spotlights.map((c, i) => (
           <Series.Sequence key={i} durationInFrames={75}>

@@ -1,9 +1,10 @@
 import { AbsoluteFill, Img, staticFile, useCurrentFrame, useVideoConfig, spring, interpolate } from 'remotion';
-import { COVERS } from '../covers';
+import type { Cover } from '../covers';
 
 const GOLD = '#D4AF37';
 
-export default function SceneCatalog() {
+export default function SceneCatalog({ covers }: { covers: Cover[] }) {
+  const COVERS = covers.slice(0, 12);
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const out = interpolate(frame, [108, 120], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
@@ -36,7 +37,7 @@ export default function SceneCatalog() {
           transform: `translateY(${interpolate(headerS, [0, 1], [20, 0])}px)`,
         }}
       >
-        12+ <span style={{ color: GOLD, fontStyle: 'italic' }}>Mitindo</span>
+        {covers.length}+ <span style={{ color: GOLD, fontStyle: 'italic' }}>Mitindo</span>
       </div>
       <div style={{ fontFamily: 'Inter', color: 'rgba(255,255,255,0.6)', fontSize: 26, marginTop: 12, opacity: headerS }}>
         Chagua inayokuvutia
