@@ -1,9 +1,10 @@
 import { AbsoluteFill, Img, staticFile, useCurrentFrame, useVideoConfig, spring, interpolate } from 'remotion';
-import { COVERS } from '../covers';
+import type { Cover } from '../covers';
 
 const GOLD = '#D4AF37';
 
-export default function SceneCatalog() {
+export default function SceneCatalog({ covers }: { covers: Cover[] }) {
+  const COVERS = covers.slice(0, 12);
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const out = interpolate(frame, [108, 120], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
