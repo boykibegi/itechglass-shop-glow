@@ -43,7 +43,7 @@ export default function Scene5() {
 
       <Row delay={20} frame={frame} fps={fps} label="LOCATION" value="Tabata Magengeni" />
       <Row delay={28} frame={frame} fps={fps} label="SIMU & WHATSAPP" value="+255 746 582 989" big />
-      <Row delay={36} frame={frame} fps={fps} label="DELIVERY" value="Tunatuma mikoani kote 🚚" />
+      <Row delay={36} frame={frame} fps={fps} label="DELIVERY" value="Tunatuma mikoani kote" />
 
       <div
         style={{
@@ -75,7 +75,7 @@ export default function Scene5() {
           boxShadow: `0 0 40px ${GOLD}55`,
         }}
       >
-        💬 PIGA SIMU SASA
+        PIGA SIMU SASA
       </div>
     </AbsoluteFill>
   );
