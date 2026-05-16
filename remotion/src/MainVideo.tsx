@@ -2,17 +2,19 @@ import { AbsoluteFill, Series, useCurrentFrame, interpolate } from 'remotion';
 import { loadFont as loadHeading } from '@remotion/google-fonts/PlayfairDisplay';
 import { loadFont as loadBody } from '@remotion/google-fonts/Inter';
 import Scene1 from './scenes/Scene1';
-import Scene2 from './scenes/Scene2';
+import SceneCatalog from './scenes/SceneCatalog';
+import SceneSpotlight from './scenes/SceneSpotlight';
 import Scene3 from './scenes/Scene3';
 import Scene4 from './scenes/Scene4';
 import Scene5 from './scenes/Scene5';
+import { COVERS } from './covers';
 
 loadHeading('normal', { weights: ['700', '900'], subsets: ['latin'] });
 loadBody('normal', { weights: ['400', '500', '700'], subsets: ['latin'] });
 
 const GoldGrain = () => {
   const frame = useCurrentFrame();
-  const shift = interpolate(frame, [0, 450], [0, 60]);
+  const shift = interpolate(frame, [0, 900], [0, 80]);
   return (
     <AbsoluteFill
       style={{
@@ -31,6 +33,9 @@ const GoldGrain = () => {
   );
 };
 
+// Pick a few standout covers for spotlights
+const spotlights = [COVERS[6], COVERS[8], COVERS[0], COVERS[11]];
+
 export const MainVideo = () => {
   return (
     <AbsoluteFill style={{ background: '#000' }}>
@@ -39,16 +44,21 @@ export const MainVideo = () => {
         <Series.Sequence durationInFrames={75}>
           <Scene1 />
         </Series.Sequence>
-        <Series.Sequence durationInFrames={90}>
-          <Scene2 />
+        <Series.Sequence durationInFrames={120}>
+          <SceneCatalog />
         </Series.Sequence>
+        {spotlights.map((c, i) => (
+          <Series.Sequence key={i} durationInFrames={75}>
+            <SceneSpotlight cover={c} index={i + 1} />
+          </Series.Sequence>
+        ))}
         <Series.Sequence durationInFrames={90}>
           <Scene3 />
         </Series.Sequence>
         <Series.Sequence durationInFrames={90}>
           <Scene4 />
         </Series.Sequence>
-        <Series.Sequence durationInFrames={105}>
+        <Series.Sequence durationInFrames={120}>
           <Scene5 />
         </Series.Sequence>
       </Series>
